@@ -1,0 +1,25 @@
+project:
+  type: book
+
+book:
+  title: "Learning Microsoft Foundry"
+  author: "Colby T. Ford"
+  date: "11/28/2025"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+

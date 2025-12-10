@@ -1,5 +1,5 @@
 # Welcome {.unnumbered}
 
-This is a Quarto book website that will be published by O'Reilly Media in mid-2025.
+This is a Quarto book website that will accompany the physical book to be published by O'Reilly Media in mid-2026.
 
 To learn more about Quarto books visit <https://quarto.org/docs/books>.

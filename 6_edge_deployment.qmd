@@ -1,0 +1,15 @@
+# Edge-Deployed AI
+In this chapter, we will learn about local model inferencing through Foundry Local and will be able to prepare and run models locally on their laptop with Olive.
+
+
+## Using Foundry Local for local model hosting
+
+### Exercise: Install Foundry Local and run a mini model locally
+
+
+## Introduction to Olive and ONNX for on-device inferencing
+
+### Exercise: Quantize a model from Hugging Face and run locally
+
+
+## Publishing to M365/A365

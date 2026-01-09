@@ -1,0 +1,13 @@
+# Additional Agent Services and Apps
+In this chapter, we will get an introduction to the other agent services in Foundry and learn how to deploy their first chat AI application.
+
+
+##	Introduction to Purview SDK integration
+
+
+##	Integrating with ChatKit and CopilotKit
+
+
+##	Deploying your first AI app
+
+###	Exercise: Deploy your first chat app

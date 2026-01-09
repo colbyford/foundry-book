@@ -1,0 +1,13 @@
+# Model Customization and Control
+
+In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. They will also learn to build knowledgebases, which will be used when deploying their first agent.
+
+##	Fine-tuning with custom data (building training datasets)
+
+
+##	Foundry IQ (knowledgebases and RAG solutions)
+
+
+##	Deploying your first agent
+
+###	Exercise: Deploy your first Agent with access to data

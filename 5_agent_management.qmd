@@ -1,0 +1,20 @@
+# Agent Management (Security, Compliance, and Governance)
+In this chapter, we will learn about the concept of agent management to better secure and govern any deployed agents. This will also cover how to manage compliance and quote and how to integrate with Entra in Azure.
+
+##	Integrating with Agent ID in Entra to manage agents
+
+### Exercise: Connect Agent AI to Entra in Azure
+
+
+## Monitoring costs vs. quality, safety, and security of agents
+
+
+## Safeguarding sensitive data
+
+
+## Setting policies for agents in tenants, subscriptions, and projects
+
+### Exercise: Implement your first policy and evaluate model compliance
+
+
+## Implementing controls to manage agent access to resources

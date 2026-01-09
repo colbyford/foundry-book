@@ -1,0 +1,13 @@
+# Introduction
+In this chapter, we will get introduced to the Microsoft Foundry service and learn how to create their first Project resource in Azure.
+
+##	Exploration of frontier models, open-source models.
+
+
+##	Deploying Foundry workspaces/projects
+
+###	Exercise: Deploy an AI Project in Azure
+
+
+##	Introduction to the Foundry UI and purpose
+

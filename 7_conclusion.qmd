@@ -1,0 +1,10 @@
+# Conclusion
+In this conclusionary chapter, we'll wrap up the book by providing some final best practices for designing an Azure cloud architecture that integrates well with Foundry. Plus, readers will learn about how to plan for serverless AI options in Azure.
+
+
+## Best practices for implementing enterprise AI
+
+
+## Reference architectures for Foundry in Azure
+
+### Understanding serverless options for AI in Azure

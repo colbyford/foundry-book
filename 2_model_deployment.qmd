@@ -1,0 +1,14 @@
+# Model Deployment
+Next, let's learn how to explore and deploy various AI models from the Foundry Models registry. They will also explore the pre-built MCP tools to connect to data sources.
+
+##	Deploying your first LLM
+
+###	Exercise: Deploy a Microsoft Phi-4 model
+
+
+##	Connecting to tools and data (SQL DB, vector DB, and web search)
+
+
+##	Explore pre-built tools (MCP servers for Databricks, Cosmos, etc.)
+
+###	Exercise: Deploy Cosmos DB and connect to using a tool

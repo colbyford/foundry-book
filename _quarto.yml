@@ -11,8 +11,13 @@ book:
   cover-image: img/cover_mockup_early_bird.png
   chapters:
     - index.qmd
-    # - intro.qmd
-    # - summary.qmd
+    - 1_intro.qmd
+    - 2_model_deployment.qmd
+    - 3_model_customization.qmd
+    - 4_additional_services.qmd
+    - 5_agent_management.qmd
+    - 6_edge_deployment.qmd
+    - 7_conclusion.qmd
     # - references.qmd
 
 bibliography: references.bib

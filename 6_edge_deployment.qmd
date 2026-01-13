@@ -475,6 +475,7 @@ Compare inference speed:
 ```python
 # benchmark.py
 import time
+import numpy as np
 import onnxruntime as ort
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch

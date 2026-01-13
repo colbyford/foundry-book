@@ -438,17 +438,42 @@ For agent orchestration and custom logic:
 **Example Use Case:**
 ```javascript
 // Azure Function for agent invocation
+const { AgentClient } = require('@azure/ai-foundry');
+const { DefaultAzureCredential } = require('@azure/identity');
+const { CosmosClient } = require('@azure/cosmos');
+
+const agentClient = new AgentClient(
+    process.env.FOUNDRY_ENDPOINT,
+    new DefaultAzureCredential()
+);
+
+const cosmosClient = new CosmosClient({
+    endpoint: process.env.COSMOS_ENDPOINT,
+    key: process.env.COSMOS_KEY
+});
+
+const database = cosmosClient.database('ConversationDB');
+const container = database.container('Conversations');
+
 module.exports = async function (context, req) {
     const userMessage = req.body.message;
     
     // Call Foundry agent
-    const response = await callFoundryAgent(userMessage);
+    const response = await agentClient.sendMessage({
+        agentId: process.env.AGENT_ID,
+        message: userMessage
+    });
     
     // Log to Cosmos DB
-    await logConversation(userMessage, response);
+    await container.items.create({
+        id: new Date().getTime().toString(),
+        userMessage: userMessage,
+        agentResponse: response.content,
+        timestamp: new Date().toISOString()
+    });
     
     context.res = {
-        body: response
+        body: response.content
     };
 };
 ```

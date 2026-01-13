@@ -1,15 +1,625 @@
 # Edge-Deployed AI
-In this chapter, we will learn about local model inferencing through Foundry Local and will be able to prepare and run models locally on their laptop with Olive.
 
+In this chapter, we will learn about local model inferencing through Foundry Local and will be able to prepare and run models locally on their laptop with Olive.
 
 ## Using Foundry Local for local model hosting
 
+**Foundry Local** is an on-device AI inference solution that lets you run AI models locally through a CLI, SDK, or REST API. This enables scenarios where cloud connectivity is limited, data privacy is paramount, or low-latency responses are required.
+
+### What is Foundry Local?
+
+Foundry Local brings the power of large language models to your local device without requiring cloud connectivity for inference. Once models are downloaded, they run entirely on your hardware, keeping your data private and reducing operational costs.
+
+### Key Features
+
+**On-device inference:**
+* Run models locally to reduce costs and help keep data on your device
+* No per-token charges after initial model download
+* Works offline after initial setup
+
+**Model customization:**
+* Select from preset models optimized for various hardware
+* Use your own models from Hugging Face or other sources
+* Optimize models for specific use cases
+
+**Cost efficiency:**
+* Use existing hardware to eliminate recurring cloud costs
+* Make AI more accessible for development and testing
+* Scale to production when cloud benefits outweigh costs
+
+**Seamless integration:**
+* Integrate with your apps through SDK, API endpoints, or CLI
+* Compatible with OpenAI API format for easy migration
+* Move to Microsoft Foundry cloud for high-throughput workloads
+
+### Use Cases
+
+Foundry Local is ideal when you need to:
+
+* **Keep sensitive data on your device** - Medical records, financial data, proprietary information
+* **Operate in limited or offline environments** - Field operations, air-gapped networks, remote locations
+* **Reduce cloud inference costs** - Development, testing, or low-volume production
+* **Get low latency AI responses** - Real-time applications requiring sub-100ms responses
+* **Experiment with AI models** - Prototype before deploying to cloud
+* **Develop without cloud dependencies** - Work on laptops, workstations, or edge devices
+
+### Prerequisites
+
+Before installing Foundry Local:
+
+* **Hardware Requirements:**
+  - CPU: Modern processor (Intel/AMD x64 or ARM64)
+  - RAM: Minimum 8 GB, 16 GB+ recommended
+  - Storage: 10 GB+ free space for models
+  - GPU: Optional but recommended (NVIDIA, AMD, or Apple Silicon)
+
+* **Software Requirements:**
+  - Windows 11, macOS 13+, or Linux (Ubuntu 20.04+)
+  - Terminal application (Windows Terminal, macOS Terminal, or Linux shell)
+  - Internet connection for initial model downloads
+
+* **No Azure subscription required** for local-only usage
+
 ### Exercise: Install Foundry Local and run a mini model locally
 
+Let's install Foundry Local and run a small language model on your device.
+
+**Step 1: Install Foundry Local**
+
+**On Windows:**
+```powershell
+# Download and run the installer
+winget install Microsoft.FoundryLocal
+```
+
+**On macOS:**
+```bash
+# Using Homebrew
+brew install foundry-local
+```
+
+**On Linux:**
+```bash
+# Download and install
+curl -fsSL https://aka.ms/foundry-local/install.sh | bash
+```
+
+**Step 2: Verify Installation**
+
+```bash
+# Check version
+foundry --version
+
+# View available commands
+foundry --help
+```
+
+You should see output showing the installed version and available commands.
+
+**Step 3: List Available Models**
+
+```bash
+# List all available pre-optimized models
+foundry model list
+```
+
+The first run might download execution providers for your hardware (ONNX Runtime, DirectML, CoreML, etc.).
+
+Common models you'll see:
+* **qwen2.5-0.5b** - Tiny model, fast inference (500M parameters)
+* **phi-3-mini** - Small but capable (3.8B parameters)
+* **phi-4** - Excellent reasoning (14B parameters)
+* **llama-3.2-1b** - Efficient small model (1B parameters)
+* **mistral-7b** - High quality mid-size model (7B parameters)
+
+**Step 4: Download and Run a Model**
+
+Let's start with the smallest model for quick testing:
+
+```bash
+# Download and run qwen2.5-0.5b
+foundry model run qwen2.5-0.5b
+```
+
+This command will:
+1. Download the model (first run only, ~500 MB)
+2. Optimize it for your hardware
+3. Start an interactive chat session
+
+**Step 5: Interact with the Model**
+
+Once the model loads, you'll see a prompt:
+
+```
+You: _
+```
+
+Try these prompts:
+* "Hello, how are you?"
+* "What is Microsoft Foundry?"
+* "Write a haiku about artificial intelligence"
+
+Press `Ctrl+C` or type `exit` to end the session.
+
+**Step 6: Run as a Server**
+
+For application integration, run Foundry Local as an API server:
+
+```bash
+# Start server on localhost:5272
+foundry server start qwen2.5-0.5b --port 5272
+```
+
+The server provides an OpenAI-compatible API endpoint.
+
+**Step 7: Test the API**
+
+Test with curl:
+
+```bash
+curl http://localhost:5272/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "qwen2.5-0.5b",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'
+```
+
+Or use Python:
+
+```python
+from openai import OpenAI
+
+# Point to local Foundry Local server
+client = OpenAI(
+    base_url="http://localhost:5272/v1",
+    api_key="not-needed"  # Local server doesn't require key
+)
+
+response = client.chat.completions.create(
+    model="qwen2.5-0.5b",
+    messages=[
+        {"role": "user", "content": "What is AI?"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+**Step 8: Hardware Optimization**
+
+Foundry Local automatically detects and uses available hardware acceleration:
+
+* **NVIDIA GPU** - Uses CUDA for faster inference
+* **Apple Silicon** - Uses CoreML and Metal
+* **AMD GPU** - Uses DirectML or ROCm
+* **CPU only** - Uses optimized ONNX Runtime
+
+Check what's being used:
+
+```bash
+foundry info
+```
+
+This shows:
+* Detected hardware
+* Active execution providers
+* Available acceleration options
+
+**Step 9: Try a Larger Model**
+
+Once comfortable, try a more capable model:
+
+```bash
+# Phi-4 provides much better reasoning
+foundry model run phi-4
+```
+
+Note: Larger models require more RAM and take longer to respond, but provide significantly better quality.
 
 ## Introduction to Olive and ONNX for on-device inferencing
 
+**Olive** (ONNX Live) is Microsoft's toolchain for optimizing machine learning models for deployment. It can take models from various frameworks and optimize them for specific hardware targets.
+
+### What is ONNX?
+
+**ONNX (Open Neural Network Exchange)** is an open standard for representing machine learning models. It enables models to be transferred between different frameworks (PyTorch, TensorFlow, etc.) and run efficiently on various hardware.
+
+Benefits of ONNX:
+* **Framework agnostic** - Train in PyTorch, deploy anywhere
+* **Hardware optimized** - Specific optimizations for CPUs, GPUs, NPUs
+* **Broad support** - Works across Windows, Linux, macOS, mobile, and web
+* **Performance** - Optimized runtime inference
+
+### What is Olive?
+
+**Olive** is an automation tool that optimizes ML models for deployment. It applies a sequence of optimizations to improve model performance, reduce size, and ensure compatibility with target hardware.
+
+Olive capabilities:
+* **Quantization** - Reduce model size by using lower precision (INT8, INT4)
+* **Pruning** - Remove unnecessary weights
+* **Graph optimization** - Simplify model architecture
+* **Hardware-specific tuning** - Optimize for specific devices
+* **Accuracy validation** - Ensure optimizations don't hurt quality
+
+### The Optimization Pipeline
+
+**1. Model Export:**
+Convert from source framework to ONNX:
+```python
+# Export PyTorch model to ONNX
+import torch
+
+model = load_my_model()
+dummy_input = torch.randn(1, 3, 224, 224)
+
+torch.onnx.export(
+    model,
+    dummy_input,
+    "model.onnx",
+    input_names=['input'],
+    output_names=['output'],
+    dynamic_axes={'input': {0: 'batch_size'}}
+)
+```
+
+**2. Optimization with Olive:**
+Apply optimizations for target hardware:
+```yaml
+# olive-config.yaml
+input_model:
+  type: PyTorchModel
+  model_path: my_model.pt
+
+systems:
+  local_system:
+    type: LocalSystem
+    accelerators:
+      - device: cpu
+        execution_providers:
+          - CPUExecutionProvider
+
+passes:
+  quantization:
+    type: OnnxQuantization
+    data_config: calibration_data
+  
+  performance_tuning:
+    type: OrtPerfTuning
+    
+output_model:
+  type: ONNXModel
+  path: optimized_model.onnx
+```
+
+**3. Validation:**
+Compare optimized model to original:
+```python
+# Test accuracy after optimization
+from olive.model import ONNXModel
+
+original = ONNXModel("model.onnx")
+optimized = ONNXModel("optimized_model.onnx")
+
+# Run test set through both
+original_acc = evaluate(original, test_data)
+optimized_acc = evaluate(optimized, test_data)
+
+print(f"Accuracy delta: {abs(original_acc - optimized_acc):.2%}")
+```
+
 ### Exercise: Quantize a model from Hugging Face and run locally
 
+Let's take a model from Hugging Face, optimize it with Olive, and run it locally with Foundry Local.
+
+**Step 1: Install Dependencies**
+
+```bash
+# Install Olive and related tools
+pip install olive-ai
+pip install torch transformers onnx onnxruntime
+```
+
+**Step 2: Choose a Model**
+
+For this exercise, we'll use a small text classification model:
+
+```python
+# download_model.py
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+model_name = "distilbert-base-uncased-finetuned-sst-2-english"
+
+# Download model and tokenizer
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# Save locally
+model.save_pretrained("./original_model")
+tokenizer.save_pretrained("./original_model")
+
+print(f"Model saved to ./original_model")
+```
+
+Run it:
+```bash
+python download_model.py
+```
+
+**Step 3: Create Olive Configuration**
+
+Create `olive-config.json`:
+
+```json
+{
+  "input_model": {
+    "type": "HfModel",
+    "model_path": "./original_model",
+    "task": "text-classification"
+  },
+  
+  "systems": {
+    "local_system": {
+      "type": "LocalSystem",
+      "accelerators": [
+        {
+          "device": "cpu",
+          "execution_providers": ["CPUExecutionProvider"]
+        }
+      ]
+    }
+  },
+  
+  "passes": {
+    "convert": {
+      "type": "OnnxConversion"
+    },
+    "quantize": {
+      "type": "OnnxQuantization",
+      "weight_type": "QUInt8"
+    },
+    "optimize": {
+      "type": "OrtTransformersOptimization",
+      "model_type": "bert"
+    }
+  },
+  
+  "engine": {
+    "search_strategy": {
+      "execution_order": "joint",
+      "search_algorithm": "exhaustive"
+    },
+    "evaluator": "common_evaluator",
+    "output_dir": "optimized_model"
+  }
+}
+```
+
+**Step 4: Run Olive Optimization**
+
+```bash
+# Run the optimization pipeline
+olive run --config olive-config.json
+```
+
+This process will:
+1. Convert the model to ONNX format
+2. Apply quantization (INT8)
+3. Optimize the graph structure
+4. Validate accuracy
+5. Save the optimized model
+
+**Step 5: Compare Model Sizes**
+
+```bash
+# Check original model size
+du -sh original_model/
+
+# Check optimized model size
+du -sh optimized_model/
+```
+
+You should see the optimized model is 3-4x smaller.
+
+**Step 6: Test the Optimized Model**
+
+```python
+# test_optimized.py
+import onnxruntime as ort
+import numpy as np
+from transformers import AutoTokenizer
+
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained("./original_model")
+
+# Load optimized ONNX model
+session = ort.InferenceSession(
+    "optimized_model/model.onnx",
+    providers=['CPUExecutionProvider']
+)
+
+# Test inference
+text = "I love using Foundry Local!"
+inputs = tokenizer(text, return_tensors="np", padding=True)
+
+# Run inference
+outputs = session.run(
+    None,
+    {
+        "input_ids": inputs["input_ids"].astype(np.int64),
+        "attention_mask": inputs["attention_mask"].astype(np.int64)
+    }
+)
+
+# Get prediction
+logits = outputs[0]
+prediction = np.argmax(logits, axis=1)[0]
+sentiment = "positive" if prediction == 1 else "negative"
+
+print(f"Text: {text}")
+print(f"Sentiment: {sentiment}")
+print(f"Confidence: {np.max(np.softmax(logits)):.2%}")
+```
+
+Run it:
+```bash
+python test_optimized.py
+```
+
+**Step 7: Benchmark Performance**
+
+Compare inference speed:
+
+```python
+# benchmark.py
+import time
+import numpy as np
+import onnxruntime as ort
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+
+tokenizer = AutoTokenizer.from_pretrained("./original_model")
+text = "This is a test sentence for benchmarking."
+
+# Test PyTorch model
+pytorch_model = AutoModelForSequenceClassification.from_pretrained("./original_model")
+pytorch_model.eval()
+
+start = time.time()
+for _ in range(100):
+    inputs = tokenizer(text, return_tensors="pt")
+    with torch.no_grad():
+        _ = pytorch_model(**inputs)
+pytorch_time = time.time() - start
+
+# Test ONNX model
+onnx_session = ort.InferenceSession(
+    "optimized_model/model.onnx",
+    providers=['CPUExecutionProvider']
+)
+
+start = time.time()
+for _ in range(100):
+    inputs = tokenizer(text, return_tensors="np")
+    _ = onnx_session.run(None, {
+        "input_ids": inputs["input_ids"].astype(np.int64),
+        "attention_mask": inputs["attention_mask"].astype(np.int64)
+    })
+onnx_time = time.time() - start
+
+print(f"PyTorch: {pytorch_time:.3f}s (100 runs)")
+print(f"ONNX:    {onnx_time:.3f}s (100 runs)")
+print(f"Speedup: {pytorch_time / onnx_time:.2f}x")
+```
+
+You should see 2-5x speedup with the optimized model.
+
+**Step 8: Deploy to Foundry Local**
+
+To use your optimized model with Foundry Local:
+
+1. Convert to Foundry Local format:
+```bash
+foundry model import \
+  --path optimized_model/model.onnx \
+  --name my-custom-model \
+  --task text-classification
+```
+
+2. Run it:
+```bash
+foundry model run my-custom-model
+```
 
 ## Publishing to M365/A365
+
+Once you've developed and tested models locally, you can deploy them to Microsoft 365 (M365) or Agent 365 (A365) for enterprise-wide access.
+
+### Publishing to Microsoft 365
+
+**Microsoft 365 Integration** enables your agents to:
+* Appear in Microsoft 365 Copilot
+* Integrate with Teams, Outlook, Word, Excel, PowerPoint
+* Access Microsoft Graph for organizational data
+* Provide consistent experience across Microsoft 365 apps
+
+**Publishing Process:**
+
+1. **Develop Locally:**
+   * Build and test agent with Foundry Local
+   * Validate functionality and performance
+   * Ensure compliance with organizational policies
+
+2. **Deploy to Foundry Cloud:**
+   * Upload your agent to Microsoft Foundry
+   * Configure cloud-based tools and connections
+   * Set up production configurations
+
+3. **Publish to M365:**
+   * In Foundry portal, select your agent
+   * Click **Publish** → **Microsoft 365 Copilot**
+   * Configure metadata and permissions
+   * Submit for organizational approval
+
+4. **Admin Approval:**
+   * IT admin reviews in Microsoft 365 Admin Center
+   * Verifies security and compliance
+   * Approves for organizational deployment
+
+5. **User Access:**
+   * Agent appears in M365 Copilot agent store
+   * Users can discover and use in their workflow
+   * Works across all M365 applications
+
+### Publishing to Agent 365
+
+**Agent 365** is the control plane for enterprise AI agents, providing:
+* Unified agent registry across Microsoft and third-party agents
+* Centralized identity and access management
+* Enterprise-grade security and compliance
+* Integration with Defender, Purview, and Entra ID
+
+**Publishing to Agent 365:**
+
+1. **Register Agent Identity:**
+   * Create agent identity in Entra ID
+   * Configure permissions and roles
+   * Set up managed identity for authentication
+
+2. **Deploy as Hosted Agent:**
+   * Package agent as container
+   * Deploy to Microsoft Foundry
+   * Configure endpoint and scaling
+
+3. **Publish to Agent 365:**
+   * Use Foundry API or portal
+   * Specify metadata and capabilities
+   * Mark as production-ready
+
+4. **Governance Integration:**
+   * Automatically appears in Agent 365 registry
+   * Subject to organizational policies
+   * Monitored by Control Plane
+
+### Hybrid Deployment Strategy
+
+Many organizations use a hybrid approach:
+
+**Development:** Foundry Local
+* Fast iteration
+* No cloud costs
+* Offline capability
+
+**Testing:** Foundry Cloud (staging)
+* Integration testing
+* Performance validation
+* Security scanning
+
+**Production:** Microsoft 365/Agent 365
+* Enterprise deployment
+* Full governance
+* Maximum reach
+
+This approach provides flexibility while maintaining control and compliance as solutions move from development to production.

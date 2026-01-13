@@ -4,10 +4,321 @@ In this chapter, we will learn how to fine-tune models in Foundry using custom t
 
 ##	Fine-tuning with custom data (building training datasets)
 
+Fine-tuning allows you to customize pre-trained models with your own data to improve performance on specific tasks or domains. This process adapts the model's behavior to better align with your use case while maintaining the model's general capabilities.
+
+### When to Fine-Tune
+
+Consider fine-tuning when you need to:
+
+* Adapt a model to a specific domain or industry (legal, medical, financial)
+* Improve performance on specialized tasks
+* Teach the model to follow specific formatting or response patterns
+* Incorporate proprietary terminology or knowledge
+* Reduce the need for lengthy prompts by encoding behavior in the model
+
+### Fine-Tuning Process
+
+The fine-tuning workflow in Microsoft Foundry consists of several steps:
+
+**1. Prepare Training Data**
+
+Your training data should be in JSONL (JSON Lines) format with clear examples of inputs and desired outputs:
+
+```json
+{"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "How do I reset my password?"}, {"role": "assistant", "content": "To reset your password, go to Settings > Security > Reset Password."}]}
+{"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "Where can I find my order history?"}, {"role": "assistant", "content": "Your order history is available in Account > Orders."}]}
+```
+
+**Best Practices for Training Data:**
+
+* **Quality over quantity** - Start with 50-100 high-quality examples
+* **Diverse examples** - Cover different scenarios and edge cases
+* **Consistent format** - Use the same structure throughout
+* **Clear instructions** - Include system messages to define behavior
+* **Representative data** - Examples should reflect real-world usage
+
+**2. Upload Data to Foundry**
+
+1. Navigate to **Data** in your Foundry project
+2. Click **+ Upload data**
+3. Select your JSONL file
+4. Provide a name and description
+5. Click **Upload**
+
+**3. Create a Fine-Tuning Job**
+
+1. Go to **Models** → **Fine-tuning**
+2. Click **+ Create fine-tuning job**
+3. Select the base model (e.g., GPT-3.5-Turbo, Phi-3)
+4. Choose your training dataset
+5. Configure hyperparameters:
+   * **Learning rate** - Controls how quickly the model adapts (default is usually best)
+   * **Epochs** - Number of training passes (3-4 is typical)
+   * **Batch size** - Number of examples per training step
+6. Optionally provide a validation dataset
+7. Click **Submit**
+
+**4. Monitor Training**
+
+The fine-tuning job can take from minutes to hours depending on:
+* Dataset size
+* Base model size
+* Number of epochs
+
+You can monitor progress in the **Fine-tuning** section, which shows:
+* Training loss (should decrease over time)
+* Validation loss (if validation set provided)
+* Estimated completion time
+
+**5. Deploy Fine-Tuned Model**
+
+Once training completes:
+1. Navigate to the completed fine-tuning job
+2. Click **Deploy model**
+3. Provide a deployment name
+4. Select deployment configuration
+5. Click **Deploy**
+
+Your fine-tuned model is now ready to use and will perform better on your specific use case than the base model.
+
+### Evaluation and Iteration
+
+After deploying your fine-tuned model:
+
+* Test with real-world examples not in your training set
+* Compare responses to the base model
+* Measure performance improvements using evaluations
+* Iterate by adding more training examples if needed
 
 ##	Foundry IQ (knowledgebases and RAG solutions)
 
+**Foundry IQ** (powered by Azure AI Search) enables Retrieval-Augmented Generation (RAG), allowing your agents to ground their responses in your own data. This approach provides more accurate, citation-backed answers without requiring fine-tuning.
+
+### What is RAG?
+
+Retrieval-Augmented Generation combines:
+
+1. **Retrieval** - Finding relevant information from a knowledge base
+2. **Augmentation** - Adding that information to the model's context
+3. **Generation** - Using the model to generate responses based on the retrieved data
+
+### Benefits of RAG
+
+* **Accuracy** - Responses are grounded in your actual data
+* **Citations** - Provides sources for information
+* **Up-to-date** - Can be updated without retraining the model
+* **Cost-effective** - No need for expensive fine-tuning
+* **Transparency** - Users can verify information sources
+
+### Creating a Knowledge Base
+
+**1. Prepare Your Data**
+
+Foundry IQ supports multiple document types:
+* PDF documents
+* Word documents (.docx)
+* Text files (.txt)
+* Markdown files (.md)
+* Web pages (via URL)
+* SharePoint sites
+
+**2. Create an Index**
+
+1. Navigate to **Tools** → **Indexes** in your Foundry project
+2. Click **+ New index**
+3. Provide a name (e.g., "product-documentation")
+4. Select the index type: **Azure AI Search**
+5. Choose or create an Azure AI Search resource
+
+**3. Add Data Sources**
+
+1. In the index configuration, click **+ Add data source**
+2. Select the source type:
+   * **Upload files** - Upload documents directly
+   * **Azure Blob Storage** - Connect to existing storage
+   * **SharePoint** - Connect to SharePoint sites
+   * **Web crawl** - Crawl public web pages
+3. Configure the data source
+4. Click **Add**
+
+**4. Configure Chunking and Embedding**
+
+* **Chunking strategy** - How documents are split into searchable pieces
+  * Default: 1000 tokens with 100 token overlap
+  * Custom: Adjust based on your document structure
+* **Embedding model** - Converts text to vectors for semantic search
+  * text-embedding-ada-002 (recommended for most cases)
+  * Custom embeddings for specialized domains
+
+**5. Build the Index**
+
+1. Review your configuration
+2. Click **Create and build**
+3. Wait for indexing to complete (time varies by data volume)
+4. Monitor progress in the **Indexes** section
+
+### Vector Search
+
+Foundry IQ uses vector search to find semantically similar content:
+
+* Converts queries to embeddings
+* Compares query embeddings to document embeddings
+* Returns most relevant chunks based on semantic similarity
+* Supports hybrid search (combines keyword and vector search)
 
 ##	Deploying your first agent
 
+Agents in Microsoft Foundry combine models, instructions, tools, and memory to create intelligent, autonomous systems that can help users accomplish tasks.
+
+### What Makes an Agent?
+
+An agent consists of:
+
+1. **Model (LLM)** - Provides reasoning and language understanding
+2. **Instructions** - Define the agent's role, behavior, and constraints
+3. **Tools** - Enable the agent to retrieve data or take actions
+4. **Memory** - Helps the agent maintain context across conversations
+
+### Agent Types
+
+**Prompt-Based Agents:**
+* Declaratively defined using natural language instructions
+* Quick to build and iterate
+* Suitable for most use cases
+
+**Workflow Agents:**
+* Express complex orchestration as YAML or code
+* Enable multi-agent collaboration
+* Handle conditional logic and branching
+
+**Hosted (Containerized) Agents:**
+* Created in code and deployed as containers
+* Full control over implementation
+* Can integrate custom libraries and frameworks
+
 ###	Exercise: Deploy your first Agent with access to data
+
+Let's create an agent that can answer questions about your product catalog using the Cosmos DB connection we set up earlier.
+
+**Step 1: Create a New Agent**
+
+1. Navigate to **Build** → **Agents** in Foundry portal
+2. Click **+ Create agent**
+3. Provide agent details:
+   * Name: "Product Support Agent"
+   * Description: "Helps customers with product information"
+4. Select a model deployment (use the Phi-4 model we deployed earlier)
+
+**Step 2: Configure Instructions**
+
+In the **Instructions** field, provide clear guidance:
+
+```
+You are a helpful product support agent for an outdoor gear company. 
+
+Your responsibilities:
+- Answer questions about products including features, pricing, and availability
+- Provide accurate information from the product database
+- Be friendly and professional
+- If you don't know something, admit it and offer to escalate to a human agent
+
+When answering questions about products:
+1. Search the product database for relevant information
+2. Provide specific details including product names and prices
+3. Include any relevant warnings or recommendations
+4. Always cite your sources
+
+Remember: Never make up product information. Only use data from the tools you have access to.
+```
+
+**Step 3: Add Tools**
+
+1. In the agent configuration, navigate to the **Tools** section
+2. Click **+ Add tool**
+3. Select **Cosmos DB Query** from the catalog
+4. Choose your "ProductCatalog" connection
+5. Configure tool permissions:
+   * Read-only access
+   * Specific containers: "Products"
+6. Add the tool
+
+**Step 4: Configure Memory (Optional)**
+
+1. Navigate to **Memory** settings
+2. Enable conversation memory
+3. Set retention policy:
+   * Per-user memory (default)
+   * Retention: 30 days
+4. This allows the agent to remember context from previous interactions
+
+**Step 5: Add Safety Features**
+
+1. Go to **Safety** settings
+2. Enable content filtering:
+   * Hate speech detection
+   * Violence detection
+   * Self-harm detection
+   * Sexual content detection
+3. Set filter levels (Low, Medium, or High)
+4. Configure response behavior for blocked content
+
+**Step 6: Test the Agent**
+
+1. Click **Test in playground**
+2. Try these sample prompts:
+   * "What hiking shoes do you have available?"
+   * "Tell me about the TrailWalker shoes"
+   * "How much do the TrailWalker hiking shoes cost?"
+3. Observe how the agent:
+   * Uses the Cosmos DB tool to fetch product data
+   * Provides accurate, grounded responses
+   * Cites the product database as its source
+
+**Step 7: Deploy the Agent**
+
+Once satisfied with testing:
+
+1. Click **Deploy**
+2. Choose deployment target:
+   * **API endpoint** - For integration with custom apps
+   * **Teams** - Deploy to Microsoft Teams
+   * **Microsoft 365** - Make available in M365 apps
+   * **Web app** - Generate a standalone web chat interface
+3. Configure deployment settings:
+   * Endpoint name
+   * Authentication method (API key or Azure AD)
+   * Rate limiting (if applicable)
+4. Click **Deploy**
+
+**Step 8: Get Deployment Details**
+
+After deployment, you'll receive:
+* **Endpoint URL** - For API calls
+* **API Key** - For authentication (store securely)
+* **Sample code** - Example integration code in multiple languages
+
+**Step 9: Test the Deployed Agent**
+
+Test the agent via API using curl:
+
+```bash
+curl -X POST https://your-endpoint.azure.com/agents/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "messages": [
+      {"role": "user", "content": "What are the TrailWalker hiking shoes?"}
+    ]
+  }'
+```
+
+Congratulations! You've deployed your first agent with access to real-time data. This agent can now be integrated into applications, websites, or workplace tools to provide intelligent assistance to users.
+
+### Next Steps
+
+To enhance your agent further:
+* Add more data sources (SQL databases, SharePoint, web search)
+* Implement multi-turn conversation handling
+* Add custom validation logic
+* Monitor agent performance and user feedback
+* Iterate on instructions based on real-world usage

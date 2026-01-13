@@ -1,20 +1,771 @@
 # Agent Management (Security, Compliance, and Governance)
-In this chapter, we will learn about the concept of agent management to better secure and govern any deployed agents. This will also cover how to manage compliance and quote and how to integrate with Entra in Azure.
+
+In this chapter, we will learn about the concept of agent management to better secure and govern any deployed agents. This will also cover how to manage compliance and costs, and how to integrate with Entra in Azure.
+
+## What is the Microsoft Foundry Control Plane?
+
+The **Microsoft Foundry Control Plane** is a unified management interface that provides visibility, governance, and control for AI agents, models, and tools across your Foundry enterprise. As organizations evolve from isolated copilots to autonomous multi-agent fleets, they need unified oversight. The Foundry Control Plane provides the visibility, governance, and control needed to scale with confidence.
+
+The Foundry Control Plane allows you to:
+
+* **Gain unified visibility** across all Foundry, Microsoft, and third-party agents in one place
+* **Observe, analyze, and optimize** agent performance, cost, quality, and compliance
+* **Apply deterministic guardrails and policies** for safety, compliance, and operational consistency
+* **Visualize resource consumption**, detect anomalies, and optimize agent configurations to reduce spend while maintaining reliability
+
+### Core Functionalities
+
+**Unified Fleet Visibility:**
+Get a real-time overview of every agent, model, and tool across projects in your subscription.
+* Track key performance indicators such as active agents, run completion, compliance posture, cost efficiency, and prohibited behaviors
+* Use deep links to evaluation and monitoring experiences for rapid debugging, diagnosis, and remediation
+* Visualize fleet health through intuitive dashboards that surface trends and anomalies instantly
+
+**Observe to Protect and Improve:**
+Observability is built in, not added on.
+* Correlate alerts, evaluation results, and trace data to pinpoint issues instantly
+* Continuously evaluate agent performance, quality, and risk dimensions
+* Use the AI Red Teaming Agent and cluster analysis for automated vulnerability probing
+* Let Foundry recommend improvements, from prompt refinements to model version upgrades
+
+**Govern and Enforce with Guardrails:**
+Operationalize Responsible AI principles through policies that scale.
+* Define enterprise-wide guardrail policies for safety, compliance, and quality
+* Apply bulk remediation to instantly correct noncompliant configurations across your fleet
+
+**Secure Agents:**
+* Schedule automated red-teaming scans and drift monitoring for ongoing agent testing
+* View Defender and Purview alerts directly in the Control Plane dashboard
+* Track rate limits, token usage, and cost anomalies to prevent inefficiency or abuse
 
 ##	Integrating with Agent ID in Entra to manage agents
 
+Microsoft Entra ID (formerly Azure Active Directory) provides identity and access management for your AI agents. Agent Identity enables secure, auditable agent-to-agent and agent-to-resource interactions.
+
+### What is Agent Identity?
+
+An **Agent Identity** is a special service principal in Microsoft Entra ID that represents an identity that agents can impersonate. This provides:
+
+* **Authentication** - Agents authenticate using managed identities
+* **Authorization** - Fine-grained access control to resources
+* **Auditability** - Track which agent accessed what resource and when
+* **Least privilege** - Grant only necessary permissions to each agent
+* **Identity federation** - Securely delegate tasks across organizational boundaries
+
+### Benefits of Agent Identity
+
+**Security:**
+* No hardcoded credentials in agent code
+* Automatic credential rotation through managed identities
+* Centralized access control policies
+* Real-time revocation capabilities
+
+**Compliance:**
+* Detailed audit logs of agent activities
+* Integration with Microsoft 365 compliance center
+* Support for regulatory requirements (GDPR, HIPAA, SOC 2)
+* Role-based access control (RBAC)
+
+**Operational Excellence:**
+* Simplified credential management
+* Reduced administrative overhead
+* Consistent identity model across agents
+* Integration with existing identity infrastructure
+
 ### Exercise: Connect Agent AI to Entra in Azure
 
+Let's configure an agent to use Entra ID for authentication and authorization.
+
+**Step 1: Enable Managed Identity**
+
+1. Navigate to your Foundry project in the Azure portal
+2. Go to **Settings** → **Identity**
+3. Toggle **System assigned managed identity** to **On**
+4. Click **Save**
+5. Note the **Object (principal) ID** - you'll need this later
+
+**Step 2: Create an Agent Identity**
+
+1. In the Foundry portal, navigate to your agent
+2. Go to **Settings** → **Identity**
+3. Click **Create agent identity**
+4. Configure the identity:
+   * Name: "ProductSupportAgentIdentity"
+   * Description: "Identity for product support agent"
+   * Permissions scope: Select the resources the agent needs to access
+5. Click **Create**
+
+This creates a service principal in Entra ID that your agent can use.
+
+**Step 3: Grant Permissions to Resources**
+
+Now grant the agent identity access to required resources:
+
+**For Azure Cosmos DB:**
+1. Navigate to your Cosmos DB account
+2. Go to **Access Control (IAM)**
+3. Click **+ Add role assignment**
+4. Select **Cosmos DB Built-in Data Contributor** role
+5. In the **Members** tab, search for your agent identity
+6. Select it and click **Review + assign**
+
+**For Azure AI Search:**
+1. Navigate to your AI Search service
+2. Go to **Access Control (IAM)**
+3. Add role assignment: **Search Index Data Reader**
+4. Assign to your agent identity
+
+**For SharePoint (via Microsoft Graph):**
+1. In Azure Portal, go to **Entra ID** → **App registrations**
+2. Find your agent's app registration
+3. Go to **API permissions**
+4. Click **+ Add a permission** → **Microsoft Graph**
+5. Add delegated permissions:
+   * Sites.Read.All
+   * Files.Read.All
+6. Click **Grant admin consent**
+
+**Step 4: Configure the Agent**
+
+Update your agent configuration to use the managed identity:
+
+1. In the Foundry portal, edit your agent
+2. Go to **Tools** → **Connections**
+3. Edit each connection to use **Managed Identity** instead of API keys:
+   * For Cosmos DB: Select "Use managed identity"
+   * For AI Search: Select "Use managed identity"
+   * For Microsoft Graph: Select "Use managed identity"
+4. Save the changes
+
+**Step 5: Test Authentication**
+
+1. Test the agent in the playground
+2. Verify it can still access all data sources
+3. Check the audit logs in Entra ID:
+   * Go to **Entra ID** → **Monitoring** → **Audit logs**
+   * Filter by your agent's service principal
+   * Verify sign-in and resource access events
+
+**Step 6: Set Up Conditional Access (Optional)**
+
+Add extra security with conditional access policies:
+
+1. In Entra ID, go to **Security** → **Conditional Access**
+2. Click **+ New policy**
+3. Configure:
+   * Name: "Agent Access Policy"
+   * Users: Select your agent identity
+   * Cloud apps: Select the resources agents can access
+   * Conditions: 
+     - Require specific IP ranges
+     - Require compliant device (for human-supervised agents)
+   * Grant controls:
+     - Require multi-factor authentication (for sensitive operations)
+     - Require device to be marked as compliant
+4. Enable policy and save
 
 ## Monitoring costs vs. quality, safety, and security of agents
 
+Effective agent management requires balancing multiple dimensions: cost efficiency, quality of outputs, safety guardrails, and security posture.
+
+### Cost Monitoring
+
+**Understanding Agent Costs:**
+Agent costs come from:
+* **Model inference** - Tokens processed by LLMs
+* **Tool executions** - API calls to external services
+* **Storage** - Conversation history and file storage
+* **Compute** - For hosted agents running on dedicated infrastructure
+
+**Monitoring Cost Metrics:**
+
+In the Control Plane, view cost dashboards:
+
+1. Navigate to **Operate** → **Overview**
+2. View cost trends:
+   * Total monthly spend
+   * Cost per agent
+   * Cost per conversation
+   * Token usage by model
+
+3. Identify cost anomalies:
+   * Sudden spikes in usage
+   * Inefficient agents (high cost, low value)
+   * Underutilized deployments
+
+**Cost Optimization Strategies:**
+
+1. **Right-size models** - Use smaller models for simple tasks:
+   * GPT-4o for complex reasoning
+   * GPT-3.5-Turbo for simple Q&A
+   * Phi-4 for efficient edge scenarios
+
+2. **Implement caching** - Cache frequent queries:
+   * Semantic cache for similar questions
+   * Response templates for common scenarios
+
+3. **Set token limits** - Configure maximum tokens per response:
+   ```json
+   {
+     "max_tokens": 500,
+     "stop_sequences": ["\n\n", "###"]
+   }
+   ```
+
+4. **Use serverless deployments** - Pay only for what you use:
+   * No idle capacity costs
+   * Automatic scaling
+   * No minimum commitments
+
+5. **Monitor tool usage** - Optimize expensive tool calls:
+   * Cache database query results
+   * Batch API requests
+   * Use efficient search queries
+
+### Quality Monitoring
+
+**Key Quality Metrics:**
+
+* **Task Adherence** - Does the agent follow instructions?
+* **Intent Resolution** - Does it address the user's actual need?
+* **Tool Call Success** - Are tools used correctly?
+* **Groundedness** - Are responses based on provided data?
+* **Coherence** - Are responses clear and logical?
+* **Relevance** - Do responses answer the question?
+
+**Implementing Quality Evaluation:**
+
+1. Navigate to **Operate** → **Evaluation**
+2. Enable continuous evaluation:
+   * Sample rate: 10% of conversations
+   * Evaluation frequency: Daily
+   * Metrics to track: All available metrics
+
+3. Set up quality thresholds:
+   * Groundedness > 90%
+   * Task Adherence > 85%
+   * Intent Resolution > 80%
+
+4. Configure alerts:
+   * Email notification when quality drops below threshold
+   * Auto-disable agent if critical issues detected
+
+**Quality Improvement Process:**
+
+1. **Analyze low-quality interactions:**
+   * Review conversation logs
+   * Identify patterns in failures
+   * Understand root causes
+
+2. **Iterate on agent design:**
+   * Refine system instructions
+   * Improve tool descriptions
+   * Add example interactions
+   * Update knowledge base
+
+3. **A/B test changes:**
+   * Deploy new version to 10% of users
+   * Compare quality metrics
+   * Roll out if improved
+
+### Safety Monitoring
+
+**Built-in Safety Features:**
+
+**Content Filtering:**
+* Hate speech detection
+* Violence and graphic content
+* Self-harm content
+* Sexual content
+
+Configure content filtering levels:
+* **Low** - Permissive, flags only severe violations
+* **Medium** - Balanced for most scenarios (recommended)
+* **High** - Strict, may have false positives
+
+**Jailbreak Detection:**
+Protects against prompt injection attacks:
+* Detects attempts to override system instructions
+* Blocks malicious prompt patterns
+* Logs attempted attacks
+
+**Sensitive Data Protection:**
+* PII detection and masking
+* Credit card number redaction
+* Social security number blocking
+* Custom sensitive pattern detection
+
+**Implementing Safety Guardrails:**
+
+1. Navigate to **Operate** → **Guardrails**
+2. Click **+ Create guardrail policy**
+3. Configure safety rules:
+   * Content filtering: Medium
+   * Jailbreak protection: Enabled
+   * PII protection: Enabled
+   * Custom blocklists: Add prohibited terms
+4. Apply to agents:
+   * Select all production agents
+   * Click **Apply policy**
+
+**Monitoring Safety Incidents:**
+
+1. View safety dashboard in **Operate** → **Safety**
+2. Track:
+   * Blocked responses by category
+   * Jailbreak attempt frequency
+   * PII exposure incidents
+   * Policy violation trends
+
+3. Investigate incidents:
+   * Review blocked conversations
+   * Analyze attack patterns
+   * Update guardrails as needed
+
+### Security Monitoring
+
+**Security Dimensions:**
+
+* **Access control** - Who can use the agent?
+* **Data protection** - Is sensitive data secured?
+* **Audit logging** - Are activities tracked?
+* **Threat detection** - Are attacks identified?
+* **Compliance** - Are regulations met?
+
+**Security Best Practices:**
+
+1. **Enable audit logging:**
+   * Log all agent interactions
+   * Retain logs for compliance requirements (typically 90 days)
+   * Monitor for suspicious patterns
+
+2. **Implement rate limiting:**
+   * Prevent abuse and DoS attacks
+   * Set per-user limits: 100 requests/hour
+   * Set per-agent limits: 10,000 requests/day
+
+3. **Use private endpoints:**
+   * Deploy agents in Azure VNet
+   * Restrict access to corporate network
+   * Use Azure Private Link for data sources
+
+4. **Regular security assessments:**
+   * Run AI Red Teaming scans monthly
+   * Review security alerts weekly
+   * Update security policies as threats evolve
 
 ## Safeguarding sensitive data
 
+Protecting sensitive data is critical when deploying AI agents. Microsoft Foundry provides multiple layers of data protection.
+
+### Data Classification
+
+**Automatic Classification:**
+Foundry automatically detects and classifies:
+* Financial information (credit cards, bank accounts)
+* Personal identifiers (SSN, passport numbers, driver's licenses)
+* Health information (medical records, diagnoses)
+* Credentials (passwords, API keys, tokens)
+
+**Custom Classification:**
+Define custom sensitive data patterns:
+
+1. Navigate to **Settings** → **Data Protection**
+2. Click **+ Add custom pattern**
+3. Define pattern using regex:
+   * Pattern: `CUST-\d{8}` (customer IDs)
+   * Name: "Customer ID"
+   * Action: Mask in logs
+4. Save and apply
+
+### Data Protection Strategies
+
+**1. Data Minimization:**
+* Only collect necessary data
+* Limit data retention periods
+* Delete data when no longer needed
+
+**2. Encryption:**
+* Data encrypted at rest (AES-256)
+* Data encrypted in transit (TLS 1.3)
+* Keys managed by Azure Key Vault
+
+**3. Data Residency:**
+* Choose deployment region for data sovereignty
+* Use multi-region for redundancy
+* Comply with local regulations (GDPR, CCPA)
+
+**4. Data Masking:**
+Configure masking rules:
+```json
+{
+  "maskingRules": [
+    {
+      "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "replacement": "***-**-****",
+      "description": "SSN masking"
+    },
+    {
+      "pattern": "\\b\\d{16}\\b",
+      "replacement": "****-****-****-****",
+      "description": "Credit card masking"
+    }
+  ]
+}
+```
+
+**5. Access Logging:**
+Track all data access:
+* Who accessed what data
+* When was it accessed
+* What operations were performed
+* From what location/IP
+
+### Customer-Managed Keys
+
+For maximum control over encryption:
+
+1. Create a Key Vault in Azure
+2. Generate or import your encryption key
+3. In Foundry settings, enable customer-managed keys
+4. Grant Foundry access to your Key Vault
+5. Select your encryption key
+
+Now all data is encrypted with your key, and you can revoke access anytime.
 
 ## Setting policies for agents in tenants, subscriptions, and projects
 
+Policies enable centralized governance across your AI fleet. You can define policies at different scopes for flexible management.
+
+### Policy Hierarchy
+
+**Tenant-level policies:**
+Apply to all subscriptions and resources in your organization
+* Broadest scope
+* Set baseline requirements
+* Example: "All agents must have content filtering enabled"
+
+**Subscription-level policies:**
+Apply to all projects within a subscription
+* Department or team scope
+* More specific requirements
+* Example: "Finance department agents must log all interactions"
+
+**Project-level policies:**
+Apply to agents within a specific project
+* Most granular control
+* Use case specific rules
+* Example: "Customer support agents must mask PII"
+
+### Types of Policies
+
+**1. Content Filtering Policies:**
+```json
+{
+  "name": "Standard Content Filtering",
+  "scope": "Subscription",
+  "rules": {
+    "contentFiltering": {
+      "hate": "medium",
+      "violence": "medium",
+      "sexual": "medium",
+      "selfHarm": "medium"
+    },
+    "enabled": true
+  }
+}
+```
+
+**2. Model Deployment Policies:**
+```json
+{
+  "name": "Approved Models Only",
+  "scope": "Tenant",
+  "rules": {
+    "allowedModels": [
+      "gpt-4o",
+      "gpt-3.5-turbo",
+      "phi-4"
+    ],
+    "blockedModels": [
+      "*uncensored*",
+      "*unrestricted*"
+    ]
+  }
+}
+```
+
+**3. Data Access Policies:**
+```json
+{
+  "name": "PII Protection",
+  "scope": "Project",
+  "rules": {
+    "piiDetection": true,
+    "piiMasking": true,
+    "allowedDataSources": [
+      "approved-cosmos-db",
+      "approved-ai-search"
+    ]
+  }
+}
+```
+
+**4. Cost Control Policies:**
+```json
+{
+  "name": "Budget Limits",
+  "scope": "Project",
+  "rules": {
+    "monthlyBudget": 5000,
+    "alertThreshold": 0.8,
+    "autoShutdown": false,
+    "costAllocation": {
+      "costCenter": "CC-1234",
+      "project": "CustomerSupport"
+    }
+  }
+}
+```
+
 ### Exercise: Implement your first policy and evaluate model compliance
 
+Let's create and enforce a policy that ensures all production agents meet security and compliance standards.
+
+**Step 1: Define Policy Requirements**
+
+Create a "Production Agent Policy" that requires:
+* Content filtering enabled (Medium level)
+* Jailbreak protection enabled
+* PII detection and masking enabled
+* Audit logging enabled
+* Cost alerts configured
+
+**Step 2: Create the Policy**
+
+1. Navigate to **Operate** → **Policies**
+2. Click **+ Create policy**
+3. Configure policy details:
+   * Name: "Production Agent Security Policy"
+   * Description: "Mandatory security requirements for production agents"
+   * Scope: Select subscription
+   * Apply to: All agents tagged as "production"
+
+4. Add policy rules:
+   ```json
+   {
+     "contentFiltering": {
+       "level": "medium",
+       "required": true
+     },
+     "jailbreakProtection": {
+       "enabled": true,
+       "required": true
+     },
+     "piiProtection": {
+       "detection": true,
+       "masking": true,
+       "required": true
+     },
+     "auditLogging": {
+       "enabled": true,
+       "retentionDays": 90,
+       "required": true
+     },
+     "costAlerts": {
+       "enabled": true,
+       "threshold": 1000,
+       "required": true
+     }
+   }
+   ```
+
+5. Set enforcement mode:
+   * **Audit** - Log non-compliance but don't block
+   * **Enforce** - Block non-compliant agents from running
+
+6. Click **Create policy**
+
+**Step 3: Evaluate Compliance**
+
+1. Navigate to **Operate** → **Compliance**
+2. View compliance dashboard:
+   * Overall compliance score
+   * Non-compliant agents
+   * Policy violations by type
+
+3. Filter to see agents affected by your new policy:
+   * Tag filter: "production"
+   * Policy filter: "Production Agent Security Policy"
+
+4. Review non-compliant agents:
+   * Click on an agent to see which requirements it fails
+   * View recommended actions to achieve compliance
+
+**Step 4: Remediate Non-Compliance**
+
+For each non-compliant agent:
+
+1. Click **View details** to see specific violations
+2. Click **Remediate** to apply fixes:
+   * Enable content filtering
+   * Turn on jailbreak protection
+   * Configure PII masking
+   * Enable audit logging
+   * Set up cost alerts
+
+3. For bulk remediation:
+   * Select multiple agents
+   * Click **Bulk actions** → **Apply policy settings**
+   * Confirm changes
+
+**Step 5: Monitor Ongoing Compliance**
+
+1. Set up compliance monitoring:
+   * Navigate to **Alerts** → **+ Create alert rule**
+   * Condition: "Agent becomes non-compliant"
+   * Action: Send email to security team
+   * Frequency: Check hourly
+
+2. Schedule compliance reports:
+   * Navigate to **Reports** → **Compliance report**
+   * Schedule: Weekly on Monday
+   * Recipients: Add stakeholder emails
+   * Click **Schedule**
+
+3. Review compliance trends:
+   * Track compliance score over time
+   * Identify recurring issues
+   * Measure policy effectiveness
 
 ## Implementing controls to manage agent access to resources
+
+Fine-grained access control ensures agents only access resources they need, implementing the principle of least privilege.
+
+### Access Control Models
+
+**1. Role-Based Access Control (RBAC):**
+Assign roles to agents:
+* **Agent Reader** - View agent configuration
+* **Agent User** - Execute agent
+* **Agent Contributor** - Modify agent
+* **Agent Owner** - Full control including deletion
+
+**2. Resource-Based Access Control:**
+Control which resources agents can access:
+* Databases
+* APIs
+* File storage
+* External services
+
+**3. Attribute-Based Access Control (ABAC):**
+Define access based on attributes:
+* Time of day
+* User location
+* Data sensitivity
+* Agent trust level
+
+### Implementing Access Controls
+
+**Step 1: Define Resource Permissions**
+
+For each resource an agent needs to access:
+
+1. Identify minimum required permissions
+2. Create a custom role if needed:
+
+```json
+{
+  "Name": "Agent Cosmos DB Reader",
+  "Description": "Read-only access to product catalog",
+  "Actions": [
+    "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/read"
+  ],
+  "NotActions": [],
+  "DataActions": [
+    "Microsoft.DocumentDB/databaseAccounts/readMetadata",
+    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/read"
+  ],
+  "NotDataActions": [],
+  "AssignableScopes": ["/subscriptions/{subscription-id}"]
+}
+```
+
+**Step 2: Apply Least Privilege**
+
+Grant only necessary permissions:
+* Read-only access when write isn't needed
+* Specific containers, not entire database
+* Limited time-based access for temporary needs
+
+**Step 3: Implement Network Security**
+
+1. Use private endpoints for data sources:
+   * Create VNet for Foundry resources
+   * Configure private endpoints
+   * Disable public access
+
+2. Configure firewall rules:
+   * Allow only agent subnet
+   * Block all other traffic
+
+3. Use Network Security Groups (NSGs):
+   * Restrict inbound/outbound traffic
+   * Log all access attempts
+
+**Step 4: Monitor Access Patterns**
+
+1. Enable diagnostic logging for all resources
+2. Send logs to Log Analytics workspace:
+   ```bash
+   az monitor diagnostic-settings create \
+     --resource {resource-id} \
+     --workspace {workspace-id} \
+     --logs '[{"category": "DataPlaneRequests", "enabled": true}]'
+   ```
+
+3. Create alert rules for suspicious access:
+   * Access from unexpected IP addresses
+   * Unusual volume of requests
+   * Failed authentication attempts
+   * Access to unauthorized resources
+
+**Step 5: Regular Access Reviews**
+
+1. Schedule quarterly access reviews:
+   * Review agent permissions
+   * Remove unused access
+   * Update based on current needs
+
+2. Automated tools for access review:
+   * Use Foundry Control Plane compliance dashboard
+   * Export access reports
+   * Identify over-privileged agents
+   * Apply principle of least privilege
+
+### Example: Secure Multi-Tenant Agent Access
+
+For a multi-tenant scenario:
+
+1. **Isolate tenant data:**
+   * Separate Cosmos DB containers per tenant
+   * Partition key: tenantId
+
+2. **Agent per tenant:**
+   * Deploy agent instance per tenant
+   * Each with its own managed identity
+
+3. **Scope permissions:**
+   * Agent A can only access Tenant A data
+   * Agent B can only access Tenant B data
+
+4. **Implement row-level security:**
+   * Filter queries by tenantId
+   * Validate user context in agent logic
+
+5. **Audit cross-tenant access attempts:**
+   * Log all data access with tenant context
+   * Alert on cross-tenant violations
+
+By implementing these controls, you ensure that your AI agents operate securely, comply with organizational policies, and maintain the trust of your users and stakeholders.

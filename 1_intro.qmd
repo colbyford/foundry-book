@@ -80,12 +80,14 @@ In the **Create a Foundry resource** form that opens, you'll begin by either sel
 
 You'll also give the Foundry Resource a name in the **Name** box. Also, you leave the **Default project name** as "proj-default".
 
+{{< pagebreak >}}
+
 ::: {.callout-note}
 Many organizations adopt a naming convention for all resources that get deployed in Azure. I usually use following format:
 
 ```
 <resource type>-<application or group name>-
-<environment (dev|stg|prd)>-<region>-<number>
+   <environment (dev|stg|prd)>-<region>-<number>
 ```
 
 For example, here are my resource names for the items I deployed in this process:
@@ -161,37 +163,115 @@ Now that your Foundry Project has been created, you'll have access to:
 * Tools and connections for integrating data sources
 * Monitoring and evaluation capabilities
 
-Before we start deploying models and agents, let's first walk through the Foundry UI and talk about what all we'll be exploring in this book.
+Before we start deploying models and agents, let's first walk through the Foundry Portal UI and talk about what all we'll be exploring in this book.
 
 ##	Introduction to the Foundry UI and purpose
 
-The Microsoft Foundry portal provides an intuitive interface organized into several key sections:
+The Microsoft Foundry portal provides an intuitive interface organized into several key sections, accessible via the portal header:
 
-### Navigation Structure
-
-* **Home** - Quick access to recent projects, tutorials, and getting started resources
-* **Build** - Create and manage agents, test in playgrounds, and develop applications
-* **Models** - Browse and deploy models from the catalog
-* **Tools** - Connect to data sources and external services using MCP (Model Context Protocol) servers
-* **Evaluate** - Test and evaluate your AI applications for quality, safety, and performance
-* **Operate** - Monitor, manage, and optimize your deployed agents and models
+![Foundry Portal Header](figures/ch01/ch01_ss_portalheader_011_clean.png)
 
 ### Project Selector
 
-The project you're working with appears in the upper-left corner of most pages. You can easily switch between projects or view all your Foundry projects by clicking on the project name. For the purposes of this book, we'll just be using the default project (`proj-default`).
+The Project you're working with appears in the upper-left corner of most pages. You can easily switch between projects or view all your Foundry Projects by clicking on the Project name. For the purposes of this book, we'll just be using the default Project (`proj-default`).
 
-### Key Features
+### Navigation Structure
+
+* **Home** - Provides quick access to your Project endpoint, API key, and region information. This page also lists some new models that have been released on the platform along with links to documentation and sample code.
+
+* **Discover** - This is where you can start exploring models to deploy. This page lists out some featured tools, which will allow you to interact with other services using MCP (Model Context Protocol) servers.
+
+* **Build** - This section holds most of the functionality once you get a model deployed. Here, you can create and manage agents, workflows, and connect to data. Also, this is where you'll go to set up model evaluations and guardrails.
+
+* **Operate** - When you need to monitor agent usage and list out all models and tools that are in use, this is the place to go. You can also implement policies and guardrails for controling model behavior.
+
+* **Docs** - Lastly, the Docs page provides a ton of resources for how to perform that various functions in Foundry. This is a good place to find sample code and quickstart guides for lots of different agentic tasks.
+
+<!-- ### Key Features
 
 * **Playground** - Interactive environment for testing models and agents with real-time responses
 * **Agent Builder** - Visual interface for creating and configuring AI agents
 * **Deployment** - Deploy agents to production environments, including Microsoft 365, Teams, and containerized deployments
 * **Observability** - Built-in monitoring and tracing to understand agent behavior and performance
-* **Governance** - Centralized controls for security, compliance, and policy enforcement
+* **Governance** - Centralized controls for security, compliance, and policy enforcement -->
 
-The Foundry UI is designed to support the full lifecycle of AI application development, from initial exploration through production deployment and ongoing management.
+The Foundry Portal is designed to support the full lifecycle of AI application development, from initial exploration through production deployment and ongoing management, in a very low-code manner. That is, you can deploy models, build agents, and connect them to data, all without writing much code at all.
+
+However, there are SDKs for Python, C#, JavaScript/TypeScript, and Java that allow you to perform all of these action using code. In the next section, we'll go over some examples in Python, which is think is most popular choice for many AI engineers and data scientists.
+
+## Interacting with the Foundry Python SDK
+
+If you're planning on integrating agents with your applications at the enterprise-level, you'll be better off using code to do so. This improves visibility and reproducibility for the agent and other resources that you deploy and connect.
+
+The Foundry SDK for Python provides an easy interface into your Foundry Project and any models that you've deployed.
+
+To install from PyPI, run the following command:
+
+```bash
+pip install azure-ai-projects>=2.0.0 azure-identity openai
+```
+
+Now, go back to the Foundry Portal and copy your Project endpoint.
+
+![Copying the Project Endpoint URL](figures/ch01/ch01_ss_portal_012_ann.png)
+
+It will look something like this:
+- `https://<resource-name>.services.ai.azure.com/api/projects/<project-name>`
+
+Now we're ready to connect to the Project from Python.
+
+The SDK exposes two client types because Foundry and OpenAI have different API shapes:
+
+- **Project client** – Use for Foundry-native operations where OpenAI has no equivalent. For example, list the agent's connections, retrieving project properties, or enabling tracing.
+
+- **OpenAI-compatible client** – Use for Foundry functionality that builds on OpenAI concepts. The Responses API, agents, evaluations, and fine-tuning all use OpenAI-style request and response patterns. This client also gives you access to Foundry direct models (non-Azure-OpenAI models hosted in Foundry, such as Claude). The project endpoint serves this traffic on the `/openai` route.
+
+It's common for apps to use some of both clients. For example, you might use the Project client to set up and configure agents. If you want to use your normal Azure account, you can login from your command line using Azure CLI (see Section @sec-az-cli). Then, the `DefaultAzureCredential()` in the Python SDK will grab those credentials from your local environment.
+
+```python
+from azure.ai.projects import AIProjectClient
+
+## To use your local Azure credential (from the Azure CLI)
+from azure.identity import DefaultAzureCredential
+
+project = AIProjectClient(
+  endpoint="https://<resource-name>.services.ai.azure.com/api/projects/<project-name>",
+  credential=DefaultAzureCredential()
+  )
+```
+
+Once you have this main `project` object, you may with to use the OpenAI-compatible client to call models or run agents programmatically.
+
+```python
+openai_client = project.inference \
+    .get_azure_openai_client(api_version="2024-10-21")
+
+response = openai_client.responses.create(
+    model="gpt-5.2",
+    input="Tell me a joke about a robot named Bob.",
+)
+
+print(response.output_text)
+```
+
+## Cost Management
+
+As with most things in the cloud, the services we're working with aren't free. Many of the facets of Foundry, such as the AI models, are charged based on usage. For other services, we'll pay for the hosting or the amount of data that we process and store..
+
+Let's take the Microsoft Phi-4 model (in the East US region) as an example. If we simply deploy an instance of the model, we'll get charged $0.000125/1,000 tokens of input and $0.0005/1,000 tokens of output. So, we pay for the inferencing and nothing will be charged if we don't use it.
+
+If we were to fine-tune a Phi-4 model, however, we would be charged $0.80/hour to host the tuned model (and that's after paying $0.003/1,000 tokens for training) plus the inferencing costs as above.
+
+Knowing how cloud services are billed is a skill, but keeping up with costs will help you avoid awkward conversations with your boss about surprise bills. As we go through the individual components of Foundry over the coming chapters, I'll explain the pricing and purchasing options along the way.
+
+::: {.callout-note}
+In all of the tutorials and examples in this book, we'll try and keep costs low. However, for parts where we have to use GPUs for a bit of time or spin up pricier data services, I'll let you know to be on the lookout.
+
+**Pro tip:** Remember to delete unneeded services after you're done with them to avoid unexpected costs.
+:::
 
 
-## Deploying via the Azure CLI
+## Deploying Foundry Projects via the Azure CLI
 
 It's always a good idea to learn how to deploy Azure services from the command line, either through infrastructure as code (e.g. Bicep or Terraform) or directly using the Azure CLI. The Azure Command-Line Interface (CLI) is a cross-platform tool that allows you to connect to Azure and deploy resources, execute commands, and manage your cloud environment right from the command line.
 
@@ -201,7 +281,7 @@ It's always a good idea to learn how to deploy Azure services from the command l
 This section is optional and is simply showing how to deploy items via the Azure CLI. If you deployed your Foundry Resource and Project using the Azure Portal UI, you do not have to redeploy via code.
 :::
 
-### Installing the Azure CLI
+### Installing the Azure CLI {#sec-az-cli}
 
 For many users, the Azure CLI can be installed with a single command on most operating systems. Find yours below:
 
@@ -214,10 +294,15 @@ For more information about how to install the Azure CLI on various operating sys
 Once the Azure CLI has been successfully installed, log into your Azure environment using one of the following commands: 
 
 ```azurecli
-## In an interactive desktop environment, this command will open a browser window for you to select your Microsoft account and log in
+## In an interactive desktop environment, this command will open a browser
+## window for you to select your Microsoft account and log in
+
 az login
 
-## In a terminal environment with no browser, this comment will generate a device code that can be entered manually at https://microsoft.com/devicelogin
+## In a terminal environment with no browser, this comment will generate
+## a device code that can be entered manually at:
+## https://microsoft.com/devicelogin
+
 az login --use-device-code
 ```
 
@@ -276,3 +361,18 @@ Now that we're logged in and have our desired Subscription selected, we can proc
    ```
 
    The output displays the project properties, including its resource ID.
+
+
+{{< pagebreak >}}
+
+## Summary
+
+In this chapter, you were introduced to **Microsoft Foundry**, Microsoft's unified Azure platform for building, deploying, and operating enterprise-grade AI applications. We explored how Foundry brings together models, agents, tools, and governance under a single resource provider, simplifying AI development while maintaining the security, observability, and control required in production environments.
+
+You learned how Foundry is organized around two core Azure resources: the Foundry Resource, which provides shared governance, security, and infrastructure for a team or organization, and the Foundry Project, which serves as an isolated workspace for development, experimentation, and collaboration. We walked through creating both using the Azure Portal and discussed best practices for naming, resource grouping, and access control.
+
+The chapter also covered the breadth of models available in Foundry, including Azure OpenAI, Microsoft-built models, other third-party offerings, and open-source models from Hugging Face, highlighting Foundry's role as a central hub for model exploration and deployment. You were introduced to the Foundry portal UI, its navigation structure, and how it supports the full AI lifecycle from discovery and building to operation and governance.
+
+Finally, we demonstrated how to interact with a Foundry Project programmatically using the Foundry Python SDK, explained the distinction between the Project client and the OpenAI-compatible client, and showed how Foundry resources can be provisioned via the Azure CLI for repeatable, automated deployments.
+
+With a Foundry Project now up and running, you're ready to start deploying models, building agents, connecting data sources, and implementing guardrails. In the next Chapter, we'll be deploying our first LLM into our Project. Are you excited yet!?

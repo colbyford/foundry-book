@@ -222,7 +222,7 @@ libs
 *.rds
 _main.*
 tmp-pdfcrop-*
-figures
+# figures
 /.quarto/
 site_libs
 oreilly

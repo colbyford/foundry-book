@@ -2,6 +2,7 @@
 
 In this chapter, we will get introduced to the Microsoft Foundry service and learn how to create their first Project resource in Azure.
 
+
 ## What is Microsoft Foundry?
 
 **Microsoft Foundry** is a unified Azure platform-as-a-service offering for enterprise AI operations, model builders, and application development. This new platform, announced at the Microsoft Ignite Conference in November 2025, combines production-grade AI deployment options with a low-code interface, enabling developers to focus on building applications rather than managing AI infrastructure.
@@ -28,9 +29,9 @@ Microsoft Foundry provides access to a wide variety of AI models from multiple s
 
 These models are offered and supported directly by Microsoft and include:
 
-* **Azure OpenAI Models** - GPT 5, Sora 2, GPT-4o, and other OpenAI models
+* **Azure OpenAI Models** - GPT 5, Sora 2, GPT-4o, o3, and other OpenAI models
 * **Microsoft Models** - Phi family models (e.g., Phi-4) and other specialized models from Microsoft and Microsoft Research such as MedImageParse, EvoDiff, Aurora, etc.
-* **Third-Party Models** - Mistral, Claude, xAI, DeepSeek, and other models provided directly on Azure
+* **Third-Party Models** - Mistral, Anthropic's Claude, xAI's Grok, DeepSeek, and other models provided directly on Azure
 * **Hugging Face Models** - Over 10,000 models from huggingface.co
 
 

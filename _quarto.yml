@@ -11,8 +11,8 @@ book:
   cover-image: img/cover_mockup_early_bird.png
   chapters:
     - index.qmd
-    - 1_intro.qmd
-    # - 2_model_deployment.qmd
+    # - 1_intro.qmd
+    - 2_model_deployment.qmd
     # - 3_model_customization.qmd
     # - 4_additional_services.qmd
     # - 5_agent_management.qmd

@@ -1,6 +1,61 @@
 # Model Deployment
 
-Next, let's learn how to explore and deploy various AI models from the Foundry Models registry. They will also explore the pre-built MCP tools to connect to data sources.
+Next, we'll learn how to explore and deploy various AI models from the Foundry Models registry. They will also explore the pre-built MCP tools to connect to data sources.
+
+From the Foundry Portal, navigate to the **Discover** tab at the top of the screen.
+
+![Locating the Discover tab](figures/ch02/ch02_ss_portal_001_ann.png)
+
+You'll see a list of featured models can be deployed. You may notice that some are popular proprietary models like OpenAI's GPT-5.2 and Anthropic's Claude Opus 4.5 and others may be open-source models from Hugging Face or Microsoft.
+
+But why deploy a model like GPT or Claude on Foundry when we can just can use them for free online? The most simple answer to that is: privacy. When you use ChatGPT or other free models online, your inputs can be used for training future models. While this may be fine personally for writing cover letters or generating recipes, this may not sit well in the enterprise space with proprietary data. Thus, deploying instances of these foundation models in your own Azure Tenant give you much more control over where your data ends up. Plus, as you'll see soon, we have a lot more control over model behavior with Foundry-deployed models over the public versions of these models.
+
+Once you're done browsing the Discover page, click on **Models** on the left-hand menu.
+
+![Exploring featured models on the Discover page](figures/ch02/ch02_ss_discover_001_ann.png)
+
+This will take you to the full list of models currently available in Foundry. There are currently over 10,000 models that you can deploy and the list is continuously growing. You'll quickly notice that Foundry isn't just for LLMs. There are models for image generation, audio generation, document analysis, text classification, 3D object generation, translations, and even protein modeling!
+
+On this page, you can filter by source (the company or group that produced the model), capabilities (like reasoning or if the model can accept images as an input), inferencing task (such as text or image generation), and other features. Spend some time playing with these filters and exploring the vast variety models that you can deploy with Foundry.
+
+![Listing all available models in Foundry](figures/ch02/ch02_ss_discover_002_clean.png)
+
+As you're exploring, you may be overwhelmed with the number of choices that you have, even for the same type of task. Let's learn how to compare models to pick the best one for your needs.
+
+At the top right of the screen, you'll notice two buttons: **View leaderboard** and **Compare models**. Click on the **Compare models** button.
+
+![Locating the Compare models button](figures/ch02/ch02_ss_compare_001_ann.png)
+
+On the **Compare models** screen, you can compare up to three different models across various benchmarks (e.g., quality, safety, costs, and throughput). Click any of the dropdown boxes and select three different models. You can also look at the differences in what the models accept as inputs and produce as outputs along with metrics about their context size. This is helpful if you're trying to figure out which model you should deploy for a given use case. I find this especially helpful when choosing between versions of the same base model with confusing names/suffixes (for example, `gpt-5.2` vs. `gpt-5.2-chat` vs. `gpt-5.2-codex`). 
+
+![Comparing models across benchmarks and capabilities](figures/ch02/ch02_ss_compare_002_clean.png)
+
+Once you've gotten familiar with the model comparison tool, go back to the **Models** page and click on the **View leaderboard** button.
+
+![Locating the View leaderboard button](figures/ch02/ch02_ss_leaderboard_001_ann.png)
+
+On this page, you can see how different models rank across the same benchmarks you saw in the model comparison screen: quality, safety, cost, and throughput.
+
+- **Quality:** An index across various benchmark tests that evaluate how well a model performs on core tasks such as reasoning, knowledge, question answering, math, and coding. (Higher is better/more capable.)
+- **Safety:** A score that indicates the success rate of attack prompts causing the model to produce harmful or disallowed responses. For example, producing hate speech or leaking copyrighted material. (Lower is better/safer.)
+- **Throughput:** The rate at which the model can generate its output, measured in tokens per second. Behind the scenes, models are also evaluated on latency, rate limit (in tokens per minute), etc. (Higher is better/faster.)
+- **Cost:** The cost per 1 million tokens. This is a blended cost estimate that assumes a three-to-one ratio between input and output token costs. (Lower is better/cheaper.)
+
+![Exploring the model leaderboard](figures/ch02/ch02_ss_leaderboard_002_clean.png)
+
+This is a good page to visit often to see at how the latest models stack up to their predecessor version or competitor models.
+
+Clicking on any of the models will take you to the model's page where you can learn more. On the **Benchmarks** tab, you can see the benchmarking data for a model. Often, this benchmarking is performed by Microsoft, but they also post publish other public benchmarks of the model if available.
+
+![More details about a model's benchmark performance](figures/ch02/ch02_ss_leaderboard_003_ann.png)
+
+Scrolling down on this page, you'll find the more detailed view of the summary metrics from before, including more drilled-down results for the overall composite scores. This is a good place to look at the specific aspects that are important to your deployment. For example, if you were building a simple chat agent for your online store, you might pick a faster (lower latency) model than one that gets a top-notch score for coding capabilities.
+
+![Metric details across various model benchmarks](figures/ch02/ch02_ss_leaderboard_004_clean.png)
+
+From a model's page, you can also see any deployments of the model that have been created, learn more about the responsible AI approaches that were taken, read the licensing details, go through the technical specifications, and more. Plus, you can even deploy the model right from this page.
+
+Now that we've explored all that the **Models** page has to offer and learned how to compare and select between models, it's time to finally deploy our first model!
 
 ##	Deploying your first LLM
 

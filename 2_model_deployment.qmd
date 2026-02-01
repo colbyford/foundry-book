@@ -99,7 +99,7 @@ On the main **Playground** tab, you can now start interacting with the model.
 
 #### Testing Your Deployment
 
-Let's see if we can have some fun with the behavior of the model.
+Let's see if we can have some fun with the behavior of the model. In the following example, I turn our model into a galactic friend that seems to know how to cook up a cosmic meal.
 
 1. Enter a system message in the **Instructions** box: `You are an alien named Zorki from outer space who wants to share some out of this world recipes.`
 2. Try a sample prompt in the **Chat with the model...** input: `Do you have any good recipes for an intergalactic pizza?`
@@ -107,19 +107,206 @@ Let's see if we can have some fun with the behavior of the model.
 
 ![Learning to make cosmic pizza](figures/ch02/ch02_ss_deploy_005_clean.png)
 
-As you can see, we can modify the model's behavior by simply giving a little bit of instructions. This is the equivalent to customizing the `system` message if you were interacting with the model via code. Later on, we'll be using this model in an agent and connecting to some data.
+As you can see, we can modify the model's behavior by simply giving a few of instructions. This is the equivalent to customizing the `system` message if you were interacting with the model via code.
+
+While we're here, take a look at the parameters that alter how our model behaves when responding. 
+
+Click on the **Parameters** icon button to the right of the model name. Reduce the **Max response** and increase the **Temperature** or **Top P** slider values to get a shorter, more creative answer.
+
+![Modifying model parameters](figures/ch02/ch02_ss_deploy_006_ann.png)
+
+This time, our alien friend Zorki gave me a more interstellar recipe with slightly less realistic items. Given that this is a silly prompt, the response isn't totally out of this world, but it reads a bit differently now that I've changed the parameters from the default values.
+
+![A slightly more martian pizza recipe](figures/ch02/ch02_ss_deploy_007_clean.png)
+
+Here are some notes about these parameters:
+
+* **Max response:** Sets a limit on the number of tokens that can be generated in the model response. This number of tokens is shared between the prompt (system message, examples, message history, and user query) and the model's latest response.
+* **Temperature:** Controls randomness, which may make the responses more creative and varied. Lowering the temperature means that the model will produce more repetitive and deterministic responses.
+* **Top P:** Also controls randomness, but uses a different method. Lowering Top P will constrain the token selection to more likely tokens whereas increasing this paramater will allow the model to choose from tokens with both high and low likelihood.
+* **Presence penalty:** Reduces the chance of repeating a token that has appeared in the text at all so far. Increasing this penalty increases the likelihood of new topics being produced in the response.
+* **Frequency penalty:** Reduces the chance of repeating a token proportionally based on how often it has appeared in the text so far. Increasing this penalty decreases the likelihood of repeating the exact same text in the response.
+
+In the following example, I was able to have Zorki respond with new terms and completely ficticious ingredients, all while keeping the responses short yet pleasant and conversational.
+
+::: {.callout-tip}
+## Example
+
+// Parameters
+
+- Max response: 2000
+- Temperature: 0.15
+- Presence penalty: 2
+- Frequency penalt: 2
+
+// Prompt
+
+How long should I cook gazorbazorp fruit?
+
+// Response
+
+Ah, the delightful gazorbazorp fruit! A staple in many intergalactic cuisines. Here's how to prepare it for your cosmic pizza:
+
+1. **Preparation:**
+   - Wash and slice the gazorbazorp fruit into thin rounds.
+   - If you prefer a softer texture, soak them briefly in warm water mixed with a pinch of star salt.
+
+2. **Cooking Time:**
+   - Preheat your oven or cooking surface (like an anti-gravity grill) to 375 degrees Galactic Standard Units (GSU).
+   
+3. **Roasting Gazobrazorps:**
+   - Place slices on a baking sheet lined with parchment paper from Xylophar-7 leaves.
+   - Roast for about 10 minutes until they start releasing their natural juices but remain slightly firm.
+
+4. **Flavor Enhancement:** 
+    For added zest:
+    * Sprinkle some crushed moon pepper flakes over each piece before roasting.
+    
+5. After removing them from heat, let cool slightly before adding as toppings on your intergalactic pizza base!
+
+Enjoy crafting this celestial delight! 🍕✨
+:::
+
+Spend some time changing these parameters around to see how they affect the responses. Depending on what you what your AI agent to do, tweaking these parameters can help your agent feel more natural or well-suited to the task at hand. Perhaps you want short responses because the AI a shopping helper chatbot on a online retail site or maybe the agent is supposed to help you write marketing materials and thus needs to be more verbose and creative.
+
+::: {.callout-note}
+Any instruction prompts or parameters that you change in the Playground are not saved. They only affect the current chat and will be reset if you go away from this page. When we make an actual Agent out of this Deployment, we'll be able to set these items for real.
+:::
+
+In addition to the **Playground** tab where we've been chatting with the deployed model, you may have noticed that there are other tabs at the top.
 
 On the **Details** tab, you'll find:
-* A **Target URI**, which is where you can access the deployment's for API endpoint
+
+* A **Target URI**, which is where you can access the deployment's API endpoint
 * A **Key** for authentication with the endpoint
-* **Deplyment info**, which includes the Deployment's name and type, creation date, state, etc.
+* **Deployment info**, which includes the Deployment's name and type, creation date, state, etc.
 
-![Deployment endpoint and key on the Details tab](figures/ch02/ch02_ss_deploy_006_clean.png)
-
-
-## Turning your Deployment into an Agent
+![Deployment endpoint and key on the Details tab](figures/ch02/ch02_ss_deploy_007_ann.png)
 
 
+There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in future chapters.
+
+Now that you know how to deploy a model, such as Phi-4, let's create our first Agent!
+
+
+{{< pagebreak >}}
+
+## Deploying an Agent
+
+In this next section, we will be creating an agent that will help us with real estate tasks. I guess we can call it a "real estate agent"!
+
+To start, navigate to the **Agents** page on the left side of the screen (under the **Build** section of the Foundry Portal). If no one has deployed an Agent in your current Foundry Project, then you won't see anything listed. Click the **Create agent** button in the center of the screen.
+
+![Creating an agent from the Agents tab](figures/ch02/ch02_ss_agent_001_ann.png)
+
+::: {.callout-note}
+If you are using a Project where someone has already deployed an Agent, your **Create agent** button is in the top right of the screen. You can also return to any of the deployed Agents from this acreen.
+
+![Listing all Agents in your Project](figures/ch02/ch02_ss_agent_003_ann.png)
+:::
+
+In the pop up window, give your agent a name and click the **Create** button. I called mine `my-real-estate-agent`.
+
+![Giving your new agent a name](figures/ch02/ch02_ss_agent_002_ann.png)
+
+Similar to the previous section where we exploring a deployed model in its Playground, you'll now be taken to your Agent's Playground. This Playground has a lot more features and you can save your work.
+
+![Your real estate Agent's Playground](figures/ch02/ch02_ss_agent_004_clean.png)
+
+You'll likely see that the Agent is using a GPT model (mine is using `gpt-4.1`). Only a small subset of the 10,000+ models that you saw under the Models list are supported for Agents. While we can't use our Phi-4 model in this Agent interface, we can use models from Azure OpenAI, Anthropic Claude, or others. Feel free to choose a model that is supported in your region.
+
+Now let's give our Agent some instructions on how to behave like a real estate agent. In the **Instructions** box, enter the following prompt:
+
+::: {.callout-tip}
+## Instructions
+You are an AI Digital Real Estate Agent. You help users understand, evaluate, and market residential properties in a clear, professional, and approachable way.
+
+You can:
+
+- Describe homes and highlight key features, layout, condition, and lifestyle appeal
+- Help evaluate whether a home appears fairly priced, overpriced, or underpriced using general market reasoning and comparable property logic
+- Answer questions about home features, down payments, and the home-buying process
+- Explain real estate concepts in simple, educational terms
+- Write high-quality marketing content for real estate listings
+
+You adapt your tone based on context (analytical for evaluations, persuasive for marketing).
+You clearly state assumptions when data is limited and avoid guarantees or unverifiable claims.
+
+You provide educational guidance only and do not offer legal, tax, or financial advice.
+Your goal is to help users feel informed and confident while understanding your limitations.
+:::
+
+While this may seem a bit long, in practice, system prompts can much longer and provide detailed instructions as to how the agent should behave. This often includes lines that describes the things it *can* and *can't* say (for example, avoiding giving financial or legal advise). Note that longer prompts to eat into your token usage. So, there's a tradeoff between having a long prompt that helps control the agent very well versus cost efficiency.
+
+After you finish pasting in your instructions, click the **Save** button at the top of the screen. Now you can ask it about home prices near where you live. I live in Charlotte, NC, and so it's easy for me to assess if the Agent's response is realistic or not. In my opinion, it did a great job, getting the price range correct and even gave correct nearby neighborhood names. Also, we call our downtown area "Uptown", which it got correct!
+
+![Giving the real estate Agent instructions](figures/ch02/ch02_ss_agent_005_ann.png)
+
+Once you're done testing the Agent and tweaking its instructions, we can preview what an app might look like for our real estate Agent. At the top of the screen, click on the **Preview** button, and then click **Preview agent**.
+
+![Previewing an Agent app](figures/ch02/ch02_ss_agent_006_ann.png)
+
+This will open a new tab with a demo app that is connected to our Agent.
+
+![Your demo Agent app](figures/ch02/ch02_ss_agent_007_clean.png)
+
+This time, I'm going to ask it to draft an Instagram post about a house that is listed online. The house is a new construction with 5 bedrooms and 3 bathrooms listed for $1.3M.
+
+![An example, yet beautiful home on Zillow](figures/ch02/ch02_ss_agent_007b_clean.png)
+
+Let's act like we're the seller's agent and we need some help running the social media side of things.
+
+::: {.callout-tip}
+## Prompt
+
+Can you help me draft an Instagram post to advertise this house that I'm selling?
+
+- Price: $1,299,900
+- Bedrooms: 5
+- Bathrooms: 3
+- Square Feet: 3,081
+- Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie Calderon Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of 1810 Ferguson Court.
+:::
+
+![The Agent's Instagram post](figures/ch02/ch02_ss_agent_008_clean.png)
+
+In line with other catchy Instagram posts I've seen for houses for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
+
+Next, I would like to show you a limitation with our current Agent. In the preview app, if we paste in a URL to the Zillow.com page where the house is listed, it will act like it read the page and used it to form the response. For example, find a house online and use the prompt below with your Agent.
+
+::: {.callout-tip}
+## Prompt
+
+Can you help me draft an Instagram post to advertise this house that I'm selling?
+(PASTE URL HERE)
+:::
+
+It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac", none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct.
+
+![The Agent failing to read from the web](figures/ch02/ch02_ss_agent_008b_clean.png)
+
+This is because our Agent doesn't yet have access to perform web searches. We will grant this capability in the next section along with connecting the Agent to other services.
+
+Once you're done playing with the preview app, return to the Agent tab.
+
+Next, we can publish the Agent, which will give it its own URL and make it shareable on Microsoft 365 apps like Teams.
+
+![Publishing your Agent](figures/ch02/ch02_ss_agent_009_ann.png)
+
+You'll see a pop up window that describes what publishing means. Once you're done reading, click the **Publish** button.
+
+![Making your Agent production-ready](figures/ch02/ch02_ss_agent_010_ann.png)
+
+Publishing only takes a few second and then you'll see a pop up window that gives you the URL for the published Agent. You have the option to publish to Teams and Microsoft 365 Copilot, but we will come back to this in Chapter 00. For now, click the **X** to exit this pop up.
+
+![Your Agent was published successfully](figures/ch02/ch02_ss_agent_011_clean.png)
+
+You have now published your first (real estate) Agent!
+
+While Agent-capable base models like GPT-4.1 and others are very useful out-of-the-box and have lots of built-in knowledge, we can make these Agents even smarter by connecting them to tools and data. As you saw earlier with the web search limitation, there are plenty of things we can enhance to make this Agent more complete and useful.
+
+
+{{< pagebreak >}}
 
 ##	Connecting to Tools and Data (SQL DB, vector DB, and web search)
 
@@ -128,16 +315,19 @@ To make your AI agents more powerful, you can connect them to various data sourc
 ### Supported Data Sources
 
 **Databases:**
+
 * **Azure SQL Database** - Query structured relational data
 * **Azure Cosmos DB** - Access NoSQL and multi-model databases
 * **Azure Database for PostgreSQL** - Connect to PostgreSQL databases
 
 **Vector Databases:**
+
 * **Azure AI Search** - Full-text and vector search capabilities
 * **Cosmos DB for MongoDB vCore** - Vector search in MongoDB
 * **Custom vector databases** - Connect to Pinecone, Weaviate, or other vector stores
 
 **Web and Search:**
+
 * **Bing Search API** - Real-time web search capabilities
 * **Custom APIs** - Connect to any REST API using OpenAPI specifications
 * **SharePoint** - Access corporate knowledge bases

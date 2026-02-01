@@ -53,24 +53,6 @@ Scrolling down on this page, you'll find the more detailed view of the summary m
 
 ![Metric details across various model benchmarks](figures/ch02/ch02_ss_leaderboard_004_clean.png)
 
-From a model's page, you can also see any deployments of the model that have been created, learn more about the responsible AI approaches that were taken, read the licensing details, go through the technical specifications, and more. Plus, you can even deploy the model right from this page.
-
-Now that we've explored all that the **Models** page has to offer and learned how to compare and select between models, it's time to finally deploy our first model!
-
-##	Deploying your first LLM
-
-Microsoft Foundry offers several deployment options for Large Language Models (LLMs):
-
-### Deployment Options
-
-1. **Serverless API Deployment** - Deploy models without managing infrastructure or quota. This option provides enterprise security while eliminating the need for compute resources on your subscription. Models are consumed through a simple API endpoint.
-
-2. **Managed Compute Deployment** - Deploy models to dedicated compute instances in your Azure subscription, giving you full control over resources and allowing for higher throughput scenarios.
-
-3. **Foundry Resources Deployment** - Deploy models directly to Foundry resources for simplified management and cost optimization.
-
-### Model Selection
-
 When choosing a model, consider:
 
 * **Task requirements** - Different models excel at different tasks (chat, completion, embedding, etc.)
@@ -78,38 +60,68 @@ When choosing a model, consider:
 * **Performance vs. cost** - Larger models typically offer better performance but at higher cost
 * **Latency requirements** - Some deployment options offer lower latency than others
 
-###	Exercise: Deploy a Microsoft Phi-4 model
+From a model's page, you can also see any deployments of the model that have been created, learn more about the responsible AI approaches that were taken, read the licensing details, go through the technical specifications, and more. Plus, you can even deploy the model right from this page.
 
-Let's deploy a Microsoft Phi-4 model, which is a small language model (SLM) optimized for reasoning and instruction following:
+Now that we've explored all that the **Models** page has to offer and learned how to compare and select between models, it's time to finally deploy our first model!
 
-1. In the Foundry portal, navigate to **Models** in the left navigation
-2. Search for "Phi-4" in the model catalog
-3. Select the **Phi-4** model card to view details
-4. Click **Deploy** or **Use this model**
-5. Choose your deployment option:
-   * For serverless API: Select **Serverless API** and click **Continue**
-   * Name your deployment (e.g., "phi-4-deployment")
-6. Review the pricing and terms
-7. Configure deployment settings:
-   * Enable content filtering (recommended for production)
-   * Set deployment parameters if available
-8. Click **Deploy** to create the deployment
-9. Wait for the deployment to complete (typically 1-2 minutes)
+##	Deploying your First Model
 
-Once deployed, you'll receive:
-* An **endpoint URL** for API access
-* An **API key** for authentication
-* Access to the **playground** for interactive testing
+If you were to try and deploy a Large Language Models (LLM) using infrastructure services in Azure, you would have to first deploy a Virtual Machine (VM) with multiple GPUs, deploy the model, write the logic for handling the incoming API requests to and from the model, manage the authentication, manage the networking and scaling logic, etc. While this is certainly possible, it's a lot to manage on your own. Microsoft Foundry offers a more managed solution for model deployment that gets you up and running in just a few clicks or a few lines of code. The best part: no need to manage the infrastructure at all, which provides enterprise security while eliminating the need for manually maintaining compute resources on your Azure Subscription. Models are consumed through a simple API endpoint.
 
-### Testing Your Deployment
+### Exercise: Deploy a Microsoft Phi-4 model
 
-1. Navigate to the **Playground** section
-2. Select your newly deployed model from the dropdown
-3. Enter a system message: "You are a helpful AI assistant."
-4. Try a sample prompt: "Explain what Microsoft Foundry is in simple terms."
-5. Review the model's response
+We'll be deploying a Microsoft Phi-4 model and then turning it into an agent. Phi-4 is an open-source, decoder-only transformer model from Microsoft Research. It is a 14-billion parameter model that was trained on a blend of synthetic datasets, data from websites in the public domain, academic books, and Q&A datasets. Phi-4 is a good foundation model to start with as it is quite fast and capable for its size and costs less than other models that are larger and/or proprietary.
 
-##	Connecting to tools and data (SQL DB, vector DB, and web search)
+To start, navigate back to the **Models** page in the Foundry Portal.
+
+Search for "Phi-4" in the model catalog. Click on the `Phi-4` option (not `Phi-4-mini` or other variants).
+
+![Searching for the Phi-4 model](figures/ch02/ch02_ss_deploy_001_ann.png)
+
+You can read more about the Phi-4 model, its benchmark performance, etc. When you're ready to deploy, click the **Deploy** button in the top right.
+
+There are two options: **Default settings** and **Custom settings**. Go with the **Default settings**.
+
+If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardails to use. We'll learn more about Guardrails in Chapter 5.
+
+![Deploying Phi-4 with Default settings](figures/ch02/ch02_ss_deploy_002_ann.png)
+
+A box will pop up that allows you to read the terms of the consumption-based deployment of the model. You can also view pricing and legal information on the **Pricing** tab. Click the **Agree and proceed** button to start the deployment.
+
+![Agreeing to the terms for deploying Phi-4](figures/ch02/ch02_ss_deploy_003_ann.png)
+
+The deployment process should only take a couple minutes, and you'll be brought to the **Playground** page for the Phi-4 deployment.
+
+![Playground UI for experimenting with a Phi-4 deployment](figures/ch02/ch02_ss_deploy_004_clean.png)
+
+
+On the main **Playground** tab, you can now start interacting with the model.
+
+#### Testing Your Deployment
+
+Let's see if we can have some fun with the behavior of the model.
+
+1. Enter a system message in the **Instructions** box: `You are an alien named Zorki from outer space who wants to share some out of this world recipes.`
+2. Try a sample prompt in the **Chat with the model...** input: `Do you have any good recipes for an intergalactic pizza?`
+3. Review the model's response
+
+![Learning to make cosmic pizza](figures/ch02/ch02_ss_deploy_005_clean.png)
+
+As you can see, we can modify the model's behavior by simply giving a little bit of instructions. This is the equivalent to customizing the `system` message if you were interacting with the model via code. Later on, we'll be using this model in an agent and connecting to some data.
+
+On the **Details** tab, you'll find:
+* A **Target URI**, which is where you can access the deployment's for API endpoint
+* A **Key** for authentication with the endpoint
+* **Deplyment info**, which includes the Deployment's name and type, creation date, state, etc.
+
+![Deployment endpoint and key on the Details tab](figures/ch02/ch02_ss_deploy_006_clean.png)
+
+
+## Turning your Deployment into an Agent
+
+
+
+##	Connecting to Tools and Data (SQL DB, vector DB, and web search)
 
 To make your AI agents more powerful, you can connect them to various data sources and tools. This enables agents to retrieve real-time information and interact with external systems.
 

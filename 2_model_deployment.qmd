@@ -308,29 +308,102 @@ While Agent-capable base models like GPT-4.1 and others are very useful out-of-t
 
 {{< pagebreak >}}
 
-##	Connecting to Tools and Data (SQL DB, vector DB, and web search)
+##	Connecting to Tools and Data
 
-To make your AI agents more powerful, you can connect them to various data sources and tools. This enables agents to retrieve real-time information and interact with external systems.
+To make your AI agents more powerful and useful, you can connect them to various data sources and tools. This enables agents to retrieve real-time information and interact with external systems. In Microsoft Foundry, you'll find dozen of services with prebuilt connectors under under the Tools section of the platform.
 
-### Supported Data Sources
+In this section, we'll be exploring some popular Tools and connect a few to our real estate Agent we made earlier.
 
-**Databases:**
+### Exploring Data Source Tools
+
+Navigate to the **Tools** section of the **Discover** page. Here you'll find over a thousand 
+
+![Exploring Tools on the Discover page](figures/ch02/ch02_ss_tools_001_ann.png)
+
+There are search options on the left side of the Tools list. Many Tools are for connecting to various types of data sources, which allow your Agent to query from the data and form a response based on that information (e.g., query a SQL database). Then there are others that simply allow your Agent to interact with an external service and act on your behalf (e.g., deploy a web app or Vercel or Netlify). 
+
+Note that each Tool is tagged as a "Local MCP" or "Remote MCP", which is a bit unclear. The Local MCP options are mainly ones that are hosted in your Azure environment. Remote MCP tools are ones that are hosted on third-party platforms. 
+
+Here are some popular Tools you may want to search for and read about:
+
+**Azure Databases:**
 
 * **Azure SQL Database** - Query structured relational data
 * **Azure Cosmos DB** - Access NoSQL and multi-model databases
 * **Azure Database for PostgreSQL** - Connect to PostgreSQL databases
+* **Azure Managed Redis** - Interact with a high-speed, in-memory Redis datastore for vector search
 
-**Vector Databases:**
+**Third-Party Databases:**
 
-* **Azure AI Search** - Full-text and vector search capabilities
-* **Cosmos DB for MongoDB vCore** - Vector search in MongoDB
-* **Custom vector databases** - Connect to Pinecone, Weaviate, or other vector stores
+* **MongoDB** - Connect to MongoDB Atlas for admin tasks and to databases for data operations
+* **Elastisearch** - Search, retrieve, and analyze Elasticsearch data
+* **Supabase** - Design Supabase tables, migrations, database branches, and custom APIs
+* **Neon** - Manage and query Neon Postgres databases with natural language
+
+**Unstructured Data Storage:**
+
+* **Azure Blob Storage** - Perform create, update, get, and delete operations on blobs
+* **Amazon S3** - Access the Simple Storage Service (S3) on Amazon Web Services
+
+**Code and Productivity:**
+
+* **Atlassian** - Connect to Jira and Confluence for issue tracking and documentation
+* **GitHub** - Access GitHub repositories, issues, and pull requests
 
 **Web and Search:**
 
-* **Bing Search API** - Real-time web search capabilities
-* **Custom APIs** - Connect to any REST API using OpenAPI specifications
-* **SharePoint** - Access corporate knowledge bases
+* **Azure AI Search** - Secure information retrieval at scale over user-owned content
+* **Bing Search API** - Real-time web search capabilities with Bing
+
+
+There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are single purpose and operate as triggers to perfom a specific task. For example, there is a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
+
+
+After you've spent some time exploring all the Tools that are now available at your fingertips, let's go back to our real estate Agent and give it some more capabilities.
+
+### Adding Web Search
+
+Navigate to the **Agents** section of the **Build** page and locate the real estate Agent you created earlier.
+
+![Locating your real estate Agent](figures/ch02/ch02_ss_tools_002_ann.png)
+
+
+Under the **Tools** dropdown (located under the Instructions box, not on the left menu), click on the **Add** button.
+
+![Adding a Tool to your Agent](figures/ch02/ch02_ss_tools_003_ann.png)
+
+In the **Select a tool** pop up window, click on the **Web search** item and then click the **Add tool** button at the bottom.
+
+![Selecting the Web search Tool](figures/ch02/ch02_ss_tools_004_ann.png)
+
+If this is the first time someone in your Project has used this Tool, you may see another screen to accept its terms. This is mainly a notification that this tool incurs costs and that user data may flow to the outside web (and thus has compliance implications). Click the **Add** button if you agree.
+
+![Accepting the terms for Web Search](figures/ch02/ch02_ss_tools_005_ann.png)
+
+Now you'll see the **Web search** tool listed under the **Tools** section for this Agent. Click the **Save** button at the top. Then, click the **Preview agent** option under the **Preview** button.
+
+![Saving and previewing the Agent with Web Search connected](figures/ch02/ch02_ss_tools_006_ann.png)
+
+
+Let's retry that prompt from earlier where I asked it to write an Instagram post for a listing on Zillow.com.
+
+::: {.callout-tip}
+## Prompt
+
+Can you help me draft an Instagram post to advertise this house that I'm selling?
+(PASTE URL HERE)
+:::
+
+![A much more function real estate Agent](figures/ch02/ch02_ss_tools_007_clean.png)
+
+
+As you can see, our real estate Agent now retrieves the information from the listing, correctly stating the number of bedrooms and bathrooms, lot size, etc. and makes a decent social media post!
+
+
+### Interacting with MCP Tools
+
+Microsoft Foundry supports the **Model Context Protocol (MCP)**, an open protocol that standardizes how AI models connect to external tools and data sources. The Foundry tool catalog provides access to over 1,400 pre-built tools.
+
 
 ### Setting Up Connections
 
@@ -348,11 +421,8 @@ To connect a data source:
 
 Once connected, these data sources can be used as tools in your agents, enabling them to query data dynamically during conversations.
 
-##	Explore pre-built tools (MCP servers for Databricks, Cosmos, etc.)
 
-Microsoft Foundry supports the **Model Context Protocol (MCP)**, an open protocol that standardizes how AI models connect to external tools and data sources. The Foundry tool catalog provides access to over 1,400 pre-built tools.
-
-### What is MCP?
+#### What is MCP?
 
 The Model Context Protocol (MCP) is an open standard that enables secure, standardized communication between AI models and external tools. MCP servers act as intermediaries that:
 
@@ -460,3 +530,5 @@ In this exercise, we'll create an Azure Cosmos DB instance and connect it to an 
 3. The agent should query Cosmos DB and provide the accurate price and description
 
 This demonstrates how agents can access real-time data from external sources to provide accurate, grounded responses.
+
+## Building Knowledgebases with Foundry IQ

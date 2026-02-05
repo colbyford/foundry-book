@@ -1,4 +1,4 @@
-# Model Deployment
+# Model and Agent Deployment
 
 Next, we'll learn how to explore and deploy various AI models from the Foundry Models registry. They will also explore the pre-built MCP tools to connect to data sources.
 
@@ -193,6 +193,12 @@ Now that you know how to deploy a model, such as Phi-4, let's create our first A
 
 ## Deploying an Agent
 
+Agents sit above deployed Models and orchestrate their behavior. An agent uses one or more models along with instructions, memory, tools, and knowledge to accomplish goals autonomously. It can decide what steps to take, call tools or APIs, manage context, and iterate toward an outcome.
+
+In Foundry, agents are designed to go beyond single responses and actively carry out work. They can plan and reason across multiple steps, using tools and APIs to  retrieve and ground answers in enterprise data. They can also maintain context or memory across interactions. Agents can also automate workflows, collaborate with other agents, and react to events or user input to adapt their behavior over time. This makes them well suited for scenarios like customer support automation, data analysis, code generation, business process orchestration, or AI copilots that operate with a clear goal rather than a single prompt.
+
+### Exercise: Creating a Real Estate Agent
+
 In this next section, we will be creating an agent that will help us with real estate tasks. I guess we can call it a "real estate agent"!
 
 To start, navigate to the **Agents** page on the left side of the screen (under the **Build** section of the Foundry Portal). If no one has deployed an Agent in your current Foundry Project, then you won't see anything listed. Click the **Create agent** button in the center of the screen.
@@ -214,6 +220,8 @@ Similar to the previous section where we exploring a deployed model in its Playg
 ![Your real estate Agent's Playground](figures/ch02/ch02_ss_agent_004_clean.png)
 
 You'll likely see that the Agent is using a GPT model (mine is using `gpt-4.1`). Only a small subset of the 10,000+ models that you saw under the Models list are supported for Agents. While we can't use our Phi-4 model in this Agent interface, we can use models from Azure OpenAI, Anthropic Claude, or others. Feel free to choose a model that is supported in your region.
+
+
 
 Now let's give our Agent some instructions on how to behave like a real estate agent. In the **Instructions** box, enter the following prompt:
 
@@ -356,17 +364,18 @@ Here are some popular Tools you may want to search for and read about:
 * **Bing Search API** - Real-time web search capabilities with Bing
 
 
-There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are single purpose and operate as triggers to perfom a specific task. For example, there is a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
+There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are limited in purpose and operate as triggers to perfom a specific task. For example, there is a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
 
 
 After you've spent some time exploring all the Tools that are now available at your fingertips, let's go back to our real estate Agent and give it some more capabilities.
 
-### Adding Web Search
+### Exercise: Let your Agent Search the Web
+
+As you noticed earlier, though we had pasted in a URL for the Agent to read and base the Instagram post on, it could not actually browse the web. Thus, it hallucinated a response based on only the embedded information available in the model. Let's connect it to the Web Search Tool so that it can actually visit the URLs we give it.
 
 Navigate to the **Agents** section of the **Build** page and locate the real estate Agent you created earlier.
 
 ![Locating your real estate Agent](figures/ch02/ch02_ss_tools_002_ann.png)
-
 
 Under the **Tools** dropdown (located under the Instructions box, not on the left menu), click on the **Add** button.
 

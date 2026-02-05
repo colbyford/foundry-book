@@ -316,7 +316,7 @@ While Agent-capable base models like GPT-4.1 and others are very useful out-of-t
 
 {{< pagebreak >}}
 
-##	Connecting to Tools and Data
+##	Connecting to Data and the Web
 
 To make your AI agents more powerful and useful, you can connect them to various data sources and tools. This enables agents to retrieve real-time information and interact with external systems. In Microsoft Foundry, you'll find dozen of services with prebuilt connectors under under the Tools section of the platform.
 
@@ -409,7 +409,7 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 As you can see, our real estate Agent now retrieves the information from the listing, correctly stating the number of bedrooms and bathrooms, lot size, etc. and makes a decent social media post!
 
 
-### Interacting with MCP Tools
+## Interacting with MCP Tools
 
 Microsoft Foundry supports the **Model Context Protocol (MCP)**, an open protocol that standardizes how AI models connect to external tools and data sources. The Foundry tool catalog provides access to over 1,400 pre-built tools.
 
@@ -472,7 +472,7 @@ Pre-built MCP tools can be easily added to your agents:
 
 The agent will now be able to call this tool during conversations to fetch data or perform actions.
 
-###	Exercise: Deploy Cosmos DB and connect to using a tool
+###	Exercise: Connect to Cosmos DB using a MCP tool
 
 In this exercise, we'll create an Azure Cosmos DB instance and connect it to an agent using MCP:
 
@@ -540,4 +540,8 @@ In this exercise, we'll create an Azure Cosmos DB instance and connect it to an 
 
 This demonstrates how agents can access real-time data from external sources to provide accurate, grounded responses.
 
-## Building Knowledgebases with Foundry IQ
+## Summary
+
+In this chapter, we've gone through the process of exploring and deploying AI models that are available in the Foundry catalog. Then, we put a deployed model to work by turning it into an Agent. We also made our Agent smarter and more useful by giving it access to the internet and some of our internal data through Tools.
+
+In the next chapter, we will be building a Knowledge Base with Foundry IQ, which allows our agents to combine multiple sources to form responses.

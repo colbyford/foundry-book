@@ -1,0 +1,7 @@
+name: cosmos-mcp-demo
+services:
+  mcp:
+    project: ./app
+    language: python
+    host: appservice
+    

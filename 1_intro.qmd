@@ -40,7 +40,7 @@ These models are offered and supported directly by Microsoft and include:
 
 Microsoft Foundry utilizes two services in Azure: the Foundry Resource and the Foundry Project.
 
-![Foundry Resource and Project Organization](figures/ch01/ch01_il_001.png)
+![Foundry Resource and Project Organization](figures/ch01/ch01_il_portal_001.png)
 
 A Foundry Resource can organize the items you create for multiple use cases, and is typically shared between a team of developers that work on use cases in a similar business or data domain. We manage security and governance and broad access controls at the Resource level.
 

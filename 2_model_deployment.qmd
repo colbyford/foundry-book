@@ -330,7 +330,7 @@ Navigate to the **Tools** section of the **Discover** page. Here you'll find ove
 
 There are search options on the left side of the Tools list. Many Tools are for connecting to various types of data sources, which allow your Agent to query from the data and form a response based on that information (e.g., query a SQL database). Then there are others that simply allow your Agent to interact with an external service and act on your behalf (e.g., deploy a web app or Vercel or Netlify). 
 
-Note that each Tool is tagged as a "Local MCP" or "Remote MCP", which is a bit unclear. The Local MCP options are mainly ones that are hosted in your Azure environment. Remote MCP tools are ones that are hosted on third-party platforms. 
+Note that each Tool is tagged as a "Local MCP" or "Remote MCP", which is a bit unclear. The Local MCP options require that you self-host MCP servers that connect to their respective services hosted in your Azure environment. Remote MCP tools are ones that are hosted on third-party platforms. 
 
 Here are some popular Tools you may want to search for and read about:
 
@@ -372,7 +372,7 @@ Here are some popular Tools you may want to search for and read about:
 * **Computer Use** - Performing tasks by interacting with computer systems and applications
 * **Browser Automation** - Automate browser-based workflow such as navigating pages, filling forms, and booking items
 
-There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are limited in purpose and operate as triggers to perfom a specific task. For example, there is a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
+There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are limited in purpose and operate as triggers to perform a specific task. For example, there is a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
 
 
 After you've spent some time exploring all the Tools that are now available at your fingertips, let's go back to our real estate Agent and give it some more capabilities.
@@ -443,7 +443,7 @@ In the Transport layer, you may experience one of two transport mechanisms:
 - **Streamable HTTP transport:** Uses HTTP POST for client-to-server messages, with optional Server-Sent Events (SSE) for streaming responses, using standard HTTP authentication mechanisms such as bearer tokens, API keys, or custom headers. (OAuth is recommended option for token acquisition.)
 
 ::: {.callout-note}
-For more information on MCP, visit the docmentation at: [modelcontextprotocol.io/docs/](https://modelcontextprotocol.io/docs/).
+For more information on MCP, visit the documentation at: [modelcontextprotocol.io/docs/](https://modelcontextprotocol.io/docs/).
 
 Also, if you're interested in building your own MCP servers, there are many libraries available that make it quite easy. For Python, some popular ones include: [FastMCP](https://github.com/jlowin/fastmcp), [MCPify](https://github.com/camel-ai/mcpify), and [FastAPI+MCP](https://github.com/tadata-org/fastapi_mcp).
 :::
@@ -475,13 +475,14 @@ If you didn't deploy a Cosmos DB back in Chapter 1, go back and review those set
 You can follow the deployment instructions from Microsoft Learn here: [learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal](https://learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal).
 :::
 
-#### Part 1: Configuration
 
-Navigate to the Azure Portal ([portal.azure.com](https://portal.azure.com)) and locate the Cosmos DB account. On the side panel, click on **Settings** dropdown and then **Keys**.
+#### Part 1: Grabbing Keys and Endpoints
+
+Navigate to the Azure Portal ([portal.azure.com](https://portal.azure.com)) and locate your Cosmos DB account. On the side panel, click on **Settings** dropdown and then **Keys**.
 
 ![The Cosmos DB screen in the Azure Portal](figures/ch02/ch02_ss_cosmos_001_ann.png)
 
-This screen will show the connection information for your Cosmos DB account. Copy and paste your **URI** and **Primary Key** (after clicking the **eye** button to unhide it) to a notepad. We'll need these things in just a moment. (Keep this tab open! We'll need to come back here soon.)
+This screen will show the connection information for your Cosmos DB account. Copy and paste your **URI** and **Primary Key** (after clicking the **eye** button to unhide it) to a notepad. We'll need these items in just a moment. (Keep this tab open! You'll be coming back here soon.)
 
 ![Locating your Cosmos DB URI and Key](figures/ch02/ch02_ss_cosmos_002_ann.png)
 
@@ -489,6 +490,12 @@ Back in the Foundry Portal, navigate to the real estate Agent we've been buildin
 
 
 #### Part 2: Deploying the MCP Server
+
+Now comes the tricky part. Since there isn't a remote MCP server for Cosmos DB (yet) like there is for Azure Databricks, Fabric, and SharePoint, we have to host our own. This is good practice so that you can see how you might build custom MCP capabilities for your own workloads. 
+
+I've provided an example Python-based MCP server that provides various tools for communicating with a Cosmos DB database.
+
+In the accompanying GitHub repository, navigate to the...
 
 
 #### Part 3: Adding the Tool
@@ -503,7 +510,7 @@ You may see a **Hosting your MCP server** screen pop up. This is letting you kno
 
 ![Information about hosting MCP servers](figures/ch02/ch02_ss_cosmos_005_ann.png)
 
-On the **Connect the Azure Cosmos DB tool** screen, paste in the URI you copied from before to the **Remote MCP Server endpoint** box. Paste the key you copied into the **Credential** box and name the credential "key1". I also replaced the default name in the **Name** box as this helps to distinguish between multiple servers of the same type later on. When you're done filling in the values, click the **Connect** button.
+On the **Connect the Azure Cosmos DB tool** screen, paste in the URI of your deployed MCP server. Paste the key you copied into the **Credential** box and name the credential "key1". I also replaced the default name in the **Name** box as this helps to distinguish between multiple servers of the same type later on. When you're done filling in the values, click the **Connect** button.
 
 ![Filling in the URI and Key for the Cosmos DB Tool connection](figures/ch02/ch02_ss_cosmos_006_ann.png)
 
@@ -513,7 +520,7 @@ If successful, you should now see the **Azure Cosmos DB** tool listed under the 
 
 
 ```
-list_databases,list_collections,get_approximate_schema,get_recent_documents,find_document_by_id,text_search
+list_databases, list_collections, get_approximate_schema, get_recent_documents, find_document_by_id, text_search
 ```
 
 ::: {.callout-tip}
@@ -522,17 +529,30 @@ list_databases,list_collections,get_approximate_schema,get_recent_documents,find
 Can you tell me what year the property at 753 Willow Boulevard in San Diego was built?
 :::
 
-
 Oh wait! We don't actually have any data in the database for the Agent to query. Let's fix that in the next part.
 
 #### Part 4: Add Sample Data
 
-1. Navigate to your Cosmos DB account
-2. Go to **Data Explorer**
-3. Click **New Container**
-4. Create a database named "RealEstateCatalog"
-5. Create a container named "Properties" with partition key `/state`
-6. Add sample documents:
+Navigate to your Cosmos DB account and click on the **Data Explorer** on the left side panel.
+In the Data Explorer, click the **+ New** button and select **+ New container**.
+
+![Creating a new Cosmos DB container](figures/ch02/ch02_ss_database_001_ann.png)
+
+On the **New Container** panel that opens to the right, fill in the following values:
+
+- Database id: `RealEstateCatalog`
+- Container id: `Properties`
+- Partition key: `/state`
+
+Then, click the **OK** button at the bottom of the panel.
+
+![Creating a new Cosmos DB database](figures/ch02/ch02_ss_database_002_ann.png)
+
+Once your database and container have been created, click on **Items** under the **Properties** drop down. At the top of the screen, click the **Upload Item** button. One the panel that opens, browse for the [`data/ch02/properties.json`](data/ch02/properties.json) file in the accompanying GitHub repository by selecting the folder icon. Lastly, click the **Upload** button.
+
+![Uploading property records to your database](figures/ch02/ch02_ss_database_003_ann.png)
+
+You should then see eight sample property records that look like this:
 
 ```json
 {
@@ -548,8 +568,13 @@ Oh wait! We don't actually have any data in the database for the Agent to query.
 }
 ```
 
+![Listing your property records](figures/ch02/ch02_ss_database_004_clean.png)
 
+Now we have some data that our Agent can query through the Cosmos DB MCP connection.
 
+#### Testing the Agent's Capabilities
+
+Back in the Agent Playground, ...
 
 ## Summary
 

@@ -1,9 +1,10 @@
+
 param location string = resourceGroup().location
 param appName string
 param pythonVersion string = '3.11'
 
 param cosmos_uri string
-param cosmos_key string
+param cosmos_key string 
 param cosmos_database string
 param cosmos_container string
 
@@ -51,10 +52,16 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
           name: 'COSMOS_CONTAINER'
           value: cosmos_container
         }
+        {
+          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+          value: 'true'
+        }
       ]
     }
     httpsOnly: true
   }
+
+  tags: { 'azd-service-name' : 'mcp' }
 }
 
 output endpoint string = 'https://${webApp.properties.defaultHostName}'

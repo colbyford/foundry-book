@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: simple-cosmos-mcp
+infra:
+    provider: "bicep"
+services:
+  mcp:
+    project: src
+    language: py
+    host: appservice

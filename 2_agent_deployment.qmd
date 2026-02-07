@@ -306,6 +306,10 @@ I've provided an example Python-based MCP server that provides various tools for
 
 In the accompanying GitHub repository, navigate to the...
 
+- Windows: `winget install microsoft.azd`
+- macOS: `brew tap azure/azd && brew install azd`
+- Linux: `curl -fsSL https://aka.ms/install-azd.sh | bash`
+
 
 #### Part 3: Adding the Tool
 

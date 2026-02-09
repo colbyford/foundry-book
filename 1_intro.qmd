@@ -237,7 +237,8 @@ from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 
 project = AIProjectClient(
-  endpoint="https://<resource-name>.services.ai.azure.com/api/projects/<project-name>",
+  endpoint="https://<resource-name>.services.ai.azure.com/\
+               api/projects/<project-name>",
   credential=DefaultAzureCredential()
   )
 ```
@@ -371,7 +372,7 @@ Next, we'll learn how to explore and deploy various AI models from the Foundry M
 
 From the Foundry Portal, navigate to the **Discover** tab at the top of the screen.
 
-![Locating the Discover tab](figures/ch02/ch02_ss_portal_001_ann.png)
+![Locating the Discover tab](figures/ch01/ch01_ss_portal_013_ann.png)
 
 You'll see a list of featured models can be deployed. You may notice that some are popular proprietary models like OpenAI's GPT-5.2 and Anthropic's Claude Opus 4.5 and others may be open-source models from Hugging Face or Microsoft.
 
@@ -379,27 +380,27 @@ But why deploy a model like GPT or Claude on Foundry when we can just can use th
 
 Once you're done browsing the Discover page, click on **Models** on the left-hand menu.
 
-![Exploring featured models on the Discover page](figures/ch02/ch02_ss_discover_001_ann.png)
+![Exploring featured models on the Discover page](figures/ch01/ch01_ss_discover_001_ann.png)
 
 This will take you to the full list of models currently available in Foundry. There are currently over 10,000 models that you can deploy and the list is continuously growing. You'll quickly notice that Foundry isn't just for LLMs. There are models for image generation, audio generation, document analysis, text classification, 3D object generation, translations, and even protein modeling!
 
 On this page, you can filter by source (the company or group that produced the model), capabilities (like reasoning or if the model can accept images as an input), inferencing task (such as text or image generation), and other features. Spend some time playing with these filters and exploring the vast variety models that you can deploy with Foundry.
 
-![Listing all available models in Foundry](figures/ch02/ch02_ss_discover_002_clean.png)
+![Listing all available models in Foundry](figures/ch01/ch01_ss_discover_002_clean.png)
 
 As you're exploring, you may be overwhelmed with the number of choices that you have, even for the same type of task. Let's learn how to compare models to pick the best one for your needs.
 
 At the top right of the screen, you'll notice two buttons: **View leaderboard** and **Compare models**. Click on the **Compare models** button.
 
-![Locating the Compare models button](figures/ch02/ch02_ss_compare_001_ann.png)
+![Locating the Compare models button](figures/ch01/ch01_ss_compare_001_ann.png)
 
 On the **Compare models** screen, you can compare up to three different models across various benchmarks (e.g., quality, safety, costs, and throughput). Click any of the dropdown boxes and select three different models. You can also look at the differences in what the models accept as inputs and produce as outputs along with metrics about their context size. This is helpful if you're trying to figure out which model you should deploy for a given use case. I find this especially helpful when choosing between versions of the same base model with confusing names/suffixes (for example, `gpt-5.2` vs. `gpt-5.2-chat` vs. `gpt-5.2-codex`). 
 
-![Comparing models across benchmarks and capabilities](figures/ch02/ch02_ss_compare_002_clean.png)
+![Comparing models across benchmarks and capabilities](figures/ch01/ch01_ss_compare_002_clean.png)
 
 Once you've gotten familiar with the model comparison tool, go back to the **Models** page and click on the **View leaderboard** button.
 
-![Locating the View leaderboard button](figures/ch02/ch02_ss_leaderboard_001_ann.png)
+![Locating the View leaderboard button](figures/ch01/ch01_ss_leaderboard_001_ann.png)
 
 On this page, you can see how different models rank across the same benchmarks you saw in the model comparison screen: quality, safety, cost, and throughput.
 
@@ -408,17 +409,17 @@ On this page, you can see how different models rank across the same benchmarks y
 - **Throughput:** The rate at which the model can generate its output, measured in tokens per second. Behind the scenes, models are also evaluated on latency, rate limit (in tokens per minute), etc. (Higher is better/faster.)
 - **Cost:** The cost per 1 million tokens. This is a blended cost estimate that assumes a three-to-one ratio between input and output token costs. (Lower is better/cheaper.)
 
-![Exploring the model leaderboard](figures/ch02/ch02_ss_leaderboard_002_clean.png)
+![Exploring the model leaderboard](figures/ch01/ch01_ss_leaderboard_002_clean.png)
 
 This is a good page to visit often to see at how the latest models stack up to their predecessor version or competitor models.
 
 Clicking on any of the models will take you to the model's page where you can learn more. On the **Benchmarks** tab, you can see the benchmarking data for a model. Often, this benchmarking is performed by Microsoft, but they also post publish other public benchmarks of the model if available.
 
-![More details about a model's benchmark performance](figures/ch02/ch02_ss_leaderboard_003_ann.png)
+![More details about a model's benchmark performance](figures/ch01/ch01_ss_leaderboard_003_ann.png)
 
 Scrolling down on this page, you'll find the more detailed view of the summary metrics from before, including more drilled-down results for the overall composite scores. This is a good place to look at the specific aspects that are important to your deployment. For example, if you were building a simple chat agent for your online store, you might pick a faster (lower latency) model than one that gets a top-notch score for coding capabilities.
 
-![Metric details across various model benchmarks](figures/ch02/ch02_ss_leaderboard_004_clean.png)
+![Metric details across various model benchmarks](figures/ch01/ch01_ss_leaderboard_004_clean.png)
 
 When choosing a model, consider:
 
@@ -443,7 +444,7 @@ To start, navigate back to the **Models** page in the Foundry Portal.
 
 Search for "Phi-4" in the model catalog. Click on the `Phi-4` option (not `Phi-4-mini` or other variants).
 
-![Searching for the Phi-4 model](figures/ch02/ch02_ss_deploy_001_ann.png)
+![Searching for the Phi-4 model](figures/ch01/ch01_ss_deploy_001_ann.png)
 
 You can read more about the Phi-4 model, its benchmark performance, etc. When you're ready to deploy, click the **Deploy** button in the top right.
 
@@ -451,15 +452,15 @@ There are two options: **Default settings** and **Custom settings**. Go with the
 
 If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardails to use. We'll learn more about Guardrails in Chapter 5.
 
-![Deploying Phi-4 with Default settings](figures/ch02/ch02_ss_deploy_002_ann.png)
+![Deploying Phi-4 with Default settings](figures/ch01/ch01_ss_deploy_002_ann.png)
 
 A box will pop up that allows you to read the terms of the consumption-based deployment of the model. You can also view pricing and legal information on the **Pricing** tab. Click the **Agree and proceed** button to start the deployment.
 
-![Agreeing to the terms for deploying Phi-4](figures/ch02/ch02_ss_deploy_003_ann.png)
+![Agreeing to the terms for deploying Phi-4](figures/ch01/ch01_ss_deploy_003_ann.png)
 
 The deployment process should only take a couple minutes, and you'll be brought to the **Playground** page for the Phi-4 deployment.
 
-![Playground UI for experimenting with a Phi-4 deployment](figures/ch02/ch02_ss_deploy_004_clean.png)
+![Playground UI for experimenting with a Phi-4 deployment](figures/ch01/ch01_ss_deploy_004_clean.png)
 
 
 On the main **Playground** tab, you can now start interacting with the model.
@@ -472,7 +473,7 @@ Let's see if we can have some fun with the behavior of the model. In the followi
 2. Try a sample prompt in the **Chat with the model...** input: `Do you have any good recipes for an intergalactic pizza?`
 3. Review the model's response
 
-![Learning to make cosmic pizza](figures/ch02/ch02_ss_deploy_005_clean.png)
+![Learning to make cosmic pizza](figures/ch01/ch01_ss_deploy_005_clean.png)
 
 As you can see, we can modify the model's behavior by simply giving a few of instructions. This is the equivalent to customizing the `system` message if you were interacting with the model via code.
 
@@ -480,11 +481,11 @@ While we're here, take a look at the parameters that alter how our model behaves
 
 Click on the **Parameters** icon button to the right of the model name. Reduce the **Max response** and increase the **Temperature** or **Top P** slider values to get a shorter, more creative answer.
 
-![Modifying model parameters](figures/ch02/ch02_ss_deploy_006_ann.png)
+![Modifying model parameters](figures/ch01/ch01_ss_deploy_006_ann.png)
 
 This time, our alien friend Zorki gave me a more interstellar recipe with slightly less realistic items. Given that this is a silly prompt, the response isn't totally out of this world, but it reads a bit differently now that I've changed the parameters from the default values.
 
-![A slightly more martian pizza recipe](figures/ch02/ch02_ss_deploy_007_clean.png)
+![A slightly more martian pizza recipe](figures/ch01/ch01_ss_deploy_007_clean.png)
 
 Here are some notes about these parameters:
 
@@ -548,7 +549,7 @@ On the **Details** tab, you'll find:
 * A **Key** for authentication with the endpoint
 * **Deployment info**, which includes the Deployment's name and type, creation date, state, etc.
 
-![Deployment endpoint and key on the Details tab](figures/ch02/ch02_ss_deploy_007_ann.png)
+![Deployment endpoint and key on the Details tab](figures/ch01/ch01_ss_deploy_007_ann.png)
 
 
 There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in future chapters.

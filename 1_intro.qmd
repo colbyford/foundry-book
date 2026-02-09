@@ -22,19 +22,17 @@ Microsoft Foundry delivers a modernized experience with powerful enhancements de
 * **Real-Time Observability** – Monitor performance and governance using built-in metrics and model tracking tools.
 * **Centralized AI asset management** - Observe, optimize, and manage 100% of your AI assets (agents, models, tools) in one place, the **Operate** section.
 
-##	Exploration of frontier models, open-source models
-
-Microsoft Foundry provides access to a wide variety of AI models from multiple sources:
 
 ### Models Provided Directly on Foundry
 
-These models are offered and supported directly by Microsoft and include:
+Microsoft Foundry provides access to a wide variety of AI models from multiple sources. These models are offered and supported directly by Microsoft and include:
 
 * **Azure OpenAI Models** - GPT 5, Sora 2, GPT-4o, o3, and other OpenAI models
 * **Microsoft Models** - Phi family models (e.g., Phi-4) and other specialized models from Microsoft and Microsoft Research such as MedImageParse, EvoDiff, Aurora, etc.
 * **Third-Party Models** - Mistral, Anthropic's Claude, xAI's Grok, DeepSeek, and other models provided directly on Azure
 * **Hugging Face Models** - Over 10,000 models from huggingface.co
 
+Note that the availability of specific models may vary by region and over time as new models are added and older ones are deprecated. You can view the current catalog of available models in the Foundry Portal under the **Discover** section. Also, note that there is a variety in the capabilities of these models, with some being better suited for certain tasks than others. For example, some models may be optimized for reasoning tasks, while others may excel at coding or image generation. The Foundry Portal provides tools to help you compare models across various benchmarks and capabilities to assist you in selecting the best model for your use case.
 
 ##	Deploying Foundry resources/projects
 

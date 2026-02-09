@@ -363,6 +363,7 @@ Now, start by cloning the GitHub repository for the MCP ToolKit and navigate int
 
 ```bash
 git clone https://github.com/AzureCosmosDB/MCPToolKit.git
+git checkout 3661d5f ## Ensures that you're using a stable commit
 cd MCPToolKit
 ```
 
@@ -400,10 +401,12 @@ Now you can run the Powershell script to deploy the server code Cosmos DB MCP se
 
 ```powershell
 ## From the MCPToolKit directory
-.\scripts\Deploy-Cosmos-MCP-Toolkit.ps1 -ResourceGroup "<resource-group-name>"
+.\scripts\Deploy-Cosmos-MCP-Toolkit.ps1 `
+   -ResourceGroup "<resource-group-name>"
 
 ## on Linux or macOS
-# pwsh ./scripts/Deploy-Cosmos-MCP-Toolkit.ps1 -ResourceGroup "<resource-group-name>"
+# pwsh ./scripts/Deploy-Cosmos-MCP-Toolkit.ps1 `
+# -ResourceGroup "<resource-group-name>"
 ```
 
 This script builds and pushes the MCP server Docker image to your new Container Registry and creates an Entra ID app registration for authentication. This will take a few minutes to complete. If successful, you should see a message that says "Deployment successful!" and it will output the URI for your new Cosmos DB MCP server, which should look something like this: `https://<container-app-name>.<region>.azurecontainerapps.io/`. Copy this URI and paste it somewhere safe as you'll need it in the next step.
@@ -413,7 +416,10 @@ This script builds and pushes the MCP server Docker image to your new Container 
 If you see any warnings that certain things were missing or not configured, follow the manual instructions that the warning gives you. For example, if your OpenAI Endpoint variable wasn't set correctly, it will give you a warning and instructions on how to set it. You can set environment variables for your Container App using the Azure CLI command below.
 
 ```bash
-az containerapp update --name mcp-demo-app --resource-group <resource-group-name> --set-env-vars 'OPENAI_ENDPOINT=<openai-endpoint>'
+az containerapp update \
+   --name mcp-demo-app \
+   --resource-group <resource-group-name> \
+   --set-env-vars 'OPENAI_ENDPOINT=<openai-endpoint>'
 ```
 :::
 
@@ -441,7 +447,18 @@ Copy the MCP Server URL somewhere safe as you'll need it in the next step.
 
 #### Part 3: Adding the Tool
 
-Navigate back to the Foundry Portal and to your real estate Agent's Playground.
+Now we have the MCP server deployed and working, we just need to connect it to our Agent by creating a new connection in Foundry. You can run the Powershell script from the MCPToolkit repository that will automate the process of creating a new connection in Foundry with the correct parameters for your MCP server. Just make sure to fill in the correct names for your Foundry workspace and Project.
+
+```powershell
+.\Setup-AIFoundry-Connection.ps1 `
+   -AIFoundryProjectName "<foundry-project-name>" `
+   -AIFoundryAccountName "<foundry-account-name>" `
+   -ConnectionName "cosmos-mcp-connection"
+```
+
+Behind the scenes, this script is also granting the Foundry Project the `MCP Tool Executor` role, which allows your Agents to communicate with the MCP server. If you want to do this manually, you can follow the instructions in the `README.md` file in the MCP ToolKit repository.
+
+I also want to show you how to create this connection manually. Navigate back to the Foundry Portal and to your real estate Agent's Playground.
 
 ![Adding another Tool to your Agent](figures/ch02/ch02_ss_cosmos_003_ann.png)
 
@@ -453,11 +470,11 @@ You may see a **Hosting your MCP server** screen pop up. This is letting you kno
 
 ![Information about hosting MCP servers](figures/ch02/ch02_ss_cosmos_005_ann.png)
 
-On the **Connect the Azure Cosmos DB tool** screen, paste in the URI of your deployed MCP server. Paste the URL to your MCP server in the **Remote MCP Server endpoint** box (remember to add `/mcp` at the end). Then, for the other values fill in with the following:
+On the **Connect the Azure Cosmos DB tool** screen, give this tool a name. Paste the URL to your MCP server in the **Remote MCP Server endpoint** box (remember to add `/mcp` at the end). Then, for the other values fill in with the following:
 
 - **Authentication**: Microsoft Entra
 - **Type**: Project Managed Identity
-- **Audence**: `https://ai.azure.com`
+- **Audience**: (Your Entra App ID for the MCP Toolkit app. This is the `ENTRA_APP_CLIENT_ID` value from the `deployment-info.json` Powershell script output.)
 
 When you're done filling in the values, click the **Connect** button.
 
@@ -503,9 +520,15 @@ Can you tell me what year the property at 753 Willow Boulevard in San Diego was 
 
 You may be prompted to approve each tool that the Agent uses for the first time. This is a security measure to prevent unauthorized access to your data and services. Make sure to review the tool usage and click the **Approve** button if you want to allow the Agent to use the tool.
 
-![Checking the Cosmos DB Tool usage in the Agent response](figures/ch02/ch02_ss_cosmos_008_clean.png)
+![Checking the Cosmos DB Tool usage in the Agent response](figures/ch02/ch02_ss_cosmos_008_ann.png)
 
-As you can see, the Agent is able to query the Cosmos DB database through the MCP server and retrieve the relevant information to answer the questions. You can ask it more complex questions that require it to compare properties, find properties with specific features, or even generate marketing content based on the properties in the database. Spend some time playing with your newly enhanced real estate Agent and see what kind of responses you get!
+As you can see, the Agent is able to query the Cosmos DB database through the MCP server and retrieve the relevant information to answer the questions.
+
+![A successful Cosmos DB Tool call and augmented Agent response](figures/ch02/ch02_ss_cosmos_009_clean.png)
+
+
+ You can ask it more complex questions that require it to compare properties, find properties with specific features, or even generate marketing content based on the properties in the database. Spend some time playing with your newly enhanced real estate Agent and see what kind of responses you get!
+
 
 ## Summary
 

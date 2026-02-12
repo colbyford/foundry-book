@@ -1,4 +1,4 @@
-# Edge-Deployed AI
+# Local Inferencing and Edge-Deployed AI
 
 In this chapter, we will learn about local model inferencing through Foundry Local and will be able to prepare and run models locally on their laptop with Olive.
 

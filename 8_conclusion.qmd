@@ -2,6 +2,8 @@
 
 In this conclusionary chapter, we'll wrap up the book by providing some final best practices for designing an Azure cloud architecture that integrates well with Foundry. Plus, readers will learn about how to plan for serverless AI options in Azure.
 
+
+
 ## Best practices for implementing enterprise AI
 
 As organizations scale their AI deployments from prototypes to production, following best practices ensures success, maintains security, and maximizes return on investment.
@@ -193,6 +195,404 @@ As organizations scale their AI deployments from prototypes to production, follo
 * Define standards and patterns
 * Review and approve production deployments
 * Share learnings across organization
+
+
+
+## Additional Agent Services and Apps
+
+Next, we will get an introduction to the other agent services in Foundry and learn how to deploy their first chat AI application.
+
+###	Introduction to Purview SDK integration
+
+Microsoft Purview integration provides governance, compliance, and data protection capabilities for your AI agents and applications. This integration helps organizations meet regulatory requirements and maintain control over sensitive data.
+
+### What is Microsoft Purview?
+
+Microsoft Purview is a unified data governance service that helps you:
+
+* **Discover and catalog** - Automatically discover and classify data across your organization
+* **Protect sensitive data** - Apply sensitivity labels and data loss prevention policies
+* **Ensure compliance** - Meet regulatory requirements (GDPR, HIPAA, SOC 2)
+* **Monitor usage** - Track how data is accessed and used by AI agents
+* **Audit activities** - Maintain detailed logs of agent interactions with data
+
+### Microsoft Agent 365 and Purview
+
+**Microsoft Agent 365** is the control plane for enterprise AI agents, providing centralized management and governance. Through its integration with Purview, it enables organizations to:
+
+* Manage hosted agents at scale with unified identity and lifecycle controls
+* Enforce least-privilege access and compliance with Defender, Microsoft Entra, and Purview
+* Boost productivity through native integration with Microsoft 365 apps
+* Monitor agent activity and apply policies from a single, secure registry
+
+### Purview Capabilities for AI Agents
+
+**Data Classification:**
+Automatically classify data that agents access:
+* Personally Identifiable Information (PII)
+* Financial data
+* Health records
+* Confidential business information
+
+**Sensitivity Labels:**
+Apply and enforce sensitivity labels on:
+* Agent conversations and threads
+* Documents retrieved by agents
+* Generated content
+* Training data
+
+**Data Loss Prevention (DLP):**
+Prevent agents from:
+* Exposing sensitive data in responses
+* Sharing confidential information outside authorized channels
+* Processing data that violates policies
+
+**Compliance Monitoring:**
+Track and report on:
+* Data access patterns
+* Policy violations
+* Compliance status
+* Risk indicators
+
+### Implementing Purview with Foundry Agents
+
+**1. Enable Purview Integration**
+
+In your Foundry project:
+1. Navigate to **Settings** → **Governance**
+2. Click **Connect Purview**
+3. Select your Purview account
+4. Authorize the connection
+
+**2. Apply Sensitivity Labels**
+
+Configure sensitivity labels for your agents:
+1. In the agent configuration, go to **Security**
+2. Select **Sensitivity labeling**
+3. Choose appropriate labels:
+   * Public
+   * Internal
+   * Confidential
+   * Highly Confidential
+4. Enable automatic labeling based on content
+
+**3. Configure DLP Policies**
+
+Set up Data Loss Prevention:
+1. Navigate to **Policies** → **DLP**
+2. Create a new DLP policy
+3. Define sensitive information types to protect
+4. Specify actions when policy is violated:
+   * Block response
+   * Notify administrator
+   * Log incident
+5. Apply policy to agents
+
+**4. Monitor Compliance**
+
+View compliance reports in the Purview portal:
+* Agent data access logs
+* Policy violation incidents
+* Compliance score
+* Risk assessment
+
+##	Integrating with ChatKit and CopilotKit
+
+While Microsoft Foundry provides native integration with Microsoft 365 and Teams, you can also integrate agents with popular chat frameworks and UI libraries for custom applications.
+
+### Publishing to Microsoft 365 Ecosystem
+
+Microsoft Foundry provides seamless integration with the Microsoft 365 ecosystem, allowing you to deploy agents where your users already work.
+
+**Microsoft 365 Copilot:**
+Deploy agents as extensions to Microsoft 365 Copilot:
+* Appear in the Copilot agent store
+* Accessible across Microsoft 365 apps (Word, Excel, PowerPoint, Outlook)
+* Maintain context across applications
+* Leverage Microsoft Graph for data access
+
+**Microsoft Teams:**
+Deploy agents as Teams applications:
+* Personal chat bots
+* Team collaboration bots
+* Meeting assistants
+* Channel notifications
+
+**BizChat:**
+Make agents available in BizChat for business conversations:
+* Enterprise search integration
+* Document summarization
+* Meeting notes and follow-ups
+
+### Publishing Process
+
+To publish your agent to Microsoft 365:
+
+1. In the Foundry portal, select your agent
+2. Click **Publish** → **Publish to Teams and Microsoft 365 Copilot**
+3. Configure the Azure Bot Service (auto-generated)
+4. Fill in metadata:
+   * App name and description
+   * Icons (color and outline)
+   * Publisher information
+   * Privacy policy URL
+   * Terms of use URL
+5. Click **Prepare Agent**
+6. Choose your publish scope:
+   * **Shared Scope** - Appears under "Your agents" in the agent store
+   * **Organization Scope** - Appears under "Built by your org" (requires admin approval)
+7. Download the package or publish directly
+
+### Custom Web Applications
+
+For custom web applications, you can:
+
+**Embed via iframe:**
+```html
+<iframe 
+  src="https://your-agent-endpoint.azure.com/chat"
+  width="400" 
+  height="600"
+  frameborder="0">
+</iframe>
+```
+
+**Use REST API:**
+```javascript
+fetch('https://your-agent-endpoint.azure.com/api/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    messages: [{
+      role: 'user',
+      content: 'Hello, how can you help me?'
+    }]
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+**Use Foundry SDK:**
+Python example:
+```python
+from azure.ai.agent import AgentClient
+from azure.identity import DefaultAzureCredential
+
+client = AgentClient(
+    endpoint="https://your-endpoint.azure.com",
+    credential=DefaultAzureCredential()
+)
+
+response = client.send_message(
+    agent_id="your-agent-id",
+    message="Hello, how can you help me?"
+)
+
+print(response.content)
+```
+
+##	Deploying your first AI app
+
+Now let's deploy a complete chat application that users can interact with through a web interface.
+
+###	Exercise: Deploy your first chat app
+
+In this exercise, we'll deploy a web-based chat application using Microsoft Foundry.
+
+**Step 1: Prepare Your Agent**
+
+Ensure you have a working agent (we'll use the Product Support Agent from Chapter 3):
+1. Test the agent thoroughly in the playground
+2. Verify all tools and connections are working
+3. Ensure content filtering is enabled
+4. Configure appropriate rate limits
+
+**Step 2: Deploy to Web App**
+
+1. Navigate to your agent in the Foundry portal
+2. Click **Deploy** → **Web app**
+3. Configure the web app:
+   * **App name**: product-support-chat
+   * **Authentication**: Choose one:
+     - Anonymous (for public demos)
+     - Azure AD (for enterprise apps)
+     - API key (for controlled access)
+   * **Branding**: Upload logo and customize colors
+   * **Welcome message**: "Hello! I'm your product support assistant. How can I help you today?"
+4. Click **Deploy**
+
+**Step 3: Configure Web App Settings**
+
+Customize the chat experience:
+
+1. **Appearance**:
+   * Primary color: #0078D4
+   * Font family: Segoe UI
+   * Chat bubble style: Modern
+   * Avatar: Upload company logo
+
+2. **Behavior**:
+   * Show typing indicators: Yes
+   * Enable file uploads: No (for this example)
+   * Suggested prompts: Add common questions:
+     - "What products do you offer?"
+     - "Tell me about hiking shoes"
+     - "What's your return policy?"
+
+3. **Advanced**:
+   * Session timeout: 30 minutes
+   * Message retention: 7 days
+   * Maximum conversation length: 50 messages
+
+**Step 4: Test the Web App**
+
+1. Click on the generated URL (e.g., `https://product-support-chat.azurewebsites.net`)
+2. Test the chat interface:
+   * Send a message: "What hiking shoes do you have?"
+   * Verify the agent responds with product information
+   * Test suggested prompts
+   * Try edge cases (unclear questions, requests for unavailable information)
+
+**Step 5: Customize with Code (Optional)**
+
+For advanced customization, download the web app template:
+
+1. Click **Download source code**
+2. Extract the zip file
+3. The package includes:
+   * HTML/CSS/JavaScript for the UI
+   * Configuration files
+   * Deployment scripts
+
+Customize the template:
+```javascript
+// config.js
+const chatConfig = {
+  endpoint: 'https://your-agent-endpoint.azure.com',
+  apiKey: 'YOUR_API_KEY',
+  theme: {
+    primaryColor: '#0078D4',
+    botMessageColor: '#F3F2F1',
+    userMessageColor: '#0078D4'
+  },
+  features: {
+    showTimestamp: true,
+    enableFeedback: true,
+    allowFileUpload: false
+  }
+};
+```
+
+**Step 6: Deploy to Azure App Service**
+
+For production deployment:
+
+1. Create an Azure App Service:
+```bash
+az webapp create \
+  --resource-group myResourceGroup \
+  --plan myAppServicePlan \
+  --name product-support-chat \
+  --runtime "NODE:18-lts"
+```
+
+2. Deploy your customized code:
+```bash
+az webapp deployment source config-zip \
+  --resource-group myResourceGroup \
+  --name product-support-chat \
+  --src app.zip
+```
+
+3. Configure environment variables:
+```bash
+az webapp config appsettings set \
+  --resource-group myResourceGroup \
+  --name product-support-chat \
+  --settings \
+    AGENT_ENDPOINT="https://your-endpoint.azure.com" \
+    AGENT_API_KEY="@Microsoft.KeyVault(SecretUri=...)"
+```
+
+**Step 7: Add Analytics (Optional)**
+
+Track usage with Application Insights:
+
+1. Enable Application Insights for your web app
+2. Add tracking code:
+```javascript
+// Track chat interactions
+appInsights.trackEvent('ChatMessage', {
+  messageCount: messageCount,
+  sessionDuration: sessionDuration,
+  userSatisfaction: feedbackScore
+});
+```
+
+3. Create dashboards in Azure Portal to monitor:
+   * Active users
+   * Message volume
+   * Response times
+   * User satisfaction scores
+
+**Step 8: Share with Users**
+
+Distribute your chat app:
+
+1. **Direct link**: Share the URL with users
+2. **Embed**: Add iframe to existing websites
+3. **QR code**: Generate QR code for mobile access
+4. **Teams**: Add as a Teams tab
+
+**Step 9: Monitor and Iterate**
+
+After deployment, continuously improve:
+
+1. Monitor usage in the **Operate** section
+2. Review conversation logs for common issues
+3. Analyze user feedback
+4. Update agent instructions based on real usage
+5. Add new tools as needs evolve
+
+### Best Practices for Production Apps
+
+**Security:**
+* Use Azure AD authentication for enterprise apps
+* Store API keys in Azure Key Vault
+* Enable HTTPS only
+* Implement rate limiting
+* Monitor for abuse
+
+**Performance:**
+* Enable caching for common queries
+* Use CDN for static assets
+* Optimize images and resources
+* Monitor response times
+
+**User Experience:**
+* Provide clear onboarding instructions
+* Handle errors gracefully
+* Show loading indicators
+* Allow users to provide feedback
+* Respect user privacy
+
+**Maintenance:**
+* Set up automated testing
+* Monitor error rates
+* Keep dependencies updated
+* Plan for scaling
+* Document customizations
+
+Congratulations! You've successfully deployed your first AI chat application. This web app can now serve as a 24/7 assistant for your users, answering questions and providing information based on your data.
+
+
+
+
+
 
 ## Reference architectures for Foundry in Azure
 

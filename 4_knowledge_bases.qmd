@@ -1,10 +1,10 @@
-# Building Knowledge Bases with Foundry IQ
+# Building Knowledge Bases and Multi-Agent Workflows
 
 Enterprise AI systems fail most often not because of model quality, but because of *context*. Without reliable access to organizational knowledge, consistent memory across interactions, and visibility into how decisions are made, even the most capable large language models degrade into brittle, untrustworthy systems.
 
 **Foundry IQ** addresses this problem directly. As the knowledge and intelligence layer of **Microsoft Foundry**, Foundry IQ enables AI agents to reason over enterprise and web data, retain context across interactions, and produce responses that are grounded, observable, and auditable. Rather than treating retrieval, memory, and evaluation as bolt-on components, Foundry IQ integrates them into the core lifecycle of AI application development.
 
-This chapter explores Foundry IQ’s role within Microsoft Foundry, its architectural principles, and how it enables production-grade, knowledge-aware AI systems.
+This chapter explores Foundry IQ's role within Microsoft Foundry, its architectural principles, and how it enables production-grade, knowledge-aware AI systems.
 
 
 ## What Is Foundry IQ?

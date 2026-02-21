@@ -1,6 +1,7 @@
 # Building Knowledge Bases and Multi-Agent Workflows
+{#chapter-knowledge-bases}
 
-Enterprise AI systems fail most often not because of model quality, but because of *context*. Without reliable access to organizational knowledge, consistent memory across interactions, and visibility into how decisions are made, even the most capable large language models degrade into brittle, untrustworthy systems.
+Enterprise AI systems may sometimes feel subpar, not because of model quality, but because of *context*. Without reliable access to organizational knowledge, consistent memory across interactions, and visibility into how decisions are made, even the most capable large language models may deliver lackluster responses or untrustworthy answers.
 
 **Foundry IQ** addresses this problem directly. As the knowledge and intelligence layer of **Microsoft Foundry**, Foundry IQ enables AI agents to reason over enterprise and web data, retain context across interactions, and produce responses that are grounded, observable, and auditable. Rather than treating retrieval, memory, and evaluation as bolt-on components, Foundry IQ integrates them into the core lifecycle of AI application development.
 
@@ -20,6 +21,13 @@ This chapter explores Foundry IQ's role within Microsoft Foundry, its architectu
 Rather than requiring developers to assemble vector databases, retrieval pipelines, memory stores, and citation logic themselves, Foundry IQ provides these capabilities as first-class platform primitives.
 
 
+### What is a Knowledge Base?
+
+Knowledge bases encapsulate an information domain for a given area. They are comprised of multiple sources and are structured repositories of information that agents can query to ground their responses.
+
+An information domain could be a specific business function (e.g., customer support), a data type (e.g., product manuals), or a topical area (e.g., financial news). Knowledge bases are designed to be comprehensive, up-to-date, and relevant to the agents that will query them. They are not static dumps of data, but living repositories that evolve as the underlying information changes.
+
+In Foundry IQ, knowledge bases can be built on top of Azure AI Search indexes, allowing developers to ingest and index a wide variety of data sources.
 
 ### Knowledge Grounding as a First-Class Capability
 
@@ -106,7 +114,28 @@ In these cases, correctness, traceability, and continuity matter as much as flue
 
 ### Exercise: Build your first Knowledge Base
 
+Now that you understand the capabilities of Foundry IQ, the next step is to build your first knowledge base and connect it to an agent. This exercise will walk through how to create a Foundry IQ knowledge base, ingest data, and configure an agent to use it for grounding responses.
 
+For this exercise, we will build a multi-agent system for financial insights that can answer questions about market trends, company performance, and investment opportunities. As shown in @fig-E787, the system will leverage a Foundry IQ knowledge base that contains financial reports and company data along with connectivity to the web and tools for real-time stock updates.
+
+![Building a multi-source Agent for financial insights](figures/kb/il_multisource_001.png){#fig-E787}
+
+
+To start, navigate to the Knowledge section of the Build page. As shown in @fig-33E, we must first connect our Foundry Project to an Azure AI Search resource, which will serve as the underlying index for our knowledge base. You can use the existing Azure AI Search resource that was deployed in @chapter-introduction or create a new one through the Azure Portal. For demo purposes, use the API key option for authentication. However, in production scenarios, using the Foundry Project's Entra ID for authentication allows for more granular access control and better security hygiene. Click the **Connect** button after selecting the Azure AI Search resource and the Auth Type.
+
+
+![Connecting to an Azure AI Search resource](figures/kb/ss_knowledge_001_ann.png){#fig-33E}
+
+
+You'll then be taken to the Foundry IQ page where you will eventually see all of your knowledge bases listed. Since this is your first time here, the list will be empty. Click the **Create a knowledge base** button, shown in @fig-F32A, to get started.
+
+![Creating a new Knowledge Base](figures/kb/ss_knowledge_002_ann.png){#fig-F32A}
+
+
+Give your knowledge base a name and description that reflects its purpose and content. For example, if you're building a knowledge base for customer support, you might name it "Customer Support KB" and describe it as "A knowledge base containing FAQs, troubleshooting guides, and policy documents for customer support agents." Once you've filled in the details, click **Create** to provision the knowledge base.
+
+
+{{< pagebreak >}}
 ## Summary
 
 Foundry IQ represents a shift in how enterprise AI systems are built. Instead of treating knowledge, memory, and observability as external concerns, it embeds them directly into the platform. By doing so, Microsoft Foundry enables developers to move beyond isolated prompts and toward intelligent systems that reason, remember, and improve over time.

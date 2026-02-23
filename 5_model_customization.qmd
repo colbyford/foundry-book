@@ -1,5 +1,4 @@
-# Model Customization through Fine-Tuning
-{#chapter-fine-tuning}
+# Model Customization through Fine-Tuning {#chapter-fine-tuning}
 
 In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. Customizing a model with your own data can improve performance on specific tasks or domains by teaching the model to better understand your unique requirements and to respond with more accurate answers or in a desired style.
 
@@ -35,7 +34,7 @@ The first step to begin fine-tuning a model in Microsoft Foundry is to build a t
 
 Your training data should be in JSONL (JSON Lines) format with clear examples of inputs and desired outputs:
 
-```json
+```{.json .code-overflow-wrap}
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "How do I reset my password?"}, {"role": "assistant", "content": "To reset your password, go to Settings > Security > Reset Password."}]}
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "Where can I find my order history?"}, {"role": "assistant", "content": "Your order history is available in Account > Orders."}]}
 ```
@@ -124,7 +123,7 @@ Play around with asking the model different medical questions to see how it resp
 - "What are the common symptoms of diabetes?"
 - "How can I lower my blood pressure?"
 - "What is atrial fibrillation?"
-- "Can I get pregnant from an alien from Mars?"
+- "Can I get pregnant by an alien from Mars?"
 
 :::
 
@@ -164,7 +163,10 @@ Then, by running the following commands in your terminal, you can submit the fin
 ```bash
 ## Submit fine-tuning job
 cd data/ch05
-azd ai finetuning jobs submit -f medical_finetuning_supervised.yaml -s <subscription-id> -e <project-endpoint>
+azd ai finetuning jobs submit \
+   -f medical_finetuning_supervised.yaml \
+   -s <subscription-id> \
+   -e <project-endpoint>
 
 ## List fine-tuning jobs
 azd ai finetuning jobs list
@@ -173,6 +175,20 @@ azd ai finetuning jobs list
 azd ai finetuning jobs show -i <job-id>
 ```
 
+This will submit the fine-tuning job to Foundry, as shown in @fig-5DD6. You'll be prompted to install the CLI extension if it's not already installed and give the local project a name. This can be whatever you like, but I named mine `medical-assistant-full`.
+
+![Initializing a fine-tuning job from the CLI](figures/ft/ss_cli_001_clean.png){#fig-5DD6}
+
+First, the CLI will upload the two `.jsonl` files, and shown in @fig-19D9, and then kick off the fine-tuning job.
+
+![Uploading training data and starting the fine-tuning job](figures/ft/ss_cli_002_clean.png){#fig-19D9}
+
+
+You can monitor its status and view details using the `list` and `show` CLI commands. See @fig-E5DD.
+
+![Listing fine-tuning jobs and showing job details](figures/ft/ss_cli_003_clean.png){#fig-E5DD}
+
+As you can see, the Foundry CLI provides a convenient way to manage your fine-tuning jobs, especially when working with larger datasets or when you prefer working in a terminal environment. This also works well within development workflows where you want to version control your training configurations and datasets in a git repository. For example, using GitHub Actions, you could set up a CI/CD pipeline that automatically runs fine-tuning jobs whenever you push changes to your training dataset or configuration files in your repository.
 
 
 ## Generating Synthetic Training Data Generation
@@ -193,7 +209,7 @@ To start, navigate to the **Data** section of the **Build** page in the Foundry 
 
 ![Navigating to the Synthetic generation tab](figures/ft/ss_syntheticdata_001_ann.png){#fig-2C04}
 
-On the **Create data** screen, you will fill in the details to create a synthetic data generation job for cardiology questions. This includes selecting the base generator model, choosing the synthetic data task at hand, and uploading your source document, as shown in @fig-DC10.
+On the **Create data** screen, you will fill in the details to create a synthetic data job for cardiology questions. This includes selecting the base generator model, choosing the synthetic data task at hand, and uploading your source document, as shown in @fig-DC10.
 
 - **Task type:** `Simple Q&A`
 - **Question type:** `Short answer`
@@ -213,6 +229,40 @@ Pick one of the files to upload to the synthetic data generator and configure th
 ![Adding cardiology documents for synthetic data generation](figures/ft/ss_syntheticdata_002_ann.png){#fig-DC10}
 
 
+Depending on which file you upload and the settings you choose, the synthetic data generation process can take anywhere from a few minutes to an hour or more. You can monitor the status as shown in @fig-2555.
+
+![Monitoring the queued synthetic data job](figures/ft/ss_syntheticdata_003a_clean.png){#fig-2555}
+
+
+Once the job is complete, you can view the generated synthetic dataset in the **Data** section by clicking the bullet selector of the succeeded job. This will open a side panel on the right that provides details about the generated dataset, including a count of the token usage, and the ability to preview some generated examples, as shown in @fig-4C1D. You can click the download icon beside the **Training file** name to download the `.jsonl` dataset.
+
+![Viewing the synthetic data job results](figures/ft/ss_syntheticdata_003_ann.png){#fig-4C1D}
+
+
+::: {.callout-warning}
+Your synthetic data generation job may fail if you hit your throughput limit with whatever deployed model you picked. If this happens, you can either wait for your throughput to reset, deploy a new instance of different base model, or simply use a smaller reference file.
+:::
+
+
+
+```{.json .code-overflow-wrap}
+{"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is the primary cause of a heart attack?"}, {"role": "assistant", "content": "The primary cause of a heart attack is the reduction or blockage of blood flow to the heart muscle, usually due to a blockage in the coronary arteries that supply the heart with oxygen-rich blood."}]}
+{"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "How does plaque buildup in the coronary arteries contribute to heart attacks?"}, {"role": "assistant", "content": "Plaque buildup in the coronary arteries narrows these vessels, restricting blood flow to the heart muscle. When plaque breaks, a blood clot can form around it, potentially blocking the artery completely and cutting off oxygen supply, which can trigger a heart attack."}]}
+{"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is atherosclerosis?"}, {"role": "assistant", "content": "Atherosclerosis is a slow process where plaque\u2014composed of fat, cholesterol, and other substances\u2014builds up in the inner walls of arteries. This buildup narrows the arteries and makes them less flexible, increasing the risk of blood clots that can cause heart attacks or strokes."}]}
+
+```
+
+::: {.callout-tip}
+## Bonus Exercise
+
+If you'd like to test your fine-tuning skills, try to use this generated synthetic dataset as additional training data to fine-tune your medical assistant model.
+
+This can help the model learn to better respond to cardiology-related questions even if your original training dataset had limited examples in that area. You can simply click the **Use this dataset for finetuning** button, which will take you to the fine-tuning page with the new training dataset pre-filled with the synthetic dataset you just generated (shown in @fig-7C3B). You can then select your previous fine-tuned medical assistant model and submit a new fine-tuning job to further customize your model with this synthetic data.
+
+![Continuing to fine-tune with the new cardiology synthetic data](figures/ft/ss_syntheticdata_004_ann.png){#fig-7C3B}
+:::
+
+Now you've successfully generated synthetic training data using the base model to augment your training dataset! As you can see, this is a powerful technique for improving model performance when you have limited real training data available. By leveraging the knowledge and capabilities of the base model, you can create additional examples that help teach the model to perform better on your specific tasks or domains when you can't get your hands on clean data otherwise.
 
 {{< pagebreak >}}
 

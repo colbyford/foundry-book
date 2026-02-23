@@ -226,3 +226,4 @@ tmp-pdfcrop-*
 /.quarto/
 site_libs
 oreilly
+.azure

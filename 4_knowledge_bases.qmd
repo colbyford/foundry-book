@@ -112,6 +112,110 @@ Foundry IQ is particularly well-suited for scenarios such as:
 In these cases, correctness, traceability, and continuity matter as much as fluency.
 
 
+### What is RAG?
+
+Retrieval-Augmented Generation combines:
+
+1. **Retrieval** - Finding relevant information from a knowledge base
+2. **Augmentation** - Adding that information to the model's context
+3. **Generation** - Using the model to generate responses based on the retrieved data
+
+### Benefits of RAG
+
+* **Accuracy** - Responses are grounded in your actual data
+* **Citations** - Provides sources for information
+* **Up-to-date** - Can be updated without retraining the model
+* **Cost-effective** - No need for expensive fine-tuning
+* **Transparency** - Users can verify information sources
+
+### Creating a Knowledge Base
+
+**1. Prepare Your Data**
+
+Foundry IQ supports multiple document types:
+* PDF documents
+* Word documents (.docx)
+* Text files (.txt)
+* Markdown files (.md)
+* Web pages (via URL)
+* SharePoint sites
+
+**2. Create an Index**
+
+1. Navigate to **Tools** → **Indexes** in your Foundry project
+2. Click **+ New index**
+3. Provide a name (e.g., "product-documentation")
+4. Select the index type: **Azure AI Search**
+5. Choose or create an Azure AI Search resource
+
+**3. Add Data Sources**
+
+1. In the index configuration, click **+ Add data source**
+2. Select the source type:
+   * **Upload files** - Upload documents directly
+   * **Azure Blob Storage** - Connect to existing storage
+   * **SharePoint** - Connect to SharePoint sites
+   * **Web crawl** - Crawl public web pages
+3. Configure the data source
+4. Click **Add**
+
+**4. Configure Chunking and Embedding**
+
+* **Chunking strategy** - How documents are split into searchable pieces
+  * Default: 1000 tokens with 100 token overlap
+  * Custom: Adjust based on your document structure
+* **Embedding model** - Converts text to vectors for semantic search
+  * text-embedding-ada-002 (recommended for most cases)
+  * Custom embeddings for specialized domains
+
+**5. Build the Index**
+
+1. Review your configuration
+2. Click **Create and build**
+3. Wait for indexing to complete (time varies by data volume)
+4. Monitor progress in the **Indexes** section
+
+### Vector Search
+
+Foundry IQ uses vector search to find semantically similar content:
+
+* Converts queries to embeddings
+* Compares query embeddings to document embeddings
+* Returns most relevant chunks based on semantic similarity
+* Supports hybrid search (combines keyword and vector search)
+
+##	Deploying your first agent
+
+Agents in Microsoft Foundry combine models, instructions, tools, and memory to create intelligent, autonomous systems that can help users accomplish tasks.
+
+### What Makes an Agent?
+
+An agent consists of:
+
+1. **Model (LLM)** - Provides reasoning and language understanding
+2. **Instructions** - Define the agent's role, behavior, and constraints
+3. **Tools** - Enable the agent to retrieve data or take actions
+4. **Memory** - Helps the agent maintain context across conversations
+
+### Agent Types
+
+**Prompt-Based Agents:**
+* Declaratively defined using natural language instructions
+* Quick to build and iterate
+* Suitable for most use cases
+
+**Workflow Agents:**
+* Express complex orchestration as YAML or code
+* Enable multi-agent collaboration
+* Handle conditional logic and branching
+
+**Hosted (Containerized) Agents:**
+* Created in code and deployed as containers
+* Full control over implementation
+* Can integrate custom libraries and frameworks
+
+
+
 ### Exercise: Build your first Knowledge Base
 
 Now that you understand the capabilities of Foundry IQ, the next step is to build your first knowledge base and connect it to an agent. This exercise will walk through how to create a Foundry IQ knowledge base, ingest data, and configure an agent to use it for grounding responses.

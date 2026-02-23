@@ -1,5 +1,4 @@
-# Building Knowledge Bases and Multi-Agent Workflows
-{#chapter-knowledge-bases}
+# Building Knowledge Bases and Multi-Agent Workflows {#chapter-knowledge-bases}
 
 Enterprise AI systems may sometimes feel subpar, not because of model quality, but because of *context*. Without reliable access to organizational knowledge, consistent memory across interactions, and visibility into how decisions are made, even the most capable large language models may deliver lackluster responses or untrustworthy answers.
 

@@ -1,6 +1,4 @@
-# Agent Deployment
-{#chapter-agent-deployment}
-
+# Agent Deployment {#chapter-agent-deployment}
 
 Agents sit above deployed Models and orchestrate their behavior. An agent uses one or more models along with instructions, memory, tools, and knowledge to accomplish goals autonomously. It can decide what steps to take, call tools or APIs, manage context, and iterate toward an outcome.
 

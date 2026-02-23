@@ -1,5 +1,4 @@
-# Model Deployment
-{#chapter-model-deployment}
+# Model Deployment {#chapter-model-deployment}
 
 ## Explore Models in the Foundry Portal
 

@@ -1,26 +1,37 @@
-# Model Customization and Control
+# Model Customization through Fine-Tuning
+{#chapter-fine-tuning}
 
-In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. They will also learn to build knowledgebases, which will be used when deploying their first agent.
+In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. Customizing a model with your own data can improve performance on specific tasks or domains by teaching the model to better understand your unique requirements and to respond with more accurate answers or in a desired style.
 
-##	Fine-tuning with custom data (building training datasets)
+##	Fine-Tuning with Custom Data 
 
-Fine-tuning allows you to customize pre-trained models with your own data to improve performance on specific tasks or domains. This process adapts the model's behavior to better align with your use case while maintaining the model's general capabilities.
+When LLMs are trained, they learn from a broad range of data sources to develop general language understanding. Groups like Anthropic or OpenAI train their models on trillions of tokens across various domains from all sorts of sources including Common Crawl (an archive of web page data), Wikipedia, and digitized books. Thus, for giant models, they can often respond reasonably well to a wide range of prompts without any additional training. You've probably also noticed that some alternate versions of models are released for specific use cases, such as code generation, deep reasoning, or mathematics. These models have been fine-tuned on additional data relevant to those tasks to improve their performance in those areas.
 
-### When to Fine-Tune
+However, the general knowledge that a model has may not be exactly what you're looking for if you need to use a model for a specific domain, task, or style. For example, if you're building a customer support agent for a software product, you want the model to be familiar with your product's features, common issues, and support policies. If you rely solely on the base model's general training, it may not perform well because it lacks the specific knowledge and context needed to answer questions accurately. This is where fine-tuning comes in.
+
+Fine-tuning allows you to customize pre-trained models with your own data to improve performance on specific tasks or domains. This process adapts the model's behavior to better align with your use case while maintaining the model's general capabilities. Also, fine tuning requires far less data and compute than training an entire model from scratch. You likely don't have trillions of tokens to train on, but you can often achieve significant improvements with just a few hundred or thousand examples that are relevant to your specific use case.
+
+In Microsoft Foundry, you can fine-tune models using custom training datasets that you upload to the platform. The fine-tuning process involves providing examples of inputs and desired outputs, which the model uses to learn how to respond in a way that is more relevant to your specific needs.
 
 Consider fine-tuning when you need to:
 
-* Adapt a model to a specific domain or industry (legal, medical, financial)
+* Adapt a model to a specific domain or industry (e.g., legal, medical, financial)
 * Improve performance on specialized tasks
 * Teach the model to follow specific formatting or response patterns
 * Incorporate proprietary terminology or knowledge
 * Reduce the need for lengthy prompts by encoding behavior in the model
 
-### Fine-Tuning Process
+### Tuning Methods
 
-The fine-tuning workflow in Microsoft Foundry consists of several steps:
+Once you identify a good use case for fine-tuning a model, you will then need to select the appropriate training technique. The technique you choose will guide the model you select for training. There are currently three training techniques to optimize your models:
 
-**1. Prepare Training Data**
+- **Supervised Fine-tuning:** Standard supervised fine-tuning with training and validation datasets. This is useful for most use cases where you have a clear set of examples that demonstrate the desired behavior you want the model to learn.
+- **Direct Preference Optimization (DPO):** Fine-tuning using preference data to align model outputs to the preferences of human evaluators. This is useful for improving the quality of responses to align with safety or other human preferences.
+- **Reinforcement Fine-tuning:** Reinforcement learning-based fine-tuning that incorporates automated feedback from built-in evaluation logic such as a scoring function. This method is useful for specific objectives where there are clear right and wrong answers, such as in code generation or math problem solving.
+
+### Building Training Datasets
+
+The first step to begin fine-tuning a model in Microsoft Foundry is to build a training dataset. This dataset should consist of examples that demonstrate the desired behavior you want the model to learn. Each example typically includes an input (prompt) and a corresponding output (response) that represents the correct or ideal answer.
 
 Your training data should be in JSONL (JSON Lines) format with clear examples of inputs and desired outputs:
 
@@ -29,7 +40,11 @@ Your training data should be in JSONL (JSON Lines) format with clear examples of
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "Where can I find my order history?"}, {"role": "assistant", "content": "Your order history is available in Account > Orders."}]}
 ```
 
-**Best Practices for Training Data:**
+For simple supervised fine-tuning, you can create a dataset with just a few dozen to a few hundred examples. The key is to ensure that the examples are high-quality, relevant, and representative of the behavior you want the model to learn. You can also include system messages in your examples to provide additional context or instructions to guide the model's behavior.
+
+Also, you have the option to have a single system-user conversation in each example, or you can include multiple turns of conversation to provide more context and demonstrate more complex interactions. The choice depends on the specific behavior you're trying to teach the model and the complexity of the task.
+
+When generating training data, keep the following best practices in mind:
 
 * **Quality over quantity** - Start with 50-100 high-quality examples
 * **Diverse examples** - Cover different scenarios and edge cases
@@ -37,288 +52,169 @@ Your training data should be in JSONL (JSON Lines) format with clear examples of
 * **Clear instructions** - Include system messages to define behavior
 * **Representative data** - Examples should reflect real-world usage
 
-**2. Upload Data to Foundry**
+### Exercise: Fine-tune a Medical Assistant Model
 
-1. Navigate to **Data** in your Foundry project
-2. Click **+ Upload data**
-3. Select your JSONL file
-4. Provide a name and description
-5. Click **Upload**
+Let's start by fine-tuning a model to be a medical assistant that can answer questions about common medical conditions. We will use the `gpt-4.1-mini` model for this exercise, which is a smaller version of the GPT-4.1 model that is suitable for fine-tuning with limited data and compute resources. I have provided a training dataset with examples of medical questions and answers in the `data/ch05` folder.
 
-**3. Create a Fine-Tuning Job**
+To start, navigate to the **Fine-tune** section of the **Build** page in the Foundry portal and click the **Fine-tune** button at the top, as shown in @fig-706E.
 
-1. Go to **Models** → **Fine-tuning**
-2. Click **+ Create fine-tuning job**
-3. Select the base model (e.g., GPT-3.5-Turbo, Phi-3)
-4. Choose your training dataset
-5. Configure hyperparameters:
-   * **Learning rate** - Controls how quickly the model adapts (default is usually best)
-   * **Epochs** - Number of training passes (3-4 is typical)
-   * **Batch size** - Number of examples per training step
-6. Optionally provide a validation dataset
-7. Click **Submit**
+![Creating a new fine-tuning job](figures/ft/ss_finetune_001_ann.png){#fig-706E}
 
-**4. Monitor Training**
+On the **Fine-tune a model** screen, shown in @fig-807A, you will fill in the details to create a fine-tuning job for a medical assistant model. This includes selecting the base model, choosing the customization method, uploading your training and validation datasets, and configuring the training settings.
 
-The fine-tuning job can take from minutes to hours depending on:
-* Dataset size
-* Base model size
-* Number of epochs
+![Defining the fine-tuning job setting](figures/ft/ss_finetune_002_ann.png){#fig-807A}
 
-You can monitor progress in the **Fine-tuning** section, which shows:
-* Training loss (should decrease over time)
-* Validation loss (if validation set provided)
-* Estimated completion time
+Fill in the following details to create a fine-tuning job for a medical assistant model and click the **Submit** button to start the fine-tuning process:
 
-**5. Deploy Fine-Tuned Model**
+- **Select model:** `gpt-4.1-mini` (or another model of your choice)
+- **Customization method:**  `Supervised`
+- **Training type:** `Global`
+- **Training dataset:** Select **Upload new dataset**, then upload the `medical_training_set_mini.jsonl` file from the data/ch05 folder.
+- **Validation dataset:** Select **Upload new dataset**, then upload the `medical_validation_set_mini.jsonl` file from the data/ch05 folder.
+- **Suffix:** `medical-training-mini`
+- **Deployment type:** `Developer`
+- **Additional configuration:** Leave these settings at their default values for now, but feel free to experiment with them later:
+  - **Seed:** `Random`
+  - **Batch size:** 1
+  - **Learning rate multiplier:** 0.1
 
-Once training completes:
-1. Navigate to the completed fine-tuning job
-2. Click **Deploy model**
-3. Provide a deployment name
-4. Select deployment configuration
-5. Click **Deploy**
+This will take you back to the **Fine-tuning** page where you can see your new fine-tuning job in the list. The job you just submitted will start in the *Queued* state and then will start running in a couple minutes. Click the job name to view the details of the fine-tuning job. See @fig-1077.
 
-Your fine-tuned model is now ready to use and will perform better on your specific use case than the base model.
+![Viewing the status of your new tuning job](figures/ft/ss_finetune_003_ann.png){#fig-1077}
 
-### Evaluation and Iteration
 
-After deploying your fine-tuned model:
+A fine-tuning process can take anywhere from a few minutes to a few hours depending on the size of the model, the size of your training dataset, and the training settings you chose. For our mini dataset, this should take an hour or so to complete. You can monitor the status of your fine-tuning job on the **Logs** tab.
 
-* Test with real-world examples not in your training set
-* Compare responses to the base model
-* Measure performance improvements using evaluations
-* Iterate by adding more training examples if needed
+While it's tuning, check out the **Monitor** tab. This page shows the current training loss and mean token accuracy by training step. This is useful for keeping an eye on how the training is progressing and whether the model is learning from the training data well. You should see the training loss decrease over time and the mean token accuracy increase as the model learns to generate responses that are closer to the desired outputs in your training dataset. See @fig-B05C.
 
-##	Foundry IQ (knowledgebases and RAG solutions)
 
-**Foundry IQ** (powered by Azure AI Search) enables Retrieval-Augmented Generation (RAG), allowing your agents to ground their responses in your own data. This approach provides more accurate, citation-backed answers without requiring fine-tuning.
+![The Monitor tab, showing fine-tuning metrics](figures/ft/ss_finetune_005_ann.png){#fig-B05C}
 
-### What is RAG?
+Once the fine-tuning job is complete, the status will change to *Completed*. You can click on the job to view the final training metrics and details about the fine-tuned model, as shown in @fig-4048. You can also deploy this fine-tuned model to an endpoint by clicking on the **Deploy** button.
 
-Retrieval-Augmented Generation combines:
+![A completed fine-tuning status and metrics](figures/ft/ss_finetune_006_ann.png){#fig-4048}
 
-1. **Retrieval** - Finding relevant information from a knowledge base
-2. **Augmentation** - Adding that information to the model's context
-3. **Generation** - Using the model to generate responses based on the retrieved data
 
-### Benefits of RAG
+On the **Customize <model-name> Deployment** panel that opens on the right, give your deployment a more friendly name (i.e., `gpt-4.1-mini-medical-mini`), leaving the other settings at their default values, and then click the **Deploy** button at the bottom. See @fig-D045. 
 
-* **Accuracy** - Responses are grounded in your actual data
-* **Citations** - Provides sources for information
-* **Up-to-date** - Can be updated without retraining the model
-* **Cost-effective** - No need for expensive fine-tuning
-* **Transparency** - Users can verify information sources
 
-### Creating a Knowledge Base
+![Customizing the fine-tuned model deployment](figures/ft/ss_finetune_007_ann.png){#fig-D045}
 
-**1. Prepare Your Data**
 
-Foundry IQ supports multiple document types:
-* PDF documents
-* Word documents (.docx)
-* Text files (.txt)
-* Markdown files (.md)
-* Web pages (via URL)
-* SharePoint sites
+This will deploy your fine-tuned model to an endpoint that you can use in your applications after a few minutes. Once the deployment is complete, you can begin playing with your fine-tuned model on the **Playground** tab.
 
-**2. Create an Index**
+You'll need to provide some basic instructions that will help control how the model responds to user questions relating to medical conditions, as shown in @fig-124F. You can add the following system text to the **Instructions** field to help guide the model to respond in a helpful and accurate way:
 
-1. Navigate to **Tools** → **Indexes** in your Foundry project
-2. Click **+ New index**
-3. Provide a name (e.g., "product-documentation")
-4. Select the index type: **Azure AI Search**
-5. Choose or create an Azure AI Search resource
+::: {.callout-tip}
+## Instructions
+You are an AI medical assistant that provides helpful and accurate information about common medical conditions. You have been fine-tuned on a dataset of medical questions and answers to improve your performance in this domain. Based on the user's question, provide a clear and concise answer that is relevant to the medical topic being asked about. If the question is outside of your knowledge or expertise, respond with "I'm sorry, I don't have information on that topic."
 
-**3. Add Data Sources**
+Always recommend consulting with a qualified healthcare professional for personalized medical advice, diagnosis, or treatment. Your responses are for informational purposes only and should not be considered a substitute for professional medical advice.
+:::
 
-1. In the index configuration, click **+ Add data source**
-2. Select the source type:
-   * **Upload files** - Upload documents directly
-   * **Azure Blob Storage** - Connect to existing storage
-   * **SharePoint** - Connect to SharePoint sites
-   * **Web crawl** - Crawl public web pages
-3. Configure the data source
-4. Click **Add**
 
-**4. Configure Chunking and Embedding**
+![Adding instructions and playing with your new medical assistant model](figures/ft/ss_finetune_008_clean.png){#fig-124F}
 
-* **Chunking strategy** - How documents are split into searchable pieces
-  * Default: 1000 tokens with 100 token overlap
-  * Custom: Adjust based on your document structure
-* **Embedding model** - Converts text to vectors for semantic search
-  * text-embedding-ada-002 (recommended for most cases)
-  * Custom embeddings for specialized domains
 
-**5. Build the Index**
+Play around with asking the model different medical questions to see how it responds. For example, here are some example prompts you can try:
 
-1. Review your configuration
-2. Click **Create and build**
-3. Wait for indexing to complete (time varies by data volume)
-4. Monitor progress in the **Indexes** section
+::: {.callout-tip}
+## Example Prompts
 
-### Vector Search
+- "What are the common symptoms of diabetes?"
+- "How can I lower my blood pressure?"
+- "What is atrial fibrillation?"
+- "Can I get pregnant from an alien from Mars?"
 
-Foundry IQ uses vector search to find semantically similar content:
+:::
 
-* Converts queries to embeddings
-* Compares query embeddings to document embeddings
-* Returns most relevant chunks based on semantic similarity
-* Supports hybrid search (combines keyword and vector search)
+For me, my fine-tuned model performs well and correctly tells users to consult medical professionals for personalized advice. It seems to provide succinct, but helpful and accurate information about common medical conditions when asked relevant questions. However, if I ask a question that is outside of the knowledge in the training dataset, such as "Can you tell me the genetic mutations that cause Gomorgazan's disease of the heart?" (which isn't real), the model correctly responds with "I'm sorry, I don't have information on that topic." This shows that the model has learned to provide accurate information within its domain of expertise while also recognizing when a question is outside of its knowledge and responding according to its instructions.
 
-##	Deploying your first agent
 
-Agents in Microsoft Foundry combine models, instructions, tools, and memory to create intelligent, autonomous systems that can help users accomplish tasks.
+### Fine Tuning with the CLI
 
-### What Makes an Agent?
+You may have noticed that we uploaded the `*_mini.jsonl` versions of the training and validation datasets. This is because the UI has a 30 second timeout window for uploading your dataset in the browser. Alternatively, you can use the Foundry CLI to run fine-tuning jobs with larger datasets. The CLI does not have the same timeout constraints as the UI, so you can upload and use larger datasets this way.
 
-An agent consists of:
+To run fine-tuning from the CLI, you must first define your fine-tuning job configuration in a YAML file. This can be more convenient for managing and versioning your training configurations, especially in, say, a git repository.
 
-1. **Model (LLM)** - Provides reasoning and language understanding
-2. **Instructions** - Define the agent's role, behavior, and constraints
-3. **Tools** - Enable the agent to retrieve data or take actions
-4. **Memory** - Helps the agent maintain context across conversations
+If you're interested in tuning the medical assistant model with the larger dataset, you can use the following YAML configuration file, which is located in the `data/ch05` folder as `medical_finetuning_supervised.yaml`:
 
-### Agent Types
-
-**Prompt-Based Agents:**
-* Declaratively defined using natural language instructions
-* Quick to build and iterate
-* Suitable for most use cases
-
-**Workflow Agents:**
-* Express complex orchestration as YAML or code
-* Enable multi-agent collaboration
-* Handle conditional logic and branching
-
-**Hosted (Containerized) Agents:**
-* Created in code and deployed as containers
-* Full control over implementation
-* Can integrate custom libraries and frameworks
-
-###	Exercise: Deploy your first Agent with access to data
-
-Let's create an agent that can answer questions about your product catalog using the Cosmos DB connection we set up earlier.
-
-**Step 1: Create a New Agent**
-
-1. Navigate to **Build** → **Agents** in Foundry portal
-2. Click **+ Create agent**
-3. Provide agent details:
-   * Name: "Product Support Agent"
-   * Description: "Helps customers with product information"
-4. Select a model deployment (use the Phi-4 model we deployed earlier)
-
-**Step 2: Configure Instructions**
-
-In the **Instructions** field, provide clear guidance:
-
-```
-You are a helpful product support agent for an outdoor gear company. 
-
-Your responsibilities:
-- Answer questions about products including features, pricing, and availability
-- Provide accurate information from the product database
-- Be friendly and professional
-- If you don't know something, admit it and offer to escalate to a human agent
-
-When answering questions about products:
-1. Search the product database for relevant information
-2. Provide specific details including product names and prices
-3. Include any relevant warnings or recommendations
-4. Always cite your sources
-
-Remember: Never make up product information. Only use data from the tools you have access to.
+```yaml
+name: supervised-ft-cli-medical
+description: Template for supervised medical fine-tuning using via CLI
+model: gpt-4.1-mini
+method:
+  type: supervised
+  supervised:
+    hyperparameters:
+      epochs: 4
+      batch_size: 8
+      learning_rate_multiplier: 0.1
+      prompt_loss_weight: 0.01
+seed: 1337
+suffix: "medical-trained-full"
+training_file: local:medical_training_set.jsonl
+validation_file: local:medical_validation_set.jsonl
 ```
 
-**Step 3: Add Tools**
+Using the Foundry CLI (which is an extension of the Azure Developer CLI, `azd`), you can submit a fine-tuning job with this configuration file. Assuming you have the Azure Developer CLI installed and configured, run `azd ext install azure.ai.finetune` to add the fine-tuning extension.
 
-1. In the agent configuration, navigate to the **Tools** section
-2. Click **+ Add tool**
-3. Select **Cosmos DB Query** from the catalog
-4. Choose your "ProductCatalog" connection
-5. Configure tool permissions:
-   * Read-only access
-   * Specific containers: "Products"
-6. Add the tool
-
-**Step 4: Configure Memory (Optional)**
-
-1. Navigate to **Memory** settings
-2. Enable conversation memory
-3. Set retention policy:
-   * Per-user memory (default)
-   * Retention: 30 days
-4. This allows the agent to remember context from previous interactions
-
-**Step 5: Add Safety Features**
-
-1. Go to **Safety** settings
-2. Enable content filtering:
-   * Hate speech detection
-   * Violence detection
-   * Self-harm detection
-   * Sexual content detection
-3. Set filter levels (Low, Medium, or High)
-4. Configure response behavior for blocked content
-
-**Step 6: Test the Agent**
-
-1. Click **Test in playground**
-2. Try these sample prompts:
-   * "What hiking shoes do you have available?"
-   * "Tell me about the TrailWalker shoes"
-   * "How much do the TrailWalker hiking shoes cost?"
-3. Observe how the agent:
-   * Uses the Cosmos DB tool to fetch product data
-   * Provides accurate, grounded responses
-   * Cites the product database as its source
-
-**Step 7: Deploy the Agent**
-
-Once satisfied with testing:
-
-1. Click **Deploy**
-2. Choose deployment target:
-   * **API endpoint** - For integration with custom apps
-   * **Teams** - Deploy to Microsoft Teams
-   * **Microsoft 365** - Make available in M365 apps
-   * **Web app** - Generate a standalone web chat interface
-3. Configure deployment settings:
-   * Endpoint name
-   * Authentication method (API key or Azure AD)
-   * Rate limiting (if applicable)
-4. Click **Deploy**
-
-**Step 8: Get Deployment Details**
-
-After deployment, you'll receive:
-* **Endpoint URL** - For API calls
-* **API Key** - For authentication (store securely)
-* **Sample code** - Example integration code in multiple languages
-
-**Step 9: Test the Deployed Agent**
-
-Test the agent via API using curl:
+Then, by running the following commands in your terminal, you can submit the fine-tuning job to Foundry: (Make sure to replace `<subscription-id>` and `<project-endpoint>` with your actual subscription ID and project endpoint.)
 
 ```bash
-curl -X POST https://your-endpoint.azure.com/agents/chat \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{
-    "messages": [
-      {"role": "user", "content": "What are the TrailWalker hiking shoes?"}
-    ]
-  }'
+## Submit fine-tuning job
+cd data/ch05
+azd ai finetuning jobs submit -f medical_finetuning_supervised.yaml -s <subscription-id> -e <project-endpoint>
+
+## List fine-tuning jobs
+azd ai finetuning jobs list
+
+## Show job details
+azd ai finetuning jobs show -i <job-id>
 ```
 
-Congratulations! You've deployed your first agent with access to real-time data. This agent can now be integrated into applications, websites, or workplace tools to provide intelligent assistance to users.
 
-### Next Steps
 
-To enhance your agent further:
-* Add more data sources (SQL databases, SharePoint, web search)
-* Implement multi-turn conversation handling
-* Add custom validation logic
-* Monitor agent performance and user feedback
-* Iterate on instructions based on real-world usage
+## Generating Synthetic Training Data Generation
+
+Sometimes you may not have enough real training data to effectively fine-tune a model for your specific use case. In these cases, Foundry allows for you to generate synthetic training data using the base model itself. This involves prompting the base model to create examples that you can then use as training data for fine-tuning.
+
+There are two synthetic data generators available in Foundry that can help you create training data:
+
+- **Simple Q&A:** This generator turns domain documents into fine-tuning question–answer pairs. It accepts PDFs, Markdown files, or plain text documents (<20MB) containing the subject knowledge from which you want the model to learn.
+- **Tool use:** Simulate multi-turn conversations with tool calls over and API. This requires a valid 3.0.x or 3.1.x OpenAPI Specification (Swagger) file in JSON (<20MB) that describes the APIs you want the model to learn to call as tools.
+
+
+### Exercise: Generate Synthetic Data for Cardiology Questions
+
+For example, let's say our previous medical training dataset lacks in a particular specialty area, such as deep knowledge about cardiology. We can use the base model to generate synthetic examples of questions and answers about cardiology to augment our training dataset. This can help the model learn to better respond to cardiology-related queries even if we don't have a lot of real examples in our original dataset. So, let's see what examples the model can generate about cardiology topics based on some documents we have.
+
+To start, navigate to the **Data** section of the **Build** page in the Foundry portal. At the top of the screen, click the **Synthetic data generation** tab. You can then click the **Generate data** button to create a new synthetic data generation job, as shown in @fig-2C04.
+
+![Navigating to the Synthetic generation tab](figures/ft/ss_syntheticdata_001_ann.png){#fig-2C04}
+
+On the **Create data** screen, you will fill in the details to create a synthetic data generation job for cardiology questions. This includes selecting the base generator model, choosing the synthetic data task at hand, and uploading your source document, as shown in @fig-DC10.
+
+- **Task type:** `Simple Q&A`
+- **Question type:** `Short answer`
+- **Reference file:** Pick one of the files as described below (or locate your own cardio-related data such as from an academic journal or other source).
+- **Maximum number of samples:** `100`
+- **Generator model:** `gpt-4.1` (or another model of your choice)
+- **Output file name:** `CardiacLearning_SimpleQnA-FineTuneSupervised`
+
+In the `data/ch05/synthetic-data` folder, I have included some sample cardiology-related files that you can use for this exercise:
+
+1. "Cardiac Learning Guide Series" (`Cardiac-Learning-Guide.pdf`) - An 84-page PDF document that provides comprehensive guidelines on cardiac care from Abbott Laboratories.
+2. "Cardiovascular Pathophysiology for Pre-Clinical Students " (`Cardiovascular_Pathophysiology_for_Pre-Clinical_Students.pdf`) - A 79-page PDF textbook from Virginia Tech Carilion School of Medicine that contains foundational knowledge of common cardiovascular diseases, disorders, and pathologies.
+3. Health Topics from the American Heart Assocation - (`AHA_Health_Topics.md`) - A Markdown document that contains health information on heart attacks, atrial fibrillation, and cholesterol from the American Heart Association.
+
+Pick one of the files to upload to the synthetic data generator and configure the settings to generate question–answer pairs. For example, you can set the number of examples to generate to 100 and adjust the temperature setting to control the creativity of the generated examples. Once you're done, click the **Submit** button to start the synthetic data generation process.
+
+![Adding cardiology documents for synthetic data generation](figures/ft/ss_syntheticdata_002_ann.png){#fig-DC10}
+
+
+
+{{< pagebreak >}}
+
+## Summary
+In this chapter, we explored how to customize models in Microsoft Foundry through fine-tuning with custom training datasets. We learned about the different fine-tuning techniques available, how to build effective training datasets, and how to use the Foundry UI and CLI to run fine-tuning jobs. We also discussed how to generate synthetic training data using the base model to augment our training datasets when we have limited real data available. With these tools and techniques, you can tailor models to better fit your specific use cases and domains, improving their performance and relevance for your applications.

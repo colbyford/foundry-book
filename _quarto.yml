@@ -8,7 +8,7 @@ book:
   date: "06/01/2026"
   site-url: https://foundry-book.ai
   repo-url: https://github.com/colbyford/foundry-book
-  cover-image: img/cover_mockup_early_bird.png
+  cover-image: img/Building Agentic Solutions with Microsoft Foundry_cover_bw.png
   chapters:
     - index.qmd
     - 1_intro.qmd
@@ -20,7 +20,7 @@ book:
     # - 7_edge_deployment.qmd
     # - 8_conclusion.qmd
 
-bibliography: references.bib
+# bibliography: references.bib
 
 format:
   html:
@@ -29,20 +29,27 @@ format:
       - brand
     code-link: true
     code-overflow: scroll
+    lightbox: true
     author-meta: "Colby T. Ford"
+    include-in-header:
+      text: |
+        <link rel="shortcut icon" href="img/squirrel_bw_sq.png" />
+        <link rel="icon" type="image/x-icon" href="img/squirrel_bw_sq.png" />
 
   pdf:
     documentclass: scrreprt
+    fig-pos: 'H'
     code-overflow: wrap
     ## Code wrapping in PDF
     include-in-header: 
       text: |
+        \usepackage{float}
         \usepackage{fvextra}
         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
           commandchars=\\\{\},
           breaklines, breaknonspaceingroup, breakanywhere
         }
 
-
+  asciidoc: default
 
 

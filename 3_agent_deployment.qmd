@@ -334,8 +334,8 @@ On the **New Container** panel that opens to the right, fill in the following va
 
 Then, as shown in @fig-A103, click the **OK** button at the bottom of the panel.
 
-![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103 width=1in}
-<!-- ![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103 height=6in} -->
+<!-- ![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103} -->
+![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103 height=6in}
 
 <!-- {{< pagebreak >}} -->
 

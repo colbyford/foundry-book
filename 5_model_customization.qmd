@@ -226,7 +226,7 @@ In the `data/ch05/synthetic-data` folder, I have included some sample cardiology
 
 Pick one of the files to upload to the synthetic data generator and configure the settings to generate question–answer pairs. For example, you can set the number of examples to generate to 100 and adjust the temperature setting to control the creativity of the generated examples. Once you're done, click the **Submit** button to start the synthetic data generation process.
 
-![Adding cardiology documents for synthetic data generation](figures/ft/ss_syntheticdata_002_ann.png){#fig-DC10}
+![Adding cardiology documents for synthetic data generation](figures/ft/ss_syntheticdata_002_ann.png){#fig-DC10 height=6in}
 
 
 Depending on which file you upload and the settings you choose, the synthetic data generation process can take anywhere from a few minutes to an hour or more. You can monitor the status as shown in @fig-2555.

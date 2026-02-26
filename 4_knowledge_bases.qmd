@@ -224,7 +224,7 @@ For this exercise, we will build a multi-agent system for financial insights tha
 ![Building a multi-source Agent for financial insights](figures/kb/il_multisource_001.png){#fig-E787}
 
 
-To start, navigate to the Knowledge section of the Build page. As shown in @fig-33E, we must first connect our Foundry Project to an Azure AI Search resource, which will serve as the underlying index for our knowledge base. You can use the existing Azure AI Search resource that was deployed in @chapter-introduction or create a new one through the Azure Portal. For demo purposes, use the API key option for authentication. However, in production scenarios, using the Foundry Project's Entra ID for authentication allows for more granular access control and better security hygiene. Click the **Connect** button after selecting the Azure AI Search resource and the Auth Type.
+To start, navigate to the Knowledge section of the Build page. As shown in @fig-33E, we must first connect our Foundry Project to an Azure AI Search resource, which will serve as the underlying index for our knowledge base. You can use the existing Azure AI Search resource that was deployed in the first chapter or create a new one through the Azure Portal. For demo purposes, use the API key option for authentication. However, in production scenarios, using the Foundry Project's Entra ID for authentication allows for more granular access control and better security hygiene. Click the **Connect** button after selecting the Azure AI Search resource and the Auth Type.
 
 
 ![Connecting to an Azure AI Search resource](figures/kb/ss_knowledge_001_ann.png){#fig-33E}

@@ -1,6 +1,8 @@
 # Agent Deployment {#chapter-agent-deployment}
 
-Agents sit above deployed Models and orchestrate their behavior. An agent uses one or more models along with instructions, memory, tools, and knowledge to accomplish goals autonomously. It can decide what steps to take, call tools or APIs, manage context, and iterate toward an outcome.
+Up to this point, we've been interacting with models directly. While models are the "brains" of the operation, turning them into Agents allows for even more control and connectivity to data and tools. Agents sit above deployed Models and orchestrate their behavior. An agent uses one or more models along with instructions, memory, tools, and knowledge to accomplish goals autonomously. It can decide what steps to take, call tools or APIs, manage context, and iterate toward an outcome.
+
+In this chapter, we'll learn how to deploy an Agent in Microsoft Foundry, connect it to various data sources and tools, and then manage its behavior through instructions and prompts.
 
 ## Agents vs. Models?
 
@@ -73,7 +75,7 @@ This will open a new tab, as shown in @fig-82E3, with a demo app that is connect
 ![Your demo Agent app](figures/ad/ss_agent_007_clean.png){#fig-82E3}
 
 
-This time, I'm going to ask it to draft an Instagram post about a house that is listed online. The house is a new construction with 5 bedrooms and 3 bathrooms listed for $1.3M. You can see a picture of the house listing in @fig-DB36 below.
+This time, I'm going to ask it to draft an Instagram post about a house that is listed online. The house is a new construction with 5 bedrooms and 3 bathrooms listed for $1.3M. You can see a picture of the house listing in @fig-DB36.
 
 ![An example, yet beautiful home on Zillow](figures/ad/ss_agent_007b_clean.png){#fig-DB36}
 
@@ -91,7 +93,7 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 - Bedrooms: 5
 - Bathrooms: 3
 - Square Feet: 3,081
-- Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie Calderon Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of 1810 Ferguson Court.
+- Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie's Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of 1810 Ferguson Court.
 :::
 
 For me, the generated post is pretty good! See @fig-96D3. In line with other catchy Instagram posts I've seen for houses for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
@@ -108,7 +110,7 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 (PASTE URL HERE)
 :::
 
-It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac", none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct. See @fig-CF22 below.
+It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac", none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct. See @fig-CF22.
 
 ![The Agent failing to read from the web](figures/ad/ss_agent_008b_clean.png){#fig-CF22}
 
@@ -185,6 +187,7 @@ Here are some popular Tools you may want to search for and read about:
 * **Bing Search API** - Real-time web search capabilities with Bing
 
 **Built-in Tools:**
+
 * **File Search** - Read and index content from uploaded files
 * **Web Search** - Search the internet for sources based on the user's prompt
 * **Code Interpreter** - Write and run Python code in a sandboxed environment
@@ -237,6 +240,7 @@ As you can see in @fig-2E89, our real estate Agent now retrieves the information
 
 
 {{< pagebreak >}}
+
 ## Model Context Protocol
 
 If you're not familiar with Model Context Protocol (MCP), let me get you acquainted. MCP is an open-source framework that was developed by Anthropic as a way to standardize how various AI models, especially LLMs, interact with external systems. This includes a universal interface for reading files and other data sources, executing code on your behalf, and handle the context needed to do so correctly. A diagram of MCP's architecture is shown in @fig-4852.
@@ -245,7 +249,7 @@ If you're not familiar with Model Context Protocol (MCP), let me get you acquain
 
 While we won't be creating our own MCP servers in this book, you should know that there are two layers to MCP at play.
 
-- **Data layer:** Defines a JSON-RPC 2.0–based protocol that governs *how* MCP clients and servers talk to each other, what kinds of messages they can exchange, and what those messages mean.
+- **Data layer:** Defines a JSON-RPC 2.0–based protocol that governs how MCP clients and servers talk to each other, what kinds of messages they can exchange, and what those messages mean.
 - **Transport layer:** Sits outside the data layer and is responsible for how MCP messages move between clients and servers. It handles connection establishment, message framing, and authentication, while remaining completely agnostic to the JSON-RPC semantics defined by the data layer.
 
 
@@ -255,12 +259,16 @@ Within the Data layer, there are "core primitives" that define the functionality
 - **Resources:** Data sources that provide contextual information, such as file contents, database schemas, or API responses.
 - **Prompts:** Reusable interaction templates, including system prompts or few-shot examples, that help structure how a model should behave.
 
-As an example, you may have a *tool* to execute parameterized SQL queries, a *resource* containing the database schema, and a *prompt* with examples that show the model how to safely and effectively use the query tool.
+As an example, you may have a *tool* to execute parameterized SQL queries, a *resource* containing the database schema, and a *prompt* with examples that show the model how to safely and effectively use the query tool. See @fig-3CBD for a diagram of how the Data and Transport layers work together when an Agent calls a Tool that is backed by an MCP server.
+
+![Foundry MCP client-server flow](figures/ad/il_mcp_001.png){#fig-3CBD}
+
 
 In the Transport layer, you may experience one of two transport mechanisms:
 
 - **Stdio transport:** Uses standard input and output streams for communication between processes on the same machine (e.g., your active CLI-based chat session). This is the simplest and most performant option, with no network overhead, and is commonly used for local tooling.
 - **Streamable HTTP transport:** Uses HTTP POST for client-to-server messages, with optional Server-Sent Events (SSE) for streaming responses, using standard HTTP authentication mechanisms such as bearer tokens, API keys, or custom headers. (OAuth is recommended option for token acquisition.)
+
 
 ::: {.callout-note}
 For more information on MCP, visit the documentation at: [modelcontextprotocol.io/docs/](https://modelcontextprotocol.io/docs/).
@@ -268,7 +276,7 @@ For more information on MCP, visit the documentation at: [modelcontextprotocol.i
 Also, if you're interested in building your own MCP servers, there are many libraries available that make it quite easy. For Python, some popular ones include: [FastMCP](https://github.com/jlowin/fastmcp), [MCPify](https://github.com/camel-ai/mcpify), and [FastAPI+MCP](https://github.com/tadata-org/fastapi_mcp).
 :::
 
-In practice, when you use MCP-backed tools inside Microsoft Foundry, you’ll be benefiting from this layered design without needing to think about most of the mechanics. Foundry acts as the MCP client, discovers available primitives, manages the lifecycle, and routes tool calls and context appropriately. This will allow you to focus on building your AI workflows rather than wiring together protocols by hand. 
+In practice, when you use MCP-backed tools inside Microsoft Foundry, you’ll benefit from this layered design without needing to think about most of the mechanics. Foundry acts as the MCP client, discovers available primitives, manages the lifecycle, and routes tool calls and context appropriately. This will allow you to focus on building your AI workflows rather than wiring together protocols by hand. 
 
 Now let's set up our first MCP tool to see how it all works.
 
@@ -322,10 +330,14 @@ On the **New Container** panel that opens to the right, fill in the following va
 - Container id: `Properties`
 - Partition key: `/state`
 
+<!-- {{< pagebreak >}} -->
+
 Then, as shown in @fig-A103, click the **OK** button at the bottom of the panel.
 
-![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103}
+![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103 width=1in}
+<!-- ![Creating a new Cosmos DB database](figures/ad/ss_database_002_ann.png){#fig-A103 height=6in} -->
 
+<!-- {{< pagebreak >}} -->
 
 Once your database and container have been created, click on **Items** under the **Properties** drop down. See @fig-310E.
 
@@ -360,7 +372,7 @@ Now we have some data that our Agent can query through the Cosmos DB MCP connect
 
 Now comes the tricky part. Since there isn't a remote MCP server for Cosmos DB (yet) like there are for Azure Databricks, Fabric, and SharePoint, we have to host our own. This is good practice so that you can see how you might build custom MCP capabilities for your own workloads. 
 
-We're going to be using the official Microsoft Azure Cosmos DB MCP server, which is open-source and available on GitHub here: [https://github.com/AzureCosmosDB/MCPToolKit](https://github.com/AzureCosmosDB/MCPToolKit). This repository contains the deployment logic and server code for a set of tools and libraries for building MCP servers that can connect to Cosmos DB. It also includes a sample implementation of a Cosmos DB MCP server that we can deploy and connect to our Agent.
+We'll use the official Microsoft Azure Cosmos DB MCP server, which is open-source and available on GitHub here: [https://github.com/AzureCosmosDB/MCPToolKit](https://github.com/AzureCosmosDB/MCPToolKit). This repository contains the deployment logic and server code for a set of tools and libraries for building MCP servers that can connect to Cosmos DB. It also includes a sample implementation of a Cosmos DB MCP server that we can deploy and connect to our Agent.
 
 Before you get started, you're going to need a few things installed locally.
 
@@ -451,7 +463,7 @@ az containerapp update \
 ```
 :::
 
-A successful deployment will look something like @fig-B89C below.
+A successful deployment will look something like @fig-B89C.
 
 ![Successful deployment of the MCP Toolkit](figures/ad/ss_mcp_003_ann.png){#fig-B89C}
 
@@ -477,7 +489,7 @@ After you successfully log in, you should see an **Authenticated** message at th
 Copy the MCP Server URL somewhere safe as you'll need it in the next step.
 
 
-#### Part 3: Adding the Tool
+#### Part 4: Adding the Tool
 
 Now we have the MCP server deployed and working, we just need to connect it to our Agent by creating a new connection in Foundry. You can run the Powershell script from the MCPToolkit repository that will automate the process of creating a new connection in Foundry with the correct parameters for your MCP server. Just make sure to fill in the correct names for your Foundry workspace and Project.
 
@@ -521,7 +533,7 @@ If successful, you should now see the **Azure Cosmos DB** tool listed under the 
 ![Checking that your Cosmos DB Tool is connected](figures/ad/ss_cosmos_007_ann.png){#fig-83DC}
 
 
-#### Testing the Agent's Capabilities
+#### Part 5: Testing the Agent's Capabilities
 
 Now you can test the Agent's new capabilities by asking it questions that require it to query the Cosmos DB database. Let's improve the instructions a bit to let it know that it can use the Cosmos DB tool to query the database for information about the properties. Go back to the **Instructions** box and add the following lines at the end of the existing instructions.
 

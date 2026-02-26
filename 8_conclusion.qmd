@@ -998,6 +998,7 @@ We encourage you to experiment, build, and share your learnings with the communi
 * Visit the [Microsoft Foundry portal](https://ai.azure.com) to start building
 * Join the [Microsoft Foundry community](https://aka.ms/foundry/community)
 * Explore the [documentation](https://learn.microsoft.com/azure/ai-foundry/)
+* Work through the Foundry examples on GitHub: [https://github.com/microsoft-foundry/foundry-samples](https://github.com/microsoft-foundry/foundry-samples)
 * Share your success stories and learn from others
 
 Thank you for reading, and best of luck with your AI journey!

@@ -8,7 +8,7 @@ book:
   date: "06/01/2026"
   site-url: https://foundry-book.ai
   repo-url: https://github.com/colbyford/foundry-book
-  cover-image: img/cover_mockup_early_bird.png
+  cover-image: img/Building Agentic Solutions with Microsoft Foundry_cover_bw.png
   chapters:
     - index.qmd
     # - intro.qmd

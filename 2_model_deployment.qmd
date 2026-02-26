@@ -1,8 +1,12 @@
 # Model Deployment {#chapter-model-deployment}
 
+In this Chapter, we'll learn how to deploy models in Microsoft Foundry. Models are brains of any AI agentic solution, so picking the right model for your use case and knowing how to deploy it are critical first steps in building agentic solutions.
+
+Microsoft Foundry provides a wide variety of models that you can deploy with just a few clicks or lines of code. You can choose from popular proprietary models from  OpenAI and Anthropic, Microsoft-built models like Phi-4, and even open-source models from Hugging Face. In addition to the variety, Foundry also provides tools to help you compare models across various benchmarks and metrics to help you pick the best model for your specific use case. Once you've picked a model, you can deploy it in just a few minutes without needing to manage any infrastructure. After deployment, you'll then be able to interact with your model through an API endpoint or through the built-in Playground in the Foundry Portal.
+
 ## Explore Models in the Foundry Portal
 
-Next, we'll learn how to explore and deploy various AI models from the Foundry Models registry. They will also explore the pre-built MCP tools to connect to data sources.
+Let's learn how to explore and deploy various AI models from the Foundry Models registry. Then, we'll also explore the pre-built MCP tools to connect to data sources.
 
 From the Foundry Portal, navigate to the **Discover** tab at the top of the screen as shown in @fig-CC76.
 
@@ -86,7 +90,7 @@ If you were to try and deploy a Large Language Models (LLM) using infrastructure
 
 ### Exercise: Deploy a Microsoft Phi-4 model
 
-We'll be deploying a Microsoft Phi-4 model and then turning it into an agent. Phi-4 is an open-source, decoder-only transformer model from Microsoft Research. It is a 14-billion parameter model that was trained on a blend of synthetic datasets, data from websites in the public domain, academic books, and Q&A datasets. Phi-4 is a good foundation model to start with as it is quite fast and capable for its size and costs less than other models that are larger and/or proprietary.
+We'll deploy a Microsoft Phi-4 model and then turn it into an agent. Phi-4 is an open-source, decoder-only transformer model from Microsoft Research. It is a 14-billion parameter model that was trained on a blend of synthetic datasets, data from websites in the public domain, academic books, and Q&A datasets. Phi-4 is a good foundation model to start with as it is quite fast and capable for its size and costs less than other models that are larger and/or proprietary.
 
 To start, navigate back to the **Models** page in the Foundry Portal.
 
@@ -114,9 +118,9 @@ The deployment process should only take a couple minutes, and you'll be brought 
 
 On the main **Playground** tab, you can now start interacting with the model. Here, you can start testing out various prompts and seeing how it responds. You can also modify the system instructions and parameters to see how that changes the model's behavior.
 
-#### Testing Your Deployment
+### Testing Your Deployment
 
-Let's see if we can have some fun with the behavior of the model. In the following example, I turn our model into a galactic friend that seems to know how to cook up a cosmic meal.
+Let's see if we can have some fun with the behavior of the model. In the following example, we will turn our model into a galactic friend that seems to know how to cook up a cosmic meal.
 
 As shown in @fig-6E5B, follow these steps:
 

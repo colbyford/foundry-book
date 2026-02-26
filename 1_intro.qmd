@@ -12,7 +12,7 @@ Introduced at the Microsoft Ignite conference in November 2025, Microsoft Foundr
 
 ### Facets of Foundry
 
-Microsoft Foundry delivers a multiple capabilities to manage enterprise agentic solutions at-scale and from end-to-end. As shown in @fig-4C72 below, these include:
+Microsoft Foundry delivers a multiple capabilities to manage enterprise agentic solutions at-scale and from end-to-end. As shown in @fig-4C72, these include:
 
 * **Multi-Agent Orchestration and Workflows** – Build advanced automation using SDKs for C# and Python that enable collaborative agent behavior and complex workflow execution.
 * **Expanded Integration Options** – Publish agents to Microsoft 365 and Teams, plus leverage containerized deployments for greater portability.
@@ -38,7 +38,7 @@ Note that the availability of specific models may vary by region and over time a
 
 ##	Deploying Foundry Resources/Projects
 
-Microsoft Foundry utilizes two services in Azure: the Foundry Resource and the Foundry Project. See @fig-3498 below for a visual of how these two services are relate to one another.
+Microsoft Foundry utilizes two services in Azure: the Foundry Resource and the Foundry Project. See @fig-3498 for a visual of how these two services are relate to one another.
 
 ![Foundry Resource and Project Organization](figures/in/il_portal_001.png){#fig-3498}
 
@@ -122,13 +122,13 @@ Also, you will need a unique name for your services. Change the number suffix or
 ![Create a Foundry Resource - Basics tab](figures/in/ss_portal_004_ann.png){#fig-3901}
 
 
-Next, click the **Next** button at the bottom of the screen or navigate to the **Storage** tab at the top of the screen. On this tab, you'll choose to either connect to or create various other resources that Foundry will use. I recommend creating new resources for all of the items. See @fig-A90C below for which items to create.
+Next, click the **Next** button at the bottom of the screen or navigate to the **Storage** tab at the top of the screen. On this tab, you'll choose to either connect to or create various other resources that Foundry will use. I recommend creating new resources for all of the items to help keep the services isolated from other services your organization may have already deployed. (This also helps for easier cleanup when you're done with the tutorials.) See @fig-A90C for which items to create.
 
 - Under the **Credential storage and application login** section, create a new Key Vault and Application Insights service.
 
 - Under the **Agent service** section, click the **+ Select Resources** button and create a new Cosmos DB database, AI Search service, and Storage Account.
 
-- For the **Speech and Language service**, you can ignore the Storage Account selection.
+- For the **Speech and Language service**, you can ignore the Storage Account selection as we won't need it.
 
 Click the **Review + create** button at the bottom or tab at the top.
 
@@ -148,7 +148,7 @@ Azure will then show a Deployment Overview page, as seen in @fig-CC82, that list
 
 Once the deployment completes, locate your newly deployed Resource Group in the Azure Portal. You'll now see lots of difference resources inside.
 
-Locate the Foundry Resource and click on it. See @fig-3954 below.
+Locate the Foundry Resource and click on it. See @fig-3954.
 
 ![Azure Portal - Resource Group of Foundry-related Resources](figures/in/ss_portal_008_ann.png){#fig-3954}
 
@@ -171,11 +171,11 @@ Now that your Foundry Project has been created, you'll have access to:
 * Tools and connections for integrating data sources
 * Monitoring and evaluation capabilities
 
-Before we start deploying models and agents, let's first walk through the Foundry Portal UI and talk about what all we'll be exploring in this book.
+Before we start deploying models and agents, let's first walk through the Foundry Portal UI and talk about what we'll explore in this book.
 
 ##	Introduction to the Foundry UI and purpose
 
-The Microsoft Foundry portal provides an intuitive interface organized into several key sections, accessible via the portal header, shown in @fig-B78E below.
+The Microsoft Foundry portal provides an intuitive interface organized into several key sections, accessible via the portal header, shown in @fig-B78E.
 
 ![Foundry Portal Header](figures/in/ss_portalheader_011_clean.png){#fig-B78E}
 
@@ -185,6 +185,9 @@ The Microsoft Foundry portal provides an intuitive interface organized into seve
 The Project you're working with appears in the upper-left corner of most pages. You can easily switch between projects or view all your Foundry Projects by clicking on the Project name. For the purposes of this book, we'll just be using the default Project (`proj-default`).
 
 ### Navigation Structure
+
+The Foundry Portal is designed to support the full lifecycle of AI application development, from initial exploration through production deployment and ongoing management, in a very low-code manner. That is, you can deploy models, build agents, and connect them to data, all without writing much code at all. At the top of the Foundry Portal, you'll find the main navigation menu with the following sections:
+
 
 * **Home** - Provides quick access to your Project endpoint, API key, and region information. This page also lists some new models that have been released on the platform along with links to documentation and sample code.
 
@@ -204,9 +207,8 @@ The Project you're working with appears in the upper-left corner of most pages. 
 * **Observability** - Built-in monitoring and tracing to understand agent behavior and performance
 * **Governance** - Centralized controls for security, compliance, and policy enforcement -->
 
-The Foundry Portal is designed to support the full lifecycle of AI application development, from initial exploration through production deployment and ongoing management, in a very low-code manner. That is, you can deploy models, build agents, and connect them to data, all without writing much code at all.
 
-However, there are SDKs for Python, C#, JavaScript/TypeScript, and Java that allow you to perform all of these action using code. In the next section, we'll go over some examples in Python, which is think is most popular choice for many AI engineers and data scientists.
+In additional to a UI-based interface, there are SDKs for Python, C#, JavaScript/TypeScript, and Java that allow you to perform all of these action using code. In the next section, we'll go over some examples in Python, which is think is most popular choice for many AI engineers and data scientists.
 
 ## Interacting with the Foundry Python SDK
 
@@ -320,7 +322,7 @@ az login --use-device-code
 az extension add -n cognitiveservices
 ```
 
-Once you get logged in, the CLI will let you pick the Subscription under which it will operate. Simply type the number of the Subscription you wish to use and press Enter. For example, my list of subscriptions looks is shown in @fig-360B below, and I would type `5` to select the "Microsoft Azure Sponsorship" subscription.
+Once you get logged in, the CLI will let you pick the Subscription under which it will operate. Simply type the number of the Subscription you wish to use and press Enter. For example, my list of subscriptions is shown in @fig-360B, and I would type `5` to select the "Microsoft Azure Sponsorship" subscription.
 
 ![Example Azure CLI Login Subscription Selection](figures/in/cd_cli_001.png){#fig-360B}
 
@@ -335,13 +337,13 @@ Now that we're logged in and have our desired Subscription selected, we can proc
 
 ### Deploy a Foundry Resource and Project via Code
 
-1. Create a Resource Group. For example, if I want to create a Resource Group named `rg-foundrybook-dev-eastus-001` in the `eastus` region:
+1. Create a Resource Group. For example, if you want to create a Resource Group named `rg-foundrybook-dev-eastus-001` in the `eastus` region:
 
 ```bash
 az group create --name rg-foundrybook-dev-eastus-001 --location eastus
 ```
 
-2. Create the Foundry Resource. For example, I can use `ai-foundrybook-dev-eastus-001` as the Foundry Resource name in the `rg-foundrybook-dev-eastus-001` resource group:
+2. Create the Foundry Resource. For example, you can use `ai-foundrybook-dev-eastus-001` as the Foundry Resource name in the `rg-foundrybook-dev-eastus-001` resource group:
 
 ```bash
 az cognitiveservices account create \

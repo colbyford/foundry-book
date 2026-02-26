@@ -4,7 +4,10 @@ Agents sit above deployed Models and orchestrate their behavior. An agent uses o
 
 ## Agents vs. Models?
 
-In Foundry, agents are designed to go beyond single responses and actively carry out work. They can plan and reason across multiple steps, using tools and APIs to  retrieve and ground answers in enterprise data. They can also maintain context or memory across interactions. Agents can also automate workflows, collaborate with other agents, and react to events or user input to adapt their behavior over time. This makes them well suited for scenarios like customer support automation, data analysis, code generation, business process orchestration, or AI copilots that operate with a clear goal rather than a single prompt.
+In Foundry, agents are designed to go beyond single responses and actively carry out work. They can plan and reason across multiple steps, using tools and APIs to retrieve and ground answers in enterprise data. They can also maintain context or memory across interactions. Furthermore, agents can automate workflows, collaborate with other agents, and react to events or user input to adapt their behavior over time. This makes them well suited for scenarios like customer support automation, data analysis, code generation, business process orchestration, or AI copilots that operate with a clear goal rather than a single prompt. See @fig-2027 for a diagram of the agentic flow between inputs, the model, tools, and outputs.
+
+![The agentic flow between inputs, the model, tools, and outputs](figures/ad/il_agent_001.png){#fig-2027}
+
 
 ### Exercise: Creating a Real Estate Agent
 

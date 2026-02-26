@@ -1,0 +1,10 @@
+{
+  "name": "financial-documents-datasource",
+  "type": "azureblob",
+  "credentials": {
+    "connectionString": "<STORAGE_CONNECTION_STRING>"
+  },
+  "container": {
+    "name": "<BLOB_CONTAINER_NAME>"
+  }
+}

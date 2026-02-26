@@ -1,0 +1,44 @@
+[
+  {
+    "@odata.type": "#Microsoft.Skills.Text.SplitSkill",
+    "name": "#splitSkill",
+    "description": "Split content into chunks",
+    "context": "/document",
+    "textSplitMode": "pages",
+    "maximumPageLength": 1000,
+    "pageOverlapLength": 200,
+    "inputs": [
+      {
+        "name": "text",
+        "source": "/document/content"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "textItems",
+        "targetName": "chunks"
+      }
+    ]
+  },
+  {
+    "@odata.type": "#Microsoft.Skills.Text.AzureOpenAIEmbeddingSkill",
+    "name": "#embeddingSkill",
+    "description": "Generate embeddings for each chunk",
+    "context": "/document/chunks/*",
+    "resourceUri": "<OPENAI_RESOURCE_URI>",
+    "deploymentId": "<OPENAI_DEPLOYMENT_NAME>",
+    "dimensions": 3072,
+    "inputs": [
+      {
+        "name": "text",
+        "source": "/document/chunks/*"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "embedding",
+        "targetName": "chunk_vector"
+      }
+    ]
+  }
+]

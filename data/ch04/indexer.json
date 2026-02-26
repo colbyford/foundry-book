@@ -1,0 +1,34 @@
+{
+  "name": "financial-documents-indexer",
+  "dataSourceName": "financial-documents-datasource",
+  "targetIndexName": "financial-documents-index",
+  "skillsetName": "financial-documents-skillset",
+  "parameters": {
+    "batchSize": 10,
+    "maxFailedItems": 10,
+    "configuration": {
+      "dataToExtract": "contentAndMetadata",
+      "parsingMode": "default"
+    }
+  },
+  "fieldMappings": [
+    {
+      "sourceFieldName": "metadata_storage_name",
+      "targetFieldName": "file_name"
+    },
+    {
+      "sourceFieldName": "metadata_storage_path",
+      "targetFieldName": "blob_url"
+    }
+  ],
+  "outputFieldMappings": [
+    {
+      "sourceFieldName": "/document/chunks/*",
+      "targetFieldName": "content"
+    },
+    {
+      "sourceFieldName": "/document/chunks/*/chunk_vector",
+      "targetFieldName": "content_vector"
+    }
+  ]
+}

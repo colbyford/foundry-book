@@ -1,0 +1,90 @@
+# Preface
+
+## Conventions Used in This Book
+
+The following typographical conventions are used in this book:
+
+*Italic*  
+: Indicates new terms, URLs, email addresses, filenames, and file extensions.
+
+`Constant width`  
+: Used for program listings, as well as within paragraphs to refer to program elements such as variable or function names, databases, data types, environment variables, statements, and keywords.
+
+**`Constant width bold`**  
+: Shows commands or other text that should be typed literally by the user.
+
+*`Constant width italic`*  
+: Shows text that should be replaced with user-supplied values or by values determined by context.
+
+::: {.callout-tip}
+## Tip
+
+This element signifies a tip or suggestion.
+:::
+
+::: {.callout-note}
+## Note
+
+This element signifies a general note.
+:::
+
+::: {.callout-warning}
+## Warning
+
+This element indicates a warning or caution.
+:::
+
+## Using Code Examples
+
+<!--
+PROD: Please reach out to author to find out if they will be uploading code examples to oreilly.com or their own site (e.g., GitHub). If there is no code download, delete this whole section. If there is, when you email digidist with the link, let them know what you filled in for title_title (should be as close to book title as possible, i.e., learning_python_2e). This info will determine where digidist loads the files.
+-->
+
+Supplemental material (code examples, exercises, etc.) is available for download at <https://github.com/oreillymedia/title_title>.
+
+If you have a technical question or a problem using the code examples, please send email to <support@oreilly.com>.
+
+This book is here to help you get your job done. In general, if example code is offered with this book, you may use it in your programs and documentation. You do not need to contact us for permission unless you’re reproducing a significant portion of the code. For example, writing a program that uses several chunks of code from this book does not require permission. Selling or distributing examples from O’Reilly books does require permission. Answering a question by citing this book and quoting example code does not require permission. Incorporating a significant amount of example code from this book into your product’s documentation does require permission.
+
+We appreciate, but generally do not require, attribution. An attribution usually includes the title, author, publisher, and ISBN. For example:
+
+> *Building Agentic Solutions with Microsoft Foundry* by Colby T. Ford (O’Reilly). Copyright 2026 Tuple, LLC, 979-8-341-67332-8.
+
+If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at <permissions@oreilly.com>.
+
+## O'Reilly Online Learning
+
+::: {.callout-note}
+For more than 40 years, [O’Reilly Media](https://oreilly.com) has provided technology and business training, knowledge, and insight to help companies succeed.
+:::
+
+Our unique network of experts and innovators share their knowledge and expertise through books, articles, and our online learning platform. O’Reilly’s online learning platform gives you on-demand access to live training courses, in-depth learning paths, interactive coding environments, and a vast collection of text and video from O’Reilly and 200+ other publishers. For more information, visit <https://oreilly.com>.
+
+## How to Contact Us
+
+Please address comments and questions concerning this book to the publisher:
+
+- O’Reilly Media, Inc.  
+- 141 Stony Circle, Suite 195  
+- Santa Rosa, CA 95401  
+- 800-889-8969 (in the United States or Canada)  
+- 707-827-7019 (international or local)  
+- 707-829-0104 (fax)  
+- <support@oreilly.com>  
+- <https://oreilly.com/about/contact.html>
+
+We have a web page for this book, where we list errata and any additional information. You can access this page at:
+
+<https://www.oreilly.com/catalog/catalog_page>
+
+<!-- Don't forget to update the link above. -->
+
+For news and information about our books and courses, visit <https://oreilly.com>.
+
+Find us on LinkedIn: <https://linkedin.com/company/oreilly-media>
+
+Watch us on YouTube: <https://youtube.com/oreillymedia>
+
+## Acknowledgments
+
+<!-- Fill in... -->

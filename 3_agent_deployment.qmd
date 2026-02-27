@@ -75,9 +75,11 @@ This will open a new tab, as shown in @fig-82E3, with a demo app that is connect
 ![Your demo Agent app](figures/ad/ss_agent_007_clean.png){#fig-82E3}
 
 
-This time, I'm going to ask it to draft an Instagram post about a house that is listed online. The house is a new construction with 5 bedrooms and 3 bathrooms listed for $1.3M. You can see a picture of the house listing in @fig-DB36.
+This time, I'm going to ask it to draft an Instagram post about a house that is listed online. The house is a new construction with 5 bedrooms and 3 bathrooms listed for $1.3M. You can see a picture of the house listing in @fig-AC5A.
 
-![An example, yet beautiful home on Zillow](figures/ad/ss_agent_007b_clean.png){#fig-DB36}
+<!-- ![An example, yet beautiful home on Zillow](figures/ad/ss_agent_007b_clean.png){#fig-DB36} -->
+![An example, yet beautiful home on Zillow](figures/ad/ss_agent_007b_cens_clean.png){#fig-AC5A}
+
 
 
 {{< pagebreak >}}
@@ -93,12 +95,14 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 - Bedrooms: 5
 - Bathrooms: 3
 - Square Feet: 3,081
-- Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie's Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of 1810 Ferguson Court.
+- Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie's Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of XXXX Ferguson Court.
 :::
 
-For me, the generated post is pretty good! See @fig-96D3. In line with other catchy Instagram posts I've seen for houses for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
+For me, the generated post is pretty good! See @fig-1600. In line with other catchy Instagram posts I've seen for houses for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
 
-![The Agent's Instagram post](figures/ad/ss_agent_008_clean.png){#fig-96D3}
+<!-- ![The Agent's Instagram post](figures/ad/ss_agent_008_clean.png){#fig-96D3} -->
+![The Agent's Instagram post](figures/ad/ss_agent_008_cens_clean.png){#fig-1600}
+
 
 
 Next, I would like to show you a limitation with our current Agent. In the preview app, if we paste in a URL to the Zillow.com page where the house is listed, it will act like it read the page and used it to form the response. For example, find a house online and use the prompt below with your Agent.
@@ -110,9 +114,11 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 (PASTE URL HERE)
 :::
 
-It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac", none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct. See @fig-CF22.
+It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac", none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct. See @fig-5F6F.
 
-![The Agent failing to read from the web](figures/ad/ss_agent_008b_clean.png){#fig-CF22}
+<!-- ![The Agent failing to read from the web](figures/ad/ss_agent_008b_clean.png){#fig-CF22} -->
+![The Agent failing to read from the web](figures/ad/ss_agent_008b_cens_clean.png){#fig-5F6F}
+
 
 This is because our Agent doesn't yet have access to perform web searches. We will grant this capability in the next section along with connecting the Agent to other services.
 
@@ -234,9 +240,11 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 (PASTE URL HERE)
 :::
 
-As you can see in @fig-2E89, our real estate Agent now retrieves the information from the listing, correctly stating the number of bedrooms and bathrooms, lot size, etc. and makes a decent social media post!
+As you can see in @fig-BB7C, our real estate Agent now retrieves the information from the listing, correctly stating the number of bedrooms and bathrooms, lot size, etc. and makes a decent social media post!
 
-![A much more functional real estate Agent](figures/ad/ss_tools_007_clean.png){#fig-2E89}
+<!-- ![A much more functional real estate Agent](figures/ad/ss_tools_007_clean.png){#fig-2E89} -->
+![A much more functional real estate Agent](figures/ad/ss_tools_007_cens_clean.png){#fig-BB7C}
+
 
 
 {{< pagebreak >}}

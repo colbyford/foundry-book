@@ -38,6 +38,22 @@ Operationalize Responsible AI principles through policies that scale.
 * View Defender and Purview alerts directly in the Control Plane dashboard
 * Track rate limits, token usage, and cost anomalies to prevent inefficiency or abuse
 
+
+### Memory Enables Continuous Intelligence
+
+Traditional LLM interactions are stateless by default. Foundry IQ introduces **memory** as a managed capability that allows agents to retain and recall context across interactions.
+
+Memory in Foundry IQ supports:
+
+- Conversational continuity across sessions
+- User preference retention
+- Task and workflow state
+- Adaptive behavior based on historical interactions
+
+This transforms agents from reactive prompt responders into persistent digital collaborators. Importantly, memory is governed: retention policies, isolation boundaries, and enterprise controls ensure that memory enhances intelligence without compromising security or compliance.
+
+
+
 ##	Integrating with Agent ID in Entra to manage agents
 
 Microsoft Entra ID (formerly Azure Active Directory) provides identity and access management for your AI agents. Agent Identity enables secure, auditable agent-to-agent and agent-to-resource interactions.

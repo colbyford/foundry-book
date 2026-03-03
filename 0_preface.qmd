@@ -40,7 +40,7 @@ This element indicates a warning or caution.
 PROD: Please reach out to author to find out if they will be uploading code examples to oreilly.com or their own site (e.g., GitHub). If there is no code download, delete this whole section. If there is, when you email digidist with the link, let them know what you filled in for title_title (should be as close to book title as possible, i.e., learning_python_2e). This info will determine where digidist loads the files.
 -->
 
-Supplemental material (code examples, exercises, etc.) is available for download at <https://github.com/oreillymedia/title_title>.
+Supplemental material (code examples, exercises, etc.) is available for download at <https://github.com/colbyford/foundry-book>.
 
 If you have a technical question or a problem using the code examples, please send email to <support@oreilly.com>.
 
@@ -48,7 +48,7 @@ This book is here to help you get your job done. In general, if example code is 
 
 We appreciate, but generally do not require, attribution. An attribution usually includes the title, author, publisher, and ISBN. For example:
 
-> *Building Agentic Solutions with Microsoft Foundry* by Colby T. Ford (O’Reilly). Copyright 2026 Tuple, LLC, 979-8-341-67332-8.
+> *Building Agentic Solutions with Microsoft Foundry* by Colby T. Ford (O’Reilly). Copyright 2026 Tuple LLC, 979-8-341-67332-8.
 
 If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at <permissions@oreilly.com>.
 
@@ -75,7 +75,7 @@ Please address comments and questions concerning this book to the publisher:
 
 We have a web page for this book, where we list errata and any additional information. You can access this page at:
 
-<https://www.oreilly.com/catalog/catalog_page>
+<https://www.oreilly.com/catalog/errata.csp?isbn=9798341673328>
 
 <!-- Don't forget to update the link above. -->
 

@@ -1,10 +1,10 @@
 # Model Customization through Fine-Tuning {#chapter-fine-tuning}
 
-In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. Customizing a model with your own data can improve performance on specific tasks or domains by teaching the model to better understand your unique requirements and to respond with more accurate answers or in a desired style.
+In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. Customizing a model with your own data can improve performance on specific tasks or domains by teaching the model to better understand your unique requirements and to respond with more accurate answers or in a desired style. Fine-tuning is a powerful technique that allows you to adapt pre-trained models to your specific use case without needing to train an entire model from scratch, which can be resource-intensive (expensive because you'd have to have many GPUs) and require large amounts of data. Instead, you can achieve significant improvements with just a few hundred or thousand examples that are relevant to your specific domain or task.
 
 ##	Fine-Tuning with Custom Data 
 
-When LLMs are trained, they learn from a broad range of data sources to develop general language understanding. Groups like Anthropic or OpenAI train their models on trillions of tokens across various domains from all sorts of sources including Common Crawl (an archive of web page data), Wikipedia, and digitized books. Thus, for giant models, they can often respond reasonably well to a wide range of prompts without any additional training. You've probably also noticed that some alternate versions of models are released for specific use cases, such as code generation, deep reasoning, or mathematics. These models have been fine-tuned on additional data relevant to those tasks to improve their performance in those areas.
+When LLMs are trained, they learn from a broad range of data sources to develop general language understanding. Groups like Anthropic or OpenAI train their models on trillions of tokens across various domains from all sorts of sources including Common Crawl (an archive of web page data), Wikipedia, and digitized books. Thus, for giant models, they often respond reasonably well to a wide range of prompts without any additional training. You've probably also noticed that some alternate versions of models are released for specific use cases, such as code generation, deep reasoning, or mathematics. These models have been fine-tuned on additional data relevant to those tasks to improve their performance in those areas.
 
 However, the general knowledge that a model has may not be exactly what you're looking for if you need to use a model for a specific domain, task, or style. For example, if you're building a customer support agent for a software product, you want the model to be familiar with your product's features, common issues, and support policies. If you rely solely on the base model's general training, it may not perform well because it lacks the specific knowledge and context needed to answer questions accurately. This is where fine-tuning comes in.
 
@@ -20,6 +20,20 @@ Consider fine-tuning when you need to:
 * Incorporate proprietary terminology or knowledge
 * Reduce the need for lengthy prompts by encoding behavior in the model
 
+::: {.callout-note}
+## To RAG or to Fine-Tune?
+
+After reading the last chapter on knowledge bases and retrieval-augmented generation (RAG), you might be wondering when to use RAG versus fine-tuning for customizing your model's behavior.
+
+We use RAG for when we want a model to retrieve data from an external knowledge base to answer questions. This is especially useful when the information is frequently changing, such as news articles or online orders. RAG allows the model to access up-to-date information without needing to retrain the model every time the data changes.
+
+We use fine-tuning when we need to teach the model specific behaviors, styles, or knowledge that is not easily retrieved from an external source. This is especially useful when you want the model to have a certain tone, follow specific formatting, or have expertise in a particular domain that may not be well-represented in a knowledge base.
+
+Both techniques can help improve the relevance and accuracy of model responses, but they serve different purposes and are suited for different scenarios.
+:::
+
+
+
 ### Tuning Methods
 
 Once you identify a good use case for fine-tuning a model, you will then need to select the appropriate training technique. The technique you choose will guide the model you select for training. There are currently three training techniques to optimize your models:
@@ -27,6 +41,9 @@ Once you identify a good use case for fine-tuning a model, you will then need to
 - **Supervised Fine-tuning:** Standard supervised fine-tuning with training and validation datasets. This is useful for most use cases where you have a clear set of examples that demonstrate the desired behavior you want the model to learn.
 - **Direct Preference Optimization (DPO):** Fine-tuning using preference data to align model outputs to the preferences of human evaluators. This is useful for improving the quality of responses to align with safety or other human preferences.
 - **Reinforcement Fine-tuning:** Reinforcement learning-based fine-tuning that incorporates automated feedback from built-in evaluation logic such as a scoring function. This method is useful for specific objectives where there are clear right and wrong answers, such as in code generation or math problem solving.
+
+Supervised fine-tuning is the most common and straightforward method, and it's a good place to start for most use cases. It just requires a training dataset with examples of the desired behavior. In contrast, DPO is a newer technique that can be very effective for aligning models with human preferences (e.g., "Do you like Response 1 or Response 2 better?", as you've probably seen when using ChatGPT or Claude online). Lastly, reinforcement fine-tuning is more specialized as is requires a well-defined scoring function to provide feedback to the model during training, which can be more complex to set up and may not be suitable for all use cases. The choice of technique will depend on your specific use case, the type of data you have available, and the behavior you want to teach the model.
+
 
 ### Building Training Datasets
 
@@ -51,7 +68,7 @@ When generating training data, keep the following best practices in mind:
 * **Clear instructions** - Include system messages to define behavior
 * **Representative data** - Examples should reflect real-world usage
 
-### Exercise: Fine-tune a Medical Assistant Model
+## Exercise: Fine-tune a Medical Assistant Model
 
 Let's start by fine-tuning a model to be a medical assistant that can answer questions about common medical conditions. We will use the `gpt-4.1-mini` model for this exercise, which is a smaller version of the GPT-4.1 model that is suitable for fine-tuning with limited data and compute resources. I have provided a training dataset with examples of medical questions and answers in the `data/ch05` folder.
 
@@ -156,6 +173,18 @@ training_file: local:medical_training_set.jsonl
 validation_file: local:medical_validation_set.jsonl
 ```
 
+
+::: {.callout-note}
+If you're not familiar with the hyperparameters listed under the `supervised` section of the YAML configuration, here is a brief explanation of what they mean:
+
+- *epochs* - The number of times the training algorithm will work through the entire training dataset. More epochs can lead to better learning but also increase the risk of overfitting.
+- *batch_size* - The number of training examples processed together in each iteration of the training algorithm before updating the weights of the model. Larger batch sizes can speed up training but require more memory, while smaller batch sizes can lead to more stable training but take longer.
+- *learning_rate_multiplier* - A factor that scales the learning rate used during training. A smaller learning rate can lead to more stable training and better convergence, while a larger learning rate can speed up training but may cause the model to overshoot optimal weights or have unstable training.
+- *prompt_loss_weight* - A weight assigned to the loss from the prompt tokens during training (i.e., the penalty for errors between the prompt and the generated response). A low loss weight means the model will focus more on getting the response correct (i.e., focus on the output), while a higher loss weight means the model will also try to optimize for generating responses that are closely aligned with the prompt (i.e., focus on the prompt). This can be useful for certain tasks where the prompt structure is important.
+
+:::
+
+
 Using the Foundry CLI (which is an extension of the Azure Developer CLI, `azd`), you can submit a fine-tuning job with this configuration file. Assuming you have the Azure Developer CLI installed and configured, run `azd ext install azure.ai.finetune` to add the fine-tuning extension.
 
 Then, by running the following commands in your terminal, you can submit the fine-tuning job to Foundry: (Make sure to replace `<subscription-id>` and `<project-endpoint>` with your actual subscription ID and project endpoint.)
@@ -175,18 +204,19 @@ azd ai finetuning jobs list
 azd ai finetuning jobs show -i <job-id>
 ```
 
-This will submit the fine-tuning job to Foundry, as shown in @fig-5DD6. You'll be prompted to install the CLI extension if it's not already installed and give the local project a name. This can be whatever you like, but I named mine `medical-assistant-full`.
+This will submit the fine-tuning job to Foundry, as shown in @fig-71F5. You'll be prompted to install the CLI extension if it's not already installed and give the local project a name. This can be whatever you like, but I named mine `medical-assistant-full`.
 
-![Initializing a fine-tuning job from the CLI](figures/ft/ss_cli_001_clean.png){#fig-5DD6}
-
-First, the CLI will upload the two `.jsonl` files, and shown in @fig-19D9, and then kick off the fine-tuning job.
-
-![Uploading training data and starting the fine-tuning job](figures/ft/ss_cli_002_clean.png){#fig-19D9}
+![Initializing a fine-tuning job from the CLI](figures/ft/ss_cli_001_clean_neg.png){#fig-71F5}
 
 
-You can monitor its status and view details using the `list` and `show` CLI commands. See @fig-E5DD.
+First, the CLI will upload the two `.jsonl` files, and shown in @fig-70B6, and then kick off the fine-tuning job.
 
-![Listing fine-tuning jobs and showing job details](figures/ft/ss_cli_003_clean.png){#fig-E5DD}
+![Uploading training data and starting the fine-tuning job](figures/ft/ss_cli_002_clean_neg.png){#fig-70B6}
+
+
+You can monitor its status and view details using the `list` and `show` CLI commands. See @fig-7077.
+
+![Listing fine-tuning jobs and showing job details](figures/ft/ss_cli_003_clean_neg.png){#fig-7077}
 
 As you can see, the Foundry CLI provides a convenient way to manage your fine-tuning jobs, especially when working with larger datasets or when you prefer working in a terminal environment. This also works well within development workflows where you want to version control your training configurations and datasets in a git repository. For example, using GitHub Actions, you could set up a CI/CD pipeline that automatically runs fine-tuning jobs whenever you push changes to your training dataset or configuration files in your repository.
 
@@ -221,7 +251,7 @@ On the **Create data** screen, you will fill in the details to create a syntheti
 In the `data/ch05/synthetic-data` folder, I have included some sample cardiology-related files that you can use for this exercise:
 
 1. "Cardiac Learning Guide Series" (`Cardiac-Learning-Guide.pdf`) - An 84-page PDF document that provides comprehensive guidelines on cardiac care from Abbott Laboratories.
-2. "Cardiovascular Pathophysiology for Pre-Clinical Students " (`Cardiovascular_Pathophysiology_for_Pre-Clinical_Students.pdf`) - A 79-page PDF textbook from Virginia Tech Carilion School of Medicine that contains foundational knowledge of common cardiovascular diseases, disorders, and pathologies.
+2. "Cardiovascular Pathophysiology for Pre-Clinical Students" (`Cardiovascular_Pathophysiology_for_Pre-Clinical_Students.pdf`) - A 79-page PDF textbook from Virginia Tech Carilion School of Medicine that contains foundational knowledge of common cardiovascular diseases, disorders, and pathologies.
 3. Health Topics from the American Heart Assocation - (`AHA_Health_Topics.md`) - A Markdown document that contains health information on heart attacks, atrial fibrillation, and cholesterol from the American Heart Association.
 
 Pick one of the files to upload to the synthetic data generator and configure the settings to generate question–answer pairs. For example, you can set the number of examples to generate to 100 and adjust the temperature setting to control the creativity of the generated examples. Once you're done, click the **Submit** button to start the synthetic data generation process.
@@ -257,7 +287,7 @@ Your synthetic data generation job may fail if you hit your throughput limit wit
 
 If you'd like to test your fine-tuning skills, try to use this generated synthetic dataset as additional training data to fine-tune your medical assistant model.
 
-This can help the model learn to better respond to cardiology-related questions even if your original training dataset had limited examples in that area. You can simply click the **Use this dataset for finetuning** button, which will take you to the fine-tuning page with the new training dataset pre-filled with the synthetic dataset you just generated (shown in @fig-7C3B). You can then select your previous fine-tuned medical assistant model and submit a new fine-tuning job to further customize your model with this synthetic data.
+This can help the model learn to better respond to cardiology-related questions even if your original training dataset had limited examples in that area. You can simply click the *Use this dataset for finetuning* button, which will take you to the fine-tuning page with the new training dataset pre-filled with the synthetic dataset you just generated (shown in @fig-7C3B). You can then select your previous fine-tuned medical assistant model and submit a new fine-tuning job to further customize your model with this synthetic data.
 
 ![Continuing to fine-tune with the new cardiology synthetic data](figures/ft/ss_syntheticdata_004_ann.png){#fig-7C3B}
 :::

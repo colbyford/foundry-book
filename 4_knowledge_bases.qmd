@@ -27,16 +27,18 @@ Knowledge bases encapsulate an information domain for a given area. They are com
 
 An information domain could be a specific business function (e.g., customer support), a data type (e.g., product manuals), or a topical area (e.g., financial news). Knowledge bases are designed to be comprehensive, up-to-date, and relevant to the agents that will query them. They are not static dumps of data, but living repositories that evolve as the underlying information changes.
 
-In Foundry IQ, knowledge bases can be built on top of Azure AI Search indexes, allowing developers to ingest and index a wide variety of data sources.
+In Foundry IQ, knowledge bases can be built on top of Azure AI Search indexes, allowing developers to ingest and index a wide variety of data sources. Plus, credentials are passed through securely from Foundry to Azure AI Search, so agents can only retrieve information that they are authorized to access based on the permissions set in Azure or the third-party systems.
 
 A knowledge base consists of one or more knowledge sources, which is interfaced with an LLM for query planning and answer synthesis, and parameters that govern retrieval behavior. Each query undergoes planning, decomposition into focused subqueries, parallel retrieval from knowledge sources, semantic re-ranking, and results merging. The three-pronged response is optimized for agent consumption.
 
 Under the hood, agentic retrieval builds on the classic search architecture by adding a context layer (knowledge base) that orchestrates multi-source retrieval. Knowledge sources can be indexed or remote: indexed sources use the same indexing and query engines as classic search, while remote sources bypass indexing and are queried live.
 
+Before we dive into how to build a knowledge base, let's first understand the RAG pattern, which is a key paradigm in enabling LLMs to access and utilize external knowledge. Then, we'll explore how Azure AI Search enables powerful retrieval capabilities for agents.
+
 
 ### Introduction to RAG
 
-Retrieval-augmented Generation (RAG) is a pattern that extends LLM capabilities by "augmenting" a model's response (a.k.a. "grounding") with relevant information from your internal content. While conceptually simple, implementing RAG solutions has garnered lots of attention in the AI community as a powerful way to build knowledge-intensive applications without needing to fine-tune custom models.
+Retrieval-augmented Generation (RAG) is a pattern that extends LLM capabilities by "augmenting" a model's response (a.k.a. "grounding") with relevant information from your internal content. While conceptually simple, as shown in the @fig-D293, implementing RAG solutions has garnered lots of attention in the AI community as a powerful way to build knowledge-intensive applications without needing to fine-tune custom models.
 
 Retrieval-Augmented Generation combines:
 
@@ -44,14 +46,24 @@ Retrieval-Augmented Generation combines:
 2. **Augmentation** - Adding that information to the model's context
 3. **Generation** - Using the model to generate responses based on the retrieved data
 
+![The basic RAG pattern](figures/kb/il_rag_001.png){#fig-D293}
 
-Some challenges with RAG implementations include:
+To build a RAG-based system, there are a few steps to follow:
+
+1. **Ingest and index your data** - This involves taking your raw data (documents, databases, etc.) and processing it to create an index that can be efficiently searched. This may include steps like tokenization, vectorization, and applying AI enrichments to extract entities or key phrases.
+2. **Store the indexed data in a retrievable format** - This typically involves using a vector database or search service that can handle both keyword and semantic search queries.
+3. **Implement a retrieval mechanism** - This is the logic that takes a user's query, processes it, and retrieves relevant information from the index. This may involve query understanding, relevance ranking, and handling multi-source retrieval if you have multiple knowledge bases.
+4. **Integrate with an LLM for generation** - Once relevant information is retrieved, it needs to be fed into the LLM as context for generating a response. This may involve formatting the retrieved data in a way that the model can understand and use effectively.
+
+There are lots of frameworks that allow you to implement RAG-based solutions, such as [LangChain](https://docs.langchain.com/oss/python/langchain/rag) and [LlamaIndex](https://developers.llamaindex.ai/python/framework/understanding/rag/), or others. However, these frameworks require you to stitch together various components such as vector databases, retrieval pipelines, and citation logic. Some additional challenges with RAG implementations include:
 
 - **Query understanding:** When a user asks complex, conversational, or vague questions with or without a specific context, traditional keyword search fails. Then,when queries don't match document terminology. So, RAG must understand intent, not just match keywords.
 - **Multi-source data access:** In an enterprise setting, data and documents may come from SharePoint, databases, blob storage, OneDrive, or other platforms, all at once. Thus, we must create a search corpus without disrupting normal data operations.
 - **Token constraints:** LLMs have limited context windows (meaning they can only accept a limited number of tokens as input). Your retrieval system must not being too wordy in its responses. So, it must only return highly relevant, concise results instead of full document dumps.
 - **Response time expectations:** No one likes when a chatbot takes forever to respond. The retrieval system must balance accuracy, thoroughness, and speed.
 - **Security and governance:** If your LLM needs to access private content, it requires granular access control. Users and agents must only retrieve authorized content.
+
+Foundry IQ alleviates this burden by providing a fully managed knowledge layer that directly integrates with Azure AI Search. Azure AI Search handles a lot of the data indexing and search functionality. Then, Foundry IQ provides a seamless integration that allows you to focus on building your intelligent agents rather than assembling and maintaining the complex RAG infrastructure.
 
 
 ## Azure AI Search
@@ -66,6 +78,17 @@ Azure AI Search provides two approaches designed specifically for these RAG chal
 
 - **Classic RAG pattern:** The standard approach using hybrid search and semantic ranking, which is ideal for simpler requirements. This mode is limited to one index defined by a schema and responds with flattened search results based on the schema.
 
+
+### Knowledge Sources
+A knowledge source is any repository of information that can be queried by agents to ground their responses. In the context of Foundry IQ and Azure AI Search, knowledge sources are typically Azure AI Search indexes that have been created from various data sources such as Azure Blob Storage, SharePoint, OneLake, or even web data. As shown in Figure @fig-E63, there are two main types of knowledge sources that can be configured in Azure AI Search:
+
+- **Indexed knowledge sources** are sources that have been ingested and indexed in Azure AI Search. This means that the data has been processed, enriched, and stored in a way that allows for efficient retrieval. Indexed sources are ideal for static or semi-static data that doesn't change super frequently, as the indexing process can be resource-intensive. Some common examples of indexed knowledge sources include Azure Blob Storage and Fabric OneLake.
+
+- **Remote knowledge sources** are sources that are queried live without being indexed. These include services like SharePoint in M365 or Bing Web Search. This is useful for data that changes frequently or is too large to index effectively.
+
+![Knowledge sources as part of the AI Search data retreival](figures/kb/il_knowledgesources_001.png){#fig-E63}
+
+When you create a knowledge base in Foundry IQ, you connect it to one or more knowledge sources. Each knowledge source is associated with an Azure AI Search index that contains the indexed information from the underlying data source. The knowledge base then orchestrates how agents query these sources to retrieve relevant information for answering questions.
 
 ### Enrichments
 
@@ -138,12 +161,18 @@ On the *Apply AI enrichments* page, we can select some AI enrichments to apply t
 
 ![Enrichments options for Keyword search](figures/kb/ss_enrichments_001_ann.png){#fig-6AFC}
 
-Selecting the *Gear* icon in the *Extract entities* box, select the entity types that may be useful for the financial questions our eventual Agent will need to answer. You can see my selections in @fig-9AE8. Click the *Save* button after making your selections.
+Select the *Gear* icon in the *Extract entities* box, then select the entity types that may be useful for the financial questions our eventual Agent will need to answer. You can see my selections in @fig-9AE8. Click the *Save* button after making your selections.
 
 ![Extract entities selection](figures/kb/ss_enrichments_002_ann.png){#fig-9AE8}
 
 
-For the *Extract text from images* enrichment, click on the *Gear* icon and select the *Generate tags* and *Categorize content* visual features to be extracted, as shown in @fig-AE5. This will ensure that any relevant information contained in charts, graphs, or other visuals in the documents will be pulled into the index and available for retrieval by our Agent. (For other use cases, such as finding information from photos, the other visual features such as *Detect brands* and *Detect objects* can be very useful.) Click the *Save* button after making these selections.
+For the *Extract text from images* enrichment, click on the *Gear* icon and select the *Generate tags* and *Categorize content* visual features to be extracted, as shown in @fig-AE5. This will ensure that any relevant information contained in charts, graphs, or other visuals in the documents will be pulled into the index and available for retrieval by our Agent.
+
+::: {.callout-note}
+For other use cases, such as finding information from photos, the other visual features such as *Detect brands* and *Detect objects* can be very useful.
+:::
+
+Click the *Save* button after making these selections.
 
 ![Extract text from images selection](figures/kb/ss_enrichments_003_ann.png){#fig-AE5}
 
@@ -162,7 +191,8 @@ Finally, on the *Review and create* page, shown in @fig-5ADA, you can see all of
 
 ![Reviewing the selections for Keyword search](figures/kb/ss_enrichments_006_ann.png){#fig-5ADA}
 
-This will create a few objects in the Azure AI Search service:
+This will create several objects in the Azure AI Search service:
+
 - a *Data source* that connects to the Azure Storage container where the documents are located.
 - an *Indexer* that defines how and when the data is ingested and indexed (including settings to exclude certain file types or tweak the batch size).
 - a *Skillset* that can do things like detect the language, read text from images, and extract entities, etc.

@@ -785,3 +785,95 @@ For a multi-tenant scenario:
    * Alert on cross-tenant violations
 
 By implementing these controls, you ensure that your AI agents operate securely, comply with organizational policies, and maintain the trust of your users and stakeholders.
+
+
+## Publishing to M365/A365
+
+Once you've developed and tested models locally, you can deploy them to Microsoft 365 (M365) or Agent 365 (A365) for enterprise-wide access.
+
+### Publishing to Microsoft 365
+
+**Microsoft 365 Integration** enables your agents to:
+* Appear in Microsoft 365 Copilot
+* Integrate with Teams, Outlook, Word, Excel, PowerPoint
+* Access Microsoft Graph for organizational data
+* Provide consistent experience across Microsoft 365 apps
+
+**Publishing Process:**
+
+1. **Develop Locally:**
+   * Build and test agent with Foundry Local
+   * Validate functionality and performance
+   * Ensure compliance with organizational policies
+
+2. **Deploy to Foundry Cloud:**
+   * Upload your agent to Microsoft Foundry
+   * Configure cloud-based tools and connections
+   * Set up production configurations
+
+3. **Publish to M365:**
+   * In Foundry portal, select your agent
+   * Click **Publish** → **Microsoft 365 Copilot**
+   * Configure metadata and permissions
+   * Submit for organizational approval
+
+4. **Admin Approval:**
+   * IT admin reviews in Microsoft 365 Admin Center
+   * Verifies security and compliance
+   * Approves for organizational deployment
+
+5. **User Access:**
+   * Agent appears in M365 Copilot agent store
+   * Users can discover and use in their workflow
+   * Works across all M365 applications
+
+### Publishing to Agent 365
+
+**Agent 365** is the control plane for enterprise AI agents, providing:
+* Unified agent registry across Microsoft and third-party agents
+* Centralized identity and access management
+* Enterprise-grade security and compliance
+* Integration with Defender, Purview, and Entra ID
+
+**Publishing to Agent 365:**
+
+1. **Register Agent Identity:**
+   * Create agent identity in Entra ID
+   * Configure permissions and roles
+   * Set up managed identity for authentication
+
+2. **Deploy as Hosted Agent:**
+   * Package agent as container
+   * Deploy to Microsoft Foundry
+   * Configure endpoint and scaling
+
+3. **Publish to Agent 365:**
+   * Use Foundry API or portal
+   * Specify metadata and capabilities
+   * Mark as production-ready
+
+4. **Governance Integration:**
+   * Automatically appears in Agent 365 registry
+   * Subject to organizational policies
+   * Monitored by Control Plane
+
+### Hybrid Deployment Strategy
+
+Many organizations use a hybrid approach:
+
+**Development:** Foundry Local
+* Fast iteration
+* No cloud costs
+* Offline capability
+
+**Testing:** Foundry Cloud (staging)
+* Integration testing
+* Performance validation
+* Security scanning
+
+**Production:** Microsoft 365/Agent 365
+* Enterprise deployment
+* Full governance
+* Maximum reach
+
+This approach provides flexibility while maintaining control and compliance as solutions move from development to production.

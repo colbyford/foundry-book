@@ -60,7 +60,7 @@ ask "what logic produced this output?"
 Foundry provides three template patterns (@fig-patterns). You can start from a
 blank canvas, but these templates cover the majority of real-world cases.
 
-![The three Foundry workflow orchestration patterns.](foundry_workflow_orchestration_patterns){#fig-patterns}
+<!-- ![The three Foundry workflow orchestration patterns.](foundry_workflow_orchestration_patterns){#fig-patterns} -->
 
 ### Sequential
 

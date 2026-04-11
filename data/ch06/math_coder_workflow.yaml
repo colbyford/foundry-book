@@ -1,0 +1,104 @@
+kind: workflow
+trigger:
+  kind: OnConversationStart
+  id: trigger_wf
+  actions:
+    - kind: Question
+      variable: Local.MathProblem
+      id: question_math_input
+      entity: StringPrebuiltEntity
+      skipQuestionMode: SkipOnFirstExecutionIfVariableHasValue
+      prompt: "Please enter your math problem:"
+    - kind: SetVariable
+      id: set_variable_input_task
+      variable: Local.LatestMessage
+      value: =UserMessage(Local.MathProblem)
+    - kind: SetVariable
+      id: set_variable_turn_count
+      variable: Local.TurnCount
+      value: =0
+    - kind: SendActivity
+      activity: Problem received. Routing to the Math Evaluator agent...
+      id: send_working
+    - kind: InvokeAzureAgent
+      id: math_evaluator_agent
+      agent:
+        name: math-evaluator-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: =Local.LatestMessage
+      output:
+        autoSend: true
+        messages: Local.LatestMessage
+    - kind: ConditionGroup
+      conditions:
+        - id: evaluator_flagged_complete
+          condition: =!IsBlank(Find("[COMPLETE]", Upper(Last(Local.LatestMessage).Text)))
+          actions:
+            - kind: SendActivity
+              activity: |-
+                The Math Evaluator was unable to proceed:
+
+                {Last(Local.LatestMessage).Text}
+              id: send_evaluator_exit
+            - kind: EndConversation
+              id: end_on_evaluator_flag
+      id: check_evaluator_exit
+      elseActions:
+        - kind: SendActivity
+          activity: Math Evaluator complete. Handing solution plan to the Python Coder agent...
+          id: send_evaluator_done
+    - kind: InvokeAzureAgent
+      id: python_coder_agent
+      agent:
+        name: python-coder-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: =Local.LatestMessage
+      output:
+        autoSend: true
+        messages: Local.LatestMessage
+    - kind: SetVariable
+      id: increment_turn_count
+      variable: Local.TurnCount
+      value: =Local.TurnCount + 1
+    - kind: ConditionGroup
+      conditions:
+        - condition: =!IsBlank(Find("[COMPLETE]", Upper(Last(Local.LatestMessage).Text)))
+          actions:
+            - kind: SendActivity
+              activity: |-
+                Solution delivered! Here's a summary:
+
+                  - Problem:   {Local.MathProblem}
+                  - Turns taken: {Local.TurnCount}
+
+                Would you like to solve another problem? (Restart the conversation to continue.)
+              id: send_complete
+            - kind: EndConversation
+              id: node-1775922756397
+          id: check_done
+        - condition: =Local.TurnCount >= 5
+          actions:
+            - kind: SendActivity
+              activity: |-
+                The agents have exceeded the maximum number of refinement turns ({Local.TurnCount}).
+                The problem may be too complex or require clarification.
+
+                Last agent output:
+                {Last(Local.LatestMessage).Text}
+              id: send_turn_limit
+            - kind: EndConversation
+              id: node-1775922764121
+          id: check_turn_limit
+      id: node-1775922613515
+      elseActions:
+        - kind: SendActivity
+          activity: Agents are refining the solution (turn {Local.TurnCount} of 5)...
+          id: send_refinement_notice
+        - kind: GotoAction
+          actionId: math_evaluator_agent
+          id: goto_evaluator
+id: ""
+name: Math-Coder-Workflow-001
+description: ""

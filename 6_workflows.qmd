@@ -5,7 +5,7 @@ In the previous chapters, you learned how to deploy models, configure agents wit
 Workflows are Microsoft Foundry's visual orchestration layer. They let you string together multiple agents, data transformations, branching logic, and human checkpoints into a repeatable, auditable process. This is provided as a low-code builder that makes multi-agent workflows approachable. Think of a workflow as a
 directed graph: nodes are actions (invoke an agent, set a variable, ask a question), and edges encode order and conditions.
 
-This chapter covers the core orchestration patterns Foundry ships as templates, walks through building a multiagent workflow from scratch, and then
+This chapter covers the core orchestration patterns Foundry ships as templates, walks through building a multi-agent workflow from scratch, and then
 digs into Power Fx, the formula language you will use any time you need more than a straight-line flow.
 
 ::: {.callout-note}
@@ -28,12 +28,13 @@ Workflows earn their keep when you need at least one of the following:
 
 * *Auditable, reusable pipelines.* - Versioning is built into the workflow engine. Every save creates a new, immutable version. That makes it straightforward to roll back, compare runs across versions, and meet compliance requirements that ask "what logic produced this output?"
 
-## The Three Orchestration Patterns
+## Multi-Agent Orchestration Patterns
 
 Foundry provides three template patterns, shown in @fig-965B. While you can start from a blank canvas, these templates cover the common real-world cases.
 
 ![Workflow template patterns](figures/wf/il_types_001_clean.png){#fig-965B}
 
+In many of such orchestration patterns, you'll find a recurring theme: the division of labor between the workflow and the agents. The workflow is responsible for *control flow*: sequencing steps, routing between agent specialists, and/or pausing for human input. The agents are responsible for *language tasks*: understanding user input, generating messages, and making decisions that require linguistic reasoning. Keeping this separation of concerns clear in your design will lead to more maintainable and robust systems.
 
 ### Sequential
 
@@ -83,9 +84,7 @@ Power Fx is the expression language that runs inside workflow nodes. If you have
 Every expression that references a variable needs a scope prefix:
 
 - `Local.` for variables defined within this workflow (for example, user responses saved by an Ask-a-question node, or JSON output saved by an agent node).
-- `System.` for runtime context provided by the platform (for example,
-  `System.LastMessage.Text`, `System.User.Language`, or
-  `System.Conversation.Id`).
+- `System.` for runtime context provided by the platform (for example, `System.LastMessage.Text`, `System.User.Language`, or `System.Conversation.Id`).
 
 Forgetting the prefix is the single most common Power Fx mistake. If you see a "Name isn't valid" error, the prefix is almost certainly missing.
 
@@ -129,11 +128,12 @@ Foundry does not save workflows automatically. Get into the habit of clicking th
 The first time you click the *Save* button, Foundry prompts you to name the workflow. I named mine `Math-Coder-Workflow-001`. Click the *Save* button on the popup window to confirm, as shown in @fig-C624. You should then see a "v1 saved Today..." message appear beside the greyed out Save button.
 
 ![Saving the Math Coder Workflow](figures/wf/ss_save_001_ann.png){#fig-C624}
+
 :::
 
 Spend a moment familiarizing yourself with the interface and the pre-defined nodes in the chain. Note that there's a *+ New node* button on the top left of the canvas where you can find all the different nodes you can add to the workflow. See @fig-B84E.
 
-![The + New node panel](figures/wf/ss_nodes_001_ann.png){#fig-B84E}
+![The + New node panel](figures/wf/ss_nodes_001_ann.png){#fig-B84E width=300}
 
 Nodes are the building blocks of any workflow. Each node represents a single action. The common node types you may use most are:
 
@@ -249,7 +249,7 @@ As shown in @fig-8952, click the *Done* button to save the configuration.
 
 Are you tired of making all these nodes by hand yet? Let's zoom out and see what we've built so far, as shown in @fig-30B4. We have a workflow that takes in a math problem, sends it to an agent to evaluate, and then conditionally sends a message back to the user based on whether the agent was able to solve the problem or not.
 
-![The first half of the Math Coder Workflow](figures/`/ss_canvas_011_clean.png){#fig-30B4}
+![The first half of the Math Coder Workflow](figures/wf/ss_canvas_011_clean.png){#fig-30B4}
 
 
 We still need another agent to take the solution plan from the evaluator and generate Python code, plus some additional logic to handle multiple turns of evaluation and coding if the problem is complex. Then, we'll need a few nodes to handle the messages back to the user (on success, failure, or waiting on another iteration) and an *End* node.
@@ -308,23 +308,30 @@ In the chat panel, ask your math solver workflow some questions to see how it pe
 ::: {.callout-tip}
 ## Example Simple Inputs
 
-### A weird factorial
+```
+## A weird factorial
 
 What is the square root of 5.25!?
+```
 
-### Derivative of a trigonometric function
+```
+## Derivative of a trigonometric function
 
 What is the derivative of sin(x^2)?
+```
 :::
 
 ::: {.callout-tip}
 ## Example Advanced Inputs
 
-### Integral with bounds
+```
+## Integral with bounds
 
 Solve the integral of e^(x^2) dx from 0 to 1.
+```
 
-### A difficult differential equations
+```
+## A difficult differential equation
 
 Solve the second-order non-homogeneous ordinary differential equation:
 
@@ -332,7 +339,11 @@ Solve the second-order non-homogeneous ordinary differential equation:
 
 with initial conditions y(0) = 1 and y'(0) = 0.
 
-Then evaluate the definite integral of the solution y(x) over the interval [0, 3], and find any local minima or maxima in that interval.
+Then evaluate the definite integral of the solution y(x)
+over the interval [0, 3], and find any local minima 
+or maxima in that interval.
+```
+
 :::
 
 

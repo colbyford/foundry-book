@@ -2,7 +2,18 @@
 
 In this conclusionary chapter, we'll wrap up the book by providing some final best practices for designing an Azure cloud architecture that integrates well with Foundry. Plus, readers will learn about how to plan for serverless AI options in Azure.
 
+## Additional Features
 
+
+### Memory
+Traditional LLM interactions are stateless by default. Foundry IQ introduces memory as a managed capability that allows agents to retain and recall context across interactions. Memory in Foundry IQ supports:
+
+- Conversational continuity across sessions
+- User preference retention
+- Task and workflow state
+- Adaptive behavior based on historical interactions
+
+This transforms agents from reactive prompt responders into persistent digital collaborators. Importantly, memory is governed: retention policies, isolation boundaries, and enterprise controls ensure that memory enhances intelligence without compromising security or compliance
 
 ## Best practices for implementing enterprise AI
 

@@ -1,879 +1,441 @@
-# Agent Management (Security, Compliance, and Governance)
+# Management - Security, Compliance, and Governance {#sec-management}
 
-In this chapter, we will learn about the concept of agent management to better secure and govern any deployed agents. This will also cover how to manage compliance and costs, and how to integrate with Entra in Azure.
+Deploying an agent is the beginning, not the end, of your responsibility as an AI engineer. Once an agent is running in production, you need to answer a growing set of operational questions: 
 
-## What is the Microsoft Foundry Control Plane?
+- Is it staying on task?
+- Is it generating unsafe content?
+- Who owns it?
+- What is it costing?
+- Does it comply with your organization's policies?
+- When something goes wrong at 2 a.m. with a fleet of fifty agents spread across three projects, do you have a single dashboard to diagnose the problem, or are you clicking through individual Azure portal blades?
 
-The **Microsoft Foundry Control Plane** is a unified management interface that provides visibility, governance, and control for AI agents, models, and tools across your Foundry enterprise. As organizations evolve from isolated copilots to autonomous multi-agent fleets, they need unified oversight. The Foundry Control Plane provides the visibility, governance, and control needed to scale with confidence.
+This chapter covers the two pillars Microsoft Foundry provides for answering those questions in production: *Guardrails and Controls*, the runtime safety layer baked into every model and agent, and the *Foundry Control Plane*. The Control Plane is the unified management interface for governing your entire agent fleet. By the end of this chapter you will understand how to define and assign guardrails, configure intervention points, enforce token limits and guardrail policies fleet-wide, integrate your organization's identity infrastructure with Entra ID, register externally-built agents, and wire up cross-fleet monitoring and compliance tooling.
 
-The Foundry Control Plane allows you to:
+## Guardrails and Controls {#sec-guardrails}
 
-* **Gain unified visibility** across all Foundry, Microsoft, and third-party agents in one place
-* **Observe, analyze, and optimize** agent performance, cost, quality, and compliance
-* **Apply deterministic guardrails and policies** for safety, compliance, and operational consistency
-* **Visualize resource consumption**, detect anomalies, and optimize agent configurations to reduce spend while maintaining reliability
+Guardrails are Foundry's runtime safety layer. They sit between user inputs, tool calls, tool responses, and model outputs, scanning each for a configurable set of risks and blocking or annotating content that exceeds your thresholds. Think of them as runtime type-checkers for AI behavior: they do not prevent you from building whatever you want, but they will surface violations at the exact point in the pipeline where they occur.
 
-### Core Functionalities
+### Concepts: Controls, Risks, and Actions
 
-**Unified Fleet Visibility:**
-Get a real-time overview of every agent, model, and tool across projects in your subscription.
-* Track key performance indicators such as active agents, run completion, compliance posture, cost efficiency, and prohibited behaviors
-* Use deep links to evaluation and monitoring experiences for rapid debugging, diagnosis, and remediation
-* Visualize fleet health through intuitive dashboards that surface trends and anomalies instantly
+A *guardrail* is a named, reusable collection of *controls*.
+Each control specifies three things:
 
-**Observe to Protect and Improve:**
-Observability is built in, not added on.
-* Correlate alerts, evaluation results, and trace data to pinpoint issues instantly
-* Continuously evaluate agent performance, quality, and risk dimensions
-* Use the AI Red Teaming Agent and cluster analysis for automated vulnerability probing
-* Let Foundry recommend improvements, from prompt refinements to model version upgrades
+1. *Risk*: what to detect (e.g., hate speech, prompt injection, task drift).
+2. *Intervention point*: where in the pipeline to scan for that risk.
+3. *Response action*: what to do when the risk is detected: annotate, block, or both.
 
-**Govern and Enforce with Guardrails:**
-Operationalize Responsible AI principles through policies that scale.
-* Define enterprise-wide guardrail policies for safety, compliance, and quality
-* Apply bulk remediation to instantly correct noncompliant configurations across your fleet
+Foundry currently supports the following risks:
 
-**Secure Agents:**
-* Schedule automated red-teaming scans and drift monitoring for ongoing agent testing
-* View Defender and Purview alerts directly in the Control Plane dashboard
-* Track rate limits, token usage, and cost anomalies to prevent inefficiency or abuse
+| Risk | Scope | Notes |
+|---|---|---|
+| Hate and Fairness | Models & Agents | Severity-thresholded (Low / Medium / High) |
+| Sexual Content | Models & Agents | Severity-thresholded |
+| Self-Harm | Models & Agents | Severity-thresholded |
+| Violence | Models & Agents | Severity-thresholded |
+| Prompt Injection (Prompt Shields) | Models & Agents | Blocks jailbreak and XPIA attacks |
+| Groundedness | Models (Preview for Agents) | Detects hallucinations relative to retrieved context |
+| Protected Material | Models & Agents | Detects copyrighted text or code in outputs |
+| Sensitive Data Detection | Agents | Detects PII and other sensitive data in outputs |
+| Task Adherence | Agents (GA as of March 2026) | Detects off-task tool calls and agent behavior drift |
+| Spotlighting | Preview | Indirect prompt injection via documents/data |
 
+: Guardrail risks in Microsoft Foundry {#tbl-guardrail-risks}
 
-### Memory Enables Continuous Intelligence
+The guardrail system applies to all Azure-sold models (with the exception of audio models like Whisper). For agents, guardrail coverage now extends to Foundry Agent Service agents; agents registered externally via the Control Plane are not yet covered by the agentic guardrail system.
 
-Traditional LLM interactions are stateless by default. Foundry IQ introduces **memory** as a managed capability that allows agents to retain and recall context across interactions.
+::: {.callout-important}
+## Agentic Guardrails Override Model Guardrails
 
-Memory in Foundry IQ supports:
+When you assign a custom guardrail directly to an agent, that guardrail fully overrides the guardrail of the underlying model deployment. It does not merge with it. 
 
-- Conversational continuity across sessions
-- User preference retention
-- Task and workflow state
-- Adaptive behavior based on historical interactions
+If the agent has no custom guardrail assigned, it inherits the model's guardrail. An agent only uses the `Microsoft.DefaultV2` guardrail if its model deployment uses that guardrail, or if you explicitly assign it. Design your agent-level guardrails to be complete and self-contained.
+:::
 
-This transforms agents from reactive prompt responders into persistent digital collaborators. Importantly, memory is governed: retention policies, isolation boundaries, and enterprise controls ensure that memory enhances intelligence without compromising security or compliance.
+### Intervention Points
 
+Where a control fires matters as much as what it fires on. Foundry supports four intervention points, each corresponding to a distinct stage in the agentic execution loop:
 
+- *User Input*: The prompt sent by the end user to the model or agent. This is the most common place to block prompt injection attempts and harmful requests before any model processing occurs.
 
-##	Integrating with Agent ID in Entra to manage agents
+- *Tool Call*: The action and parameters the agent proposes to send to a tool. For example, the SQL query it is about to execute or the API endpoint it intends to call. Scanning here catches unsafe or off-task actions *before* the tool executes, which is critical for agentic workflows with side effects.
 
-Microsoft Entra ID (formerly Azure Active Directory) provides identity and access management for your AI agents. Agent Identity enables secure, auditable agent-to-agent and agent-to-resource interactions.
+- *Tool Response* *(Preview)*: The content returned from the tool back to the agent. Malicious or sensitive data returned from an external data source can be caught and blocked here before the model incorporates it into its reasoning.
 
-### What is Agent Identity?
+- *Output*: The final completion returned to the user. This is the last line of defense and the only intervention point available for non-agentic model deployments.
 
-An **Agent Identity** is a special service principal in Microsoft Entra ID that represents an identity that agents can impersonate. This provides:
+Together, these four points form a perimeter around every stage of the agent's execution.
 
-* **Authentication** - Agents authenticate using managed identities
-* **Authorization** - Fine-grained access control to resources
-* **Auditability** - Track which agent accessed what resource and when
-* **Least privilege** - Grant only necessary permissions to each agent
-* **Identity federation** - Securely delegate tasks across organizational boundaries
+<!-- ```
+User Input → [scan] → Agent Reasoning → Tool Call → [scan]
+                                                         ↓
+           Output ← [scan] ← Agent Reasoning ← Tool Response ← [scan]
+``` -->
 
-### Benefits of Agent Identity
+::: {.callout-note}
+## Preview Status for Tool-Level Intervention Points
 
-**Security:**
-* No hardcoded credentials in agent code
-* Automatic credential rotation through managed identities
-* Centralized access control policies
-* Real-time revocation capabilities
+Tool Call and Tool Response intervention points were introduced in preview at Microsoft Ignite 2025 and reached GA alongside Foundry Agent Service in March 2026.
+Task Adherence became a native guardrail risk type (rather than a standalone API) in the same release.
 
-**Compliance:**
-* Detailed audit logs of agent activities
-* Integration with Microsoft 365 compliance center
-* Support for regulatory requirements (GDPR, HIPAA, SOC 2)
-* Role-based access control (RBAC)
+Always check the [Foundry release notes](https://devblogs.microsoft.com/foundry/) for the current GA status of specific controls in your target region.
+:::
 
-**Operational Excellence:**
-* Simplified credential management
-* Reduced administrative overhead
-* Consistent identity model across agents
-* Integration with existing identity infrastructure
+### Task Adherence
 
-### Exercise: Connect Agent AI to Entra in Azure
+Task adherence is a guardrail risk specifically designed for agentic workflows. It detects when an agent's *next proposed action*, typically a tool call, begins to drift away from the original task the agent was given.
 
-Let's configure an agent to use Entra ID for authentication and authorization.
+Prior to March 2026, task adherence was available only through a standalone API that required custom wiring. It is now a first-class risk type in the guardrail system: you can configure it like any other control, choosing whether to annotate or block off-task tool calls, and at which intervention point.
 
-**Step 1: Enable Managed Identity**
+This matters in some specific scenarios. For example, a customer support agent that starts browsing the web for unrelated information, or a data analysis agent that begins writing files outside its designated storage container, represents not just quality degradation but a potential security boundary violation.
+Task adherence provides a deterministic, configurable check on this behavior rather than relying solely on the model's instruction following.
 
-1. Navigate to your Foundry project in the Azure portal
-2. Go to **Settings** → **Identity**
-3. Toggle **System assigned managed identity** to **On**
-4. Click **Save**
-5. Note the **Object (principal) ID** - you'll need this later
-
-**Step 2: Create an Agent Identity**
-
-1. In the Foundry portal, navigate to your agent
-2. Go to **Settings** → **Identity**
-3. Click **Create agent identity**
-4. Configure the identity:
-   * Name: "ProductSupportAgentIdentity"
-   * Description: "Identity for product support agent"
-   * Permissions scope: Select the resources the agent needs to access
-5. Click **Create**
-
-This creates a service principal in Entra ID that your agent can use.
-
-**Step 3: Grant Permissions to Resources**
-
-Now grant the agent identity access to required resources:
-
-**For Azure Cosmos DB:**
-1. Navigate to your Cosmos DB account
-2. Go to **Access Control (IAM)**
-3. Click **+ Add role assignment**
-4. Select **Cosmos DB Built-in Data Contributor** role
-5. In the **Members** tab, search for your agent identity
-6. Select it and click **Review + assign**
-
-**For Azure AI Search:**
-1. Navigate to your AI Search service
-2. Go to **Access Control (IAM)**
-3. Add role assignment: **Search Index Data Reader**
-4. Assign to your agent identity
-
-**For SharePoint (via Microsoft Graph):**
-1. In Azure Portal, go to **Entra ID** → **App registrations**
-2. Find your agent's app registration
-3. Go to **API permissions**
-4. Click **+ Add a permission** → **Microsoft Graph**
-5. Add delegated permissions:
-   * Sites.Read.All
-   * Files.Read.All
-6. Click **Grant admin consent**
-
-**Step 4: Configure the Agent**
-
-Update your agent configuration to use the managed identity:
-
-1. In the Foundry portal, edit your agent
-2. Go to **Tools** → **Connections**
-3. Edit each connection to use **Managed Identity** instead of API keys:
-   * For Cosmos DB: Select "Use managed identity"
-   * For AI Search: Select "Use managed identity"
-   * For Microsoft Graph: Select "Use managed identity"
-4. Save the changes
-
-**Step 5: Test Authentication**
-
-1. Test the agent in the playground
-2. Verify it can still access all data sources
-3. Check the audit logs in Entra ID:
-   * Go to **Entra ID** → **Monitoring** → **Audit logs**
-   * Filter by your agent's service principal
-   * Verify sign-in and resource access events
-
-**Step 6: Set Up Conditional Access (Optional)**
-
-Add extra security with conditional access policies:
-
-1. In Entra ID, go to **Security** → **Conditional Access**
-2. Click **+ New policy**
-3. Configure:
-   * Name: "Agent Access Policy"
-   * Users: Select your agent identity
-   * Cloud apps: Select the resources agents can access
-   * Conditions: 
-     - Require specific IP ranges
-     - Require compliant device (for human-supervised agents)
-   * Grant controls:
-     - Require multi-factor authentication (for sensitive operations)
-     - Require device to be marked as compliant
-4. Enable policy and save
-
-## Monitoring costs vs. quality, safety, and security of agents
-
-Effective agent management requires balancing multiple dimensions: cost efficiency, quality of outputs, safety guardrails, and security posture.
-
-### Cost Monitoring
-
-**Understanding Agent Costs:**
-Agent costs come from:
-* **Model inference** - Tokens processed by LLMs
-* **Tool executions** - API calls to external services
-* **Storage** - Conversation history and file storage
-* **Compute** - For hosted agents running on dedicated infrastructure
-
-**Monitoring Cost Metrics:**
-
-In the Control Plane, view cost dashboards:
-
-1. Navigate to **Operate** → **Overview**
-2. View cost trends:
-   * Total monthly spend
-   * Cost per agent
-   * Cost per conversation
-   * Token usage by model
-
-3. Identify cost anomalies:
-   * Sudden spikes in usage
-   * Inefficient agents (high cost, low value)
-   * Underutilized deployments
-
-**Cost Optimization Strategies:**
-
-1. **Right-size models** - Use smaller models for simple tasks:
-   * GPT-4o for complex reasoning
-   * GPT-3.5-Turbo for simple Q&A
-   * Phi-4 for efficient edge scenarios
-
-2. **Implement caching** - Cache frequent queries:
-   * Semantic cache for similar questions
-   * Response templates for common scenarios
-
-3. **Set token limits** - Configure maximum tokens per response:
-   ```json
-   {
-     "max_tokens": 500,
-     "stop_sequences": ["\n\n", "###"]
-   }
-   ```
-
-4. **Use serverless deployments** - Pay only for what you use:
-   * No idle capacity costs
-   * Automatic scaling
-   * No minimum commitments
-
-5. **Monitor tool usage** - Optimize expensive tool calls:
-   * Cache database query results
-   * Batch API requests
-   * Use efficient search queries
-
-### Quality Monitoring
-
-**Key Quality Metrics:**
-
-* **Task Adherence** - Does the agent follow instructions?
-* **Intent Resolution** - Does it address the user's actual need?
-* **Tool Call Success** - Are tools used correctly?
-* **Groundedness** - Are responses based on provided data?
-* **Coherence** - Are responses clear and logical?
-* **Relevance** - Do responses answer the question?
-
-**Implementing Quality Evaluation:**
-
-1. Navigate to **Operate** → **Evaluation**
-2. Enable continuous evaluation:
-   * Sample rate: 10% of conversations
-   * Evaluation frequency: Daily
-   * Metrics to track: All available metrics
-
-3. Set up quality thresholds:
-   * Groundedness > 90%
-   * Task Adherence > 85%
-   * Intent Resolution > 80%
-
-4. Configure alerts:
-   * Email notification when quality drops below threshold
-   * Auto-disable agent if critical issues detected
-
-**Quality Improvement Process:**
-
-1. **Analyze low-quality interactions:**
-   * Review conversation logs
-   * Identify patterns in failures
-   * Understand root causes
-
-2. **Iterate on agent design:**
-   * Refine system instructions
-   * Improve tool descriptions
-   * Add example interactions
-   * Update knowledge base
-
-3. **A/B test changes:**
-   * Deploy new version to 10% of users
-   * Compare quality metrics
-   * Roll out if improved
-
-### Safety Monitoring
-
-**Built-in Safety Features:**
-
-**Content Filtering:**
-* Hate speech detection
-* Violence and graphic content
-* Self-harm content
-* Sexual content
-
-Configure content filtering levels:
-* **Low** - Permissive, flags only severe violations
-* **Medium** - Balanced for most scenarios (recommended)
-* **High** - Strict, may have false positives
-
-**Jailbreak Detection:**
-Protects against prompt injection attacks:
-* Detects attempts to override system instructions
-* Blocks malicious prompt patterns
-* Logs attempted attacks
-
-**Sensitive Data Protection:**
-* PII detection and masking
-* Credit card number redaction
-* Social security number blocking
-* Custom sensitive pattern detection
-
-**Implementing Safety Guardrails:**
-
-1. Navigate to **Operate** → **Guardrails**
-2. Click **+ Create guardrail policy**
-3. Configure safety rules:
-   * Content filtering: Medium
-   * Jailbreak protection: Enabled
-   * PII protection: Enabled
-   * Custom blocklists: Add prohibited terms
-4. Apply to agents:
-   * Select all production agents
-   * Click **Apply policy**
-
-**Monitoring Safety Incidents:**
-
-1. View safety dashboard in **Operate** → **Safety**
-2. Track:
-   * Blocked responses by category
-   * Jailbreak attempt frequency
-   * PII exposure incidents
-   * Policy violation trends
-
-3. Investigate incidents:
-   * Review blocked conversations
-   * Analyze attack patterns
-   * Update guardrails as needed
-
-### Security Monitoring
-
-**Security Dimensions:**
-
-* **Access control** - Who can use the agent?
-* **Data protection** - Is sensitive data secured?
-* **Audit logging** - Are activities tracked?
-* **Threat detection** - Are attacks identified?
-* **Compliance** - Are regulations met?
-
-**Security Best Practices:**
-
-1. **Enable audit logging:**
-   * Log all agent interactions
-   * Retain logs for compliance requirements (typically 90 days)
-   * Monitor for suspicious patterns
-
-2. **Implement rate limiting:**
-   * Prevent abuse and DoS attacks
-   * Set per-user limits: 100 requests/hour
-   * Set per-agent limits: 10,000 requests/day
-
-3. **Use private endpoints:**
-   * Deploy agents in Azure VNet
-   * Restrict access to corporate network
-   * Use Azure Private Link for data sources
-
-4. **Regular security assessments:**
-   * Run AI Red Teaming scans monthly
-   * Review security alerts weekly
-   * Update security policies as threats evolve
-
-## Safeguarding sensitive data
-
-Protecting sensitive data is critical when deploying AI agents. Microsoft Foundry provides multiple layers of data protection.
-
-### Data Classification
-
-**Automatic Classification:**
-Foundry automatically detects and classifies:
-* Financial information (credit cards, bank accounts)
-* Personal identifiers (SSN, passport numbers, driver's licenses)
-* Health information (medical records, diagnoses)
-* Credentials (passwords, API keys, tokens)
-
-**Custom Classification:**
-Define custom sensitive data patterns:
-
-1. Navigate to **Settings** → **Data Protection**
-2. Click **+ Add custom pattern**
-3. Define pattern using regex:
-   * Pattern: `CUST-\d{8}` (customer IDs)
-   * Name: "Customer ID"
-   * Action: Mask in logs
-4. Save and apply
-
-### Data Protection Strategies
-
-**1. Data Minimization:**
-* Only collect necessary data
-* Limit data retention periods
-* Delete data when no longer needed
-
-**2. Encryption:**
-* Data encrypted at rest (AES-256)
-* Data encrypted in transit (TLS 1.3)
-* Keys managed by Azure Key Vault
-
-**3. Data Residency:**
-* Choose deployment region for data sovereignty
-* Use multi-region for redundancy
-* Comply with local regulations (GDPR, CCPA)
-
-**4. Data Masking:**
-Configure masking rules:
-```json
-{
-  "maskingRules": [
-    {
-      "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
-      "replacement": "***-**-****",
-      "description": "SSN masking"
-    },
-    {
-      "pattern": "\\b\\d{16}\\b",
-      "replacement": "****-****-****-****",
-      "description": "Credit card masking"
+### Third-Party Guardrail Integrations
+
+As of March 2026, Foundry supports third-party runtime security providers alongside its native guardrail stack. Currently generally available integrations include:
+
+- *Palo Alto Networks Prisma AIRS*: detects prompt injection, toxic content, malicious URLs, and tool misuse.
+- *Zenity*: focuses on sensitive data leakage and agentic threat detection.
+
+These providers are registered and managed directly from the Foundry portal and surface their signals alongside native guardrail annotations in the same dashboard.
+
+Third-party guardrails are additive: they do not replace native controls but complement them, giving security teams flexibility to use vendor tools they may already have deployed elsewhere in their stack.
+
+To register a third-party provider, navigate to *Build → Guardrails → Third-Party Integrations* in the Foundry portal and follow the registration flow for your provider. Once connected, you can apply provider-specific controls within the standard guardrail wizard.
+
+### Creating and Assigning a Guardrail
+
+Guardrails are created through the Foundry Portal or the Azure AI Services REST API.
+
+#### Portal Workflow
+
+1. In the Foundry portal, select *Build* in the top-right menu.
+2. Select *Guardrails* from the left navigation and then *Create Guardrail*.
+3. In Step 1, add controls by selecting a risk from the dropdown, choosing intervention points, and setting the response action. Default controls are pre-populated with Microsoft-recommended settings.
+4. In Step 2, assign the guardrail to one or more agents and/or model deployments in your project.
+5. In Step 3, review, name the guardrail, and select *Create*.
+
+The guardrail appears in the guardrail list and takes effect immediately on the selected assets.
+
+#### REST API
+
+In the Azure AI Services REST API, a guardrail is represented as an *RAI policy*, a resource-level object in Azure Resource Manager.
+Use the `RAI Policies - Create Or Update` operation to create or update a guardrail, specifying the risk category, severity level, and action in the request body:
+
+```python
+import requests
+import json
+from azure.identity import DefaultAzureCredential
+
+credential = DefaultAzureCredential()
+token = credential.get_token("https://management.azure.com/.default").token
+
+subscription_id = "<your-subscription-id>"
+resource_group = "<your-resource-group>"
+account_name = "<your-ai-services-account>"
+policy_name = "MyAgentGuardrail"
+
+url = (
+    f"https://management.azure.com/subscriptions/{subscription_id}"
+    f"/resourceGroups/{resource_group}"
+    f"/providers/Microsoft.CognitiveServices/accounts/{account_name}"
+    f"/raiPolicies/{policy_name}?api-version=2024-10-01"
+)
+
+payload = {
+    "name": policy_name,
+    "properties": {
+        "mode": "Blocking",
+        "contentFilters": [
+            {
+                "name": "hate",
+                "allowedContentLevel": "Low",
+                "blocking": True,
+                "enabled": True,
+                "source": "Prompt"
+            },
+            {
+                "name": "hate",
+                "allowedContentLevel": "Low",
+                "blocking": True,
+                "enabled": True,
+                "source": "Completion"
+            },
+            {
+                "name": "prompt_shield_user_prompt",
+                "blocking": True,
+                "enabled": True,
+                "source": "Prompt"
+            }
+        ]
     }
-  ]
 }
-```
 
-**5. Access Logging:**
-Track all data access:
-* Who accessed what data
-* When was it accessed
-* What operations were performed
-* From what location/IP
-
-### Customer-Managed Keys
-
-For maximum control over encryption:
-
-1. Create a Key Vault in Azure
-2. Generate or import your encryption key
-3. In Foundry settings, enable customer-managed keys
-4. Grant Foundry access to your Key Vault
-5. Select your encryption key
-
-Now all data is encrypted with your key, and you can revoke access anytime.
-
-## Setting policies for agents in tenants, subscriptions, and projects
-
-Policies enable centralized governance across your AI fleet. You can define policies at different scopes for flexible management.
-
-### Policy Hierarchy
-
-**Tenant-level policies:**
-Apply to all subscriptions and resources in your organization
-* Broadest scope
-* Set baseline requirements
-* Example: "All agents must have content filtering enabled"
-
-**Subscription-level policies:**
-Apply to all projects within a subscription
-* Department or team scope
-* More specific requirements
-* Example: "Finance department agents must log all interactions"
-
-**Project-level policies:**
-Apply to agents within a specific project
-* Most granular control
-* Use case specific rules
-* Example: "Customer support agents must mask PII"
-
-### Types of Policies
-
-**1. Content Filtering Policies:**
-```json
-{
-  "name": "Standard Content Filtering",
-  "scope": "Subscription",
-  "rules": {
-    "contentFiltering": {
-      "hate": "medium",
-      "violence": "medium",
-      "sexual": "medium",
-      "selfHarm": "medium"
+response = requests.put(
+    url,
+    headers={
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
     },
-    "enabled": true
-  }
-}
+    data=json.dumps(payload)
+)
+response.raise_for_status()
+print(response.json())
 ```
 
-**2. Model Deployment Policies:**
-```json
-{
-  "name": "Approved Models Only",
-  "scope": "Tenant",
-  "rules": {
-    "allowedModels": [
-      "gpt-4o",
-      "gpt-3.5-turbo",
-      "phi-4"
-    ],
-    "blockedModels": [
-      "*uncensored*",
-      "*unrestricted*"
-    ]
-  }
-}
+To assign the guardrail to a deployment, set the `raiPolicyName` property in the `Deployments - Create Or Update` operation.
+
+::: {.callout-tip}
+## Prompt Format Improves Guardrail Accuracy
+
+Guardrails perform significantly better when they can distinguish between the system message, user input, and assistant output. Always use the Chat Completions API's structured message format (with `role` fields) rather than concatenating everything into a single string.
+
+The safety system parses these roles and applies controls selectively to the appropriate message types.
+:::
+
+
+
+## Foundry Control Plane {#sec-control-plane}
+
+Guardrails protect individual models and agents at runtime.
+The **Foundry Control Plane** is the layer above that: a unified management interface that gives administrators, developers, and security teams a single place to observe, govern, and optimize their entire AI agent fleet (across projects, subscriptions, and even non-Foundry agent origins).
+
+The Control Plane is accessed via **Operate** in the top-right toolbar of the Foundry workspace.
+It is organized into purpose-built panes: **Overview**, **Assets**, **Observability**, **Compliance**, and **Admin**.
+As of early 2026, the Control Plane is in public preview; Foundry Agent Service reached GA in March 2026 alongside several Control Plane capabilities.
+
+::: {.callout-note}
+## Control Plane vs. the Build Experience
+
+The **Build** experience (left navigation) is where you create, configure, and test individual agents.
+The **Operate** (Control Plane) experience is where you govern and monitor them post-deployment.
+The two are tightly integrated: from a fleet alert in the Control Plane, you can jump directly into the Build experience for the offending agent without losing context.
+:::
+
+### Model Management
+
+#### Enforcing Token Limits
+
+Unconstrained token consumption is a real operational risk: a single runaway agentic loop can burn through quota that other teams depend on, spike costs unexpectedly, or obscure abuse.
+Foundry Control Plane enforces **tokens-per-minute (TPM) rate limits** and **total token quotas** for model deployments at the project scope through integration with an **AI Gateway**.
+
+The AI Gateway is an Azure API Management instance that sits between clients and model deployments.
+All requests flow through it, making it the enforcement point for rate limiting, cost tracking, and authentication.
+
+Limits apply at the **project level**: each project can have independent TPM and quota settings, which makes this mechanism well-suited for:
+
+- Multi-team token containment (preventing one project from monopolizing shared capacity).
+- Cost control by capping aggregate usage across a billing period.
+- Compliance boundaries for regulated workloads where predictable usage ceilings are required.
+
+To configure token limits:
+
+1. In the Foundry portal, ensure the **New Foundry** toggle is enabled.
+2. Select **Operate → Admin**.
+3. In the **AI Gateway** list, select the gateway you want to configure.
+4. In the gateway details pane, select **Token management** and set TPM and quota values per model deployment.
+
+::: {.callout-warning}
+## AI Gateway is a Prerequisite
+
+Token limit enforcement requires a Foundry resource with an AI Gateway already configured.
+You need the **API Management Service Contributor** role (or Owner) on the Azure API Management resource.
+If your organization does not yet have an AI Gateway deployed alongside Foundry, token limits are not enforceable through this mechanism.
+:::
+
+#### Applying Guardrail Policies
+
+A **guardrail policy** is distinct from an individual guardrail.
+Where a guardrail is a project-level configuration applied to specific models and agents, a guardrail policy is a **subscription- or resource-group-level Azure Policy** that mandates minimum guardrail controls across all model deployments in scope.
+
+Guardrail policies are the mechanism for enterprise-wide enforcement: they ensure that no deployment within your organization falls below the safety floor you define, regardless of which team created it.
+
+Policy controls include content safety filters, prompt shields, and groundedness checks.
+A deployment is considered **compliant** when its active guardrail meets or exceeds all the minimums specified by the applicable policy.
+
+To create your first guardrail policy:
+
+1. Select **Operate → Compliance** in the Foundry portal.
+2. Select **Create new policy**.
+3. Select the controls to include. These represent the minimum settings for compliance.
+4. Assign the policy to a subscription or resource group.
+
+Azure Policy performs compliance scans asynchronously; initial results may not appear immediately after policy creation.
+Non-compliant deployments are surfaced in the **Policies** tab, and bulk remediation can be applied directly from the Control Plane without switching to the Azure portal.
+
+::: {.callout-note}
+## RBAC Requirements for Policy Creation
+
+Most Foundry users *cannot* create guardrail policies.
+Policy creation requires the **Owner** or **Resource Policy Contributor** role at the Azure subscription or resource group level.
+However, any user with project access can *view* compliance status and see which deployments are non-compliant.
+Design your team's permission model accordingly.
+:::
+
+#### Cost and Performance Optimization
+
+The Control Plane's **Overview** and **Observability** panes surface cost and performance data across the fleet.
+Key signals include:
+
+- **Token usage trends** broken down by deployment, agent, and run.
+- **Cost anomalies** flagged when usage spikes unexpectedly.
+- **Latency distributions** and error rates per agent and model.
+- **Inline recommendations** for prompt refinements, model version upgrades, or configuration changes based on observed performance signals.
+
+From the **Assets** pane you can filter the entire agent and model inventory by cost, health score, token usage, and alert status.
+
+Drilling into any entry reveals the *Evaluation* and *Monitoring* tabs, which correlate runtime logs with pre-deployment evaluation results, a powerful workflow for identifying whether a performance regression is a prompt quality issue or a model behavior change.
+
+The Control Plane also integrates with *Azure Cost Management*, enabling cost attribution at the Foundry resource and model deployment level. You can set budgets with alerts and auto-pause rules, and developers get per-deployment, per-agent, and per-run cost visibility directly within Foundry without leaving the portal.
+
+
+### Agent Management
+
+The *Assets* pane in the Control Plane provides a unified, searchable inventory of every agent, model, and tool across all projects within a subscription.
+
+Agents created in Foundry Agent Service appear here automatically. Agents built outside Foundry (using frameworks like Microsoft Agent Framework, LangGraph, LangChain, or CrewAI) running on other clouds or on-premises, can be connected through AI Gateway or registered directly, bringing them into the same fleet view.
+
+From the inventory table you can:
+
+- Filter and sort by version, tags, health score, cost, alerts, and token usage.
+- Drill into any agent's evaluation and monitoring data.
+- Pause or disable an agent in response to an alert.
+- Surface inline recommendations for configuration improvements.
+
+#### Entra ID Integration
+
+Every agent created in Foundry is automatically issued a **Microsoft Entra Agent ID** at build time.
+This is not a service account or a shared credential: it is a dedicated, purpose-built identity type in Microsoft Entra ID, represented as a service principal with its own lifecycle and permissions.
+
+Entra Agent IDs serve two operational needs simultaneously:
+
+- *Management and governance*: Administrators can inventory all agents across the tenant in the Microsoft Entra admin center under **Entra ID → Agent ID → All agent identities**. This view includes Foundry agents, Microsoft Copilot Studio agents, and any third-party agents you register. From here you can apply familiar enterprise controls: Conditional Access policies, Identity Protection, network access policies, and governance settings like expiration dates and ownership.
+
+- *Tool authentication*: : When an agent invokes a tool, Foundry orchestrates a multi-step OAuth 2.0 token exchange between Agent Service, Entra ID, and the downstream resource. The agent identity blueprint uses a *federated credential* that trusts the project's managed identity, so no client secrets or certificates need to be embedded in prompts, code, or connection strings. The downstream service (Azure Storage, Azure SQL, a custom API) receives a properly scoped token and never sees shared credentials.
+
+```python
+## Example: accessing Azure Blob Storage from within an agent tool.
+from azure.identity import ManagedIdentityCredential
+from azure.storage.blob import BlobServiceClient
+
+credential = ManagedIdentityCredential()  # agent identity flows through here
+client = BlobServiceClient(
+    account_url="https://<storage-account>.blob.core.windows.net",
+    credential=credential
+)
+container_client = client.get_container_client("agent-outputs")
 ```
 
-**3. Data Access Policies:**
-```json
-{
-  "name": "PII Protection",
-  "scope": "Project",
-  "rules": {
-    "piiDetection": true,
-    "piiMasking": true,
-    "allowedDataSources": [
-      "approved-cosmos-db",
-      "approved-ai-search"
-    ]
-  }
-}
+The published/unpublished distinction matters here: unpublished agents within the same project share a common agent identity (simplifying development-time permission management), while publishing an agent promotes it to a dedicated `Agent Application` resource with its own independent identity, stable endpoint, and full audit trail.
+
+::: {.callout-tip}
+## Apply Least-Privilege RBAC to Agent Identities
+
+Because each published agent has its own service principal, you can apply RBAC roles at the individual agent level rather than granting broad project-level access.
+Grant agents only the specific roles they need. For example, `Storage Blob Data Reader` on a single container rather than `Contributor` on the entire storage account.
+:::
+
+#### Registering Custom Agents
+
+Not all agents in your fleet will be built using Foundry Agent Service. You may have agents built with open-source frameworks, deployed to other Azure services, or running entirely outside Azure. The Control Plane supports registering these as *custom agents*, bringing them under the same governance umbrella as native Foundry agents.
+
+Custom agent registration works through the *AI Gateway*: configure the gateway as the entry point for the external agent's requests, and the Control Plane can observe the agent's behavior, apply controls, and surface it in the inventory table. The agent does not need to be rebuilt or redeployed; only its request routing needs to be pointed through the gateway.
+
+Once registered, a custom agent:
+
+- Appears in the Assets inventory with full filter and sort capability.
+- Can have guardrails applied via the Control Plane's compliance tools (subject to the same agentic guardrail limitations described in @sec-guardrails).
+- Is visible in fleet-wide health and cost dashboards.
+- Can receive a Microsoft Entra Agent ID for unified identity governance.
+
+For agents built on frameworks like LangGraph or Microsoft Agent Framework that already emit OpenTelemetry traces, those traces can be forwarded to Azure Monitor and surfaced directly in the Foundry observability stack.
+
+#### Across-Fleet Monitoring
+
+The **Observability** pane is the operational nerve center of the Control Plane.
+It brings together traces, logs, evaluations, and safety signals across your entire agent fleet in a single, correlated view.
+
+Key capabilities include:
+
+- *OpenTelemetry-based tracing*: Every step of an agent's execution (e.g., prompt construction, model call, tool invocation, tool response, final output) is captured as a span in an OpenTelemetry trace. You can drill into any trace to understand decision paths, latency contributors, and failure points. Traces are stored in Azure Monitor and queryable via standard Azure Monitor tools.
+
+- *Continuous evaluation*: Foundry's evaluator library includes out-of-the-box evaluators for coherence, groundedness, relevance, safety risks, security vulnerabilities, task adherence, and tool-call accuracy. Evaluations run continuously against production traffic, not just at pre-deployment time, and are piped into Azure Monitor as of the March 2026 GA release. This makes quality a live signal rather than a pre-ship checkbox.
+
+- *AI Red Teaming Agent*: The Control Plane integrates with Foundry's AI Red Teaming Agent, which can be scheduled to run automated adversarial probing against your agents on a recurring basis. Red teaming sessions surface jailbreak vulnerabilities, prompt injection vectors, and regression issues that routine evaluation might miss. Results are correlated with trace data in the observability view, enabling root-cause analysis directly in the portal.
+
+- *Drift monitoring*: The Control Plane surfaces latency trends, error rate clusters, and evaluation score drift over time. When a model is silently degrading, perhaps after a provider update, drift charts will reveal the regression before users escalate tickets.
+
+```python
+# Example: querying Azure Monitor for agent evaluation metrics
+# using the azure-monitor-query SDK.
+from azure.monitor.query import LogsQueryClient, LogsQueryStatus
+from azure.identity import DefaultAzureCredential
+from datetime import timedelta
+
+credential = DefaultAzureCredential()
+client = LogsQueryClient(credential)
+
+workspace_id = "<your-log-analytics-workspace-id>"
+
+query = """
+AzureDiagnostics
+| where ResourceType == "AISERVICES"
+| where OperationName == "AgentRun"
+| extend TaskAdherenceScore = toreal(properties_s.taskAdherence)
+| summarize avg(TaskAdherenceScore), count() by bin(TimeGenerated, 1h), AgentId_s
+| order by TimeGenerated desc
+"""
+
+response = client.query_workspace(
+    workspace_id=workspace_id,
+    query=query,
+    timespan=timedelta(days=7)
+)
+
+if response.status == LogsQueryStatus.SUCCESS:
+    for row in response.tables[0].rows:
+        print(row)
 ```
 
-**4. Cost Control Policies:**
-```json
-{
-  "name": "Budget Limits",
-  "scope": "Project",
-  "rules": {
-    "monthlyBudget": 5000,
-    "alertThreshold": 0.8,
-    "autoShutdown": false,
-    "costAllocation": {
-      "costCenter": "CC-1234",
-      "project": "CustomerSupport"
-    }
-  }
-}
-```
-
-### Exercise: Implement your first policy and evaluate model compliance
-
-Let's create and enforce a policy that ensures all production agents meet security and compliance standards.
-
-**Step 1: Define Policy Requirements**
-
-Create a "Production Agent Policy" that requires:
-* Content filtering enabled (Medium level)
-* Jailbreak protection enabled
-* PII detection and masking enabled
-* Audit logging enabled
-* Cost alerts configured
-
-**Step 2: Create the Policy**
-
-1. Navigate to **Operate** → **Policies**
-2. Click **+ Create policy**
-3. Configure policy details:
-   * Name: "Production Agent Security Policy"
-   * Description: "Mandatory security requirements for production agents"
-   * Scope: Select subscription
-   * Apply to: All agents tagged as "production"
-
-4. Add policy rules:
-   ```json
-   {
-     "contentFiltering": {
-       "level": "medium",
-       "required": true
-     },
-     "jailbreakProtection": {
-       "enabled": true,
-       "required": true
-     },
-     "piiProtection": {
-       "detection": true,
-       "masking": true,
-       "required": true
-     },
-     "auditLogging": {
-       "enabled": true,
-       "retentionDays": 90,
-       "required": true
-     },
-     "costAlerts": {
-       "enabled": true,
-       "threshold": 1000,
-       "required": true
-     }
-   }
-   ```
-
-5. Set enforcement mode:
-   * **Audit** - Log non-compliance but don't block
-   * **Enforce** - Block non-compliant agents from running
-
-6. Click **Create policy**
-
-**Step 3: Evaluate Compliance**
-
-1. Navigate to **Operate** → **Compliance**
-2. View compliance dashboard:
-   * Overall compliance score
-   * Non-compliant agents
-   * Policy violations by type
-
-3. Filter to see agents affected by your new policy:
-   * Tag filter: "production"
-   * Policy filter: "Production Agent Security Policy"
-
-4. Review non-compliant agents:
-   * Click on an agent to see which requirements it fails
-   * View recommended actions to achieve compliance
-
-**Step 4: Remediate Non-Compliance**
-
-For each non-compliant agent:
-
-1. Click **View details** to see specific violations
-2. Click **Remediate** to apply fixes:
-   * Enable content filtering
-   * Turn on jailbreak protection
-   * Configure PII masking
-   * Enable audit logging
-   * Set up cost alerts
-
-3. For bulk remediation:
-   * Select multiple agents
-   * Click **Bulk actions** → **Apply policy settings**
-   * Confirm changes
-
-**Step 5: Monitor Ongoing Compliance**
-
-1. Set up compliance monitoring:
-   * Navigate to **Alerts** → **+ Create alert rule**
-   * Condition: "Agent becomes non-compliant"
-   * Action: Send email to security team
-   * Frequency: Check hourly
-
-2. Schedule compliance reports:
-   * Navigate to **Reports** → **Compliance report**
-   * Schedule: Weekly on Monday
-   * Recipients: Add stakeholder emails
-   * Click **Schedule**
-
-3. Review compliance trends:
-   * Track compliance score over time
-   * Identify recurring issues
-   * Measure policy effectiveness
-
-## Implementing controls to manage agent access to resources
-
-Fine-grained access control ensures agents only access resources they need, implementing the principle of least privilege.
-
-### Access Control Models
-
-**1. Role-Based Access Control (RBAC):**
-Assign roles to agents:
-* **Agent Reader** - View agent configuration
-* **Agent User** - Execute agent
-* **Agent Contributor** - Modify agent
-* **Agent Owner** - Full control including deletion
-
-**2. Resource-Based Access Control:**
-Control which resources agents can access:
-* Databases
-* APIs
-* File storage
-* External services
-
-**3. Attribute-Based Access Control (ABAC):**
-Define access based on attributes:
-* Time of day
-* User location
-* Data sensitivity
-* Agent trust level
-
-### Implementing Access Controls
-
-**Step 1: Define Resource Permissions**
-
-For each resource an agent needs to access:
-
-1. Identify minimum required permissions
-2. Create a custom role if needed:
-
-```json
-{
-  "Name": "Agent Cosmos DB Reader",
-  "Description": "Read-only access to product catalog",
-  "Actions": [
-    "Microsoft.DocumentDB/databaseAccounts/readMetadata",
-    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/read"
-  ],
-  "NotActions": [],
-  "DataActions": [
-    "Microsoft.DocumentDB/databaseAccounts/readMetadata",
-    "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/read"
-  ],
-  "NotDataActions": [],
-  "AssignableScopes": ["/subscriptions/{subscription-id}"]
-}
-```
-
-**Step 2: Apply Least Privilege**
-
-Grant only necessary permissions:
-* Read-only access when write isn't needed
-* Specific containers, not entire database
-* Limited time-based access for temporary needs
-
-**Step 3: Implement Network Security**
-
-1. Use private endpoints for data sources:
-   * Create VNet for Foundry resources
-   * Configure private endpoints
-   * Disable public access
-
-2. Configure firewall rules:
-   * Allow only agent subnet
-   * Block all other traffic
-
-3. Use Network Security Groups (NSGs):
-   * Restrict inbound/outbound traffic
-   * Log all access attempts
-
-**Step 4: Monitor Access Patterns**
-
-1. Enable diagnostic logging for all resources
-2. Send logs to Log Analytics workspace:
-   ```bash
-   az monitor diagnostic-settings create \
-     --resource {resource-id} \
-     --workspace {workspace-id} \
-     --logs '[{"category": "DataPlaneRequests", "enabled": true}]'
-   ```
-
-3. Create alert rules for suspicious access:
-   * Access from unexpected IP addresses
-   * Unusual volume of requests
-   * Failed authentication attempts
-   * Access to unauthorized resources
-
-**Step 5: Regular Access Reviews**
-
-1. Schedule quarterly access reviews:
-   * Review agent permissions
-   * Remove unused access
-   * Update based on current needs
-
-2. Automated tools for access review:
-   * Use Foundry Control Plane compliance dashboard
-   * Export access reports
-   * Identify over-privileged agents
-   * Apply principle of least privilege
-
-### Example: Secure Multi-Tenant Agent Access
-
-For a multi-tenant scenario:
-
-1. **Isolate tenant data:**
-   * Separate Cosmos DB containers per tenant
-   * Partition key: tenantId
-
-2. **Agent per tenant:**
-   * Deploy agent instance per tenant
-   * Each with its own managed identity
-
-3. **Scope permissions:**
-   * Agent A can only access Tenant A data
-   * Agent B can only access Tenant B data
-
-4. **Implement row-level security:**
-   * Filter queries by tenantId
-   * Validate user context in agent logic
-
-5. **Audit cross-tenant access attempts:**
-   * Log all data access with tenant context
-   * Alert on cross-tenant violations
-
-By implementing these controls, you ensure that your AI agents operate securely, comply with organizational policies, and maintain the trust of your users and stakeholders.
-
-
-## Publishing to M365/A365
-
-Once you've developed and tested models locally, you can deploy them to Microsoft 365 (M365) or Agent 365 (A365) for enterprise-wide access.
-
-### Publishing to Microsoft 365
-
-**Microsoft 365 Integration** enables your agents to:
-* Appear in Microsoft 365 Copilot
-* Integrate with Teams, Outlook, Word, Excel, PowerPoint
-* Access Microsoft Graph for organizational data
-* Provide consistent experience across Microsoft 365 apps
-
-**Publishing Process:**
-
-1. **Develop Locally:**
-   * Build and test agent with Foundry Local
-   * Validate functionality and performance
-   * Ensure compliance with organizational policies
-
-2. **Deploy to Foundry Cloud:**
-   * Upload your agent to Microsoft Foundry
-   * Configure cloud-based tools and connections
-   * Set up production configurations
-
-3. **Publish to M365:**
-   * In Foundry portal, select your agent
-   * Click **Publish** → **Microsoft 365 Copilot**
-   * Configure metadata and permissions
-   * Submit for organizational approval
-
-4. **Admin Approval:**
-   * IT admin reviews in Microsoft 365 Admin Center
-   * Verifies security and compliance
-   * Approves for organizational deployment
-
-5. **User Access:**
-   * Agent appears in M365 Copilot agent store
-   * Users can discover and use in their workflow
-   * Works across all M365 applications
-
-### Publishing to Agent 365
-
-**Agent 365** is the control plane for enterprise AI agents, providing:
-* Unified agent registry across Microsoft and third-party agents
-* Centralized identity and access management
-* Enterprise-grade security and compliance
-* Integration with Defender, Purview, and Entra ID
-
-**Publishing to Agent 365:**
-
-1. **Register Agent Identity:**
-   * Create agent identity in Entra ID
-   * Configure permissions and roles
-   * Set up managed identity for authentication
-
-2. **Deploy as Hosted Agent:**
-   * Package agent as container
-   * Deploy to Microsoft Foundry
-   * Configure endpoint and scaling
-
-3. **Publish to Agent 365:**
-   * Use Foundry API or portal
-   * Specify metadata and capabilities
-   * Mark as production-ready
-
-4. **Governance Integration:**
-   * Automatically appears in Agent 365 registry
-   * Subject to organizational policies
-   * Monitored by Control Plane
-
-### Hybrid Deployment Strategy
-
-Many organizations use a hybrid approach:
-
-**Development:** Foundry Local
-* Fast iteration
-* No cloud costs
-* Offline capability
-
-**Testing:** Foundry Cloud (staging)
-* Integration testing
-* Performance validation
-* Security scanning
-
-**Production:** Microsoft 365/Agent 365
-* Enterprise deployment
-* Full governance
-* Maximum reach
-
-This approach provides flexibility while maintaining control and compliance as solutions move from development to production.
+
+
+### Compliance and Security
+
+The *Compliance* pane in the Control Plane is where policy meets practice.
+It consolidates three distinct security layers into a single interface:
+
+- *Foundry Guardrails**: Content filters, prompt shields, and abuse detection protect managed inference endpoints at the model layer. The compliance view shows which deployments have guardrails assigned, which meet policy minimums, and which are non-compliant with direct links to remediate.
+
+- *Microsoft Defender for Cloud*: Foundry integrates with Defender for Cloud to surface security posture recommendations and threat protection alerts. Defender specifically detects jailbreak attempts and user input attacks targeting Foundry Tool endpoints. Enabling Defender requires the `Security Admin` or `Owner` role on the subscription. Once enabled, Defender alerts appear in the *Risks + Alerts* section of the Foundry portal, and the same alerts are visible in the Control Plane's Compliance pane without switching tools.
+
+- *Microsoft Purview*: Purview integration provides auditing, sensitive information type (SIT) classification, and Data Security Posture Management (DSPM) for AI. When enabled, Purview captures prompt and response data from Foundry agents and classifies it for compliance purposes. This is useful for regulated industries that need to demonstrate what data their AI systems processed and when.
+
+::: {.callout-important}
+## Purview Requires User-Context Tokens
+
+Microsoft Purview Data Security Policies require API calls to use **Microsoft Entra ID authentication with a user-context token** (or to explicitly include user context via `AzureUserSecurityContext`).
+Service-to-service calls using application-only credentials will appear in Purview Audit but will not receive DSPM policy enforcement.
+If your agents operate in a fully automated pipeline without user context, plan your Purview integration accordingly.
+:::
+
+- *The three-layer model:* Guardrails at the model layer, Defender at the network/threat layer, and Purview at the data governance layer. This provides defense in depth for enterprise AI deployments. Each layer is independently configurable and surfaced in a single compliance dashboard, making it practical to maintain a coherent security posture even as your agent fleet grows.
+
+#### Key Security Risks to Address
+
+Building AI workloads introduces attack surfaces that traditional application security does not cover. The Control Plane's compliance tooling is specifically designed to address:
+
+- *Prompt injection*: Malicious inputs crafted to manipulate model behavior or bypass safety controls (including cross-prompt injection attacks, XPIA, where malicious instructions are embedded in data retrieved from external sources).
+- *Sensitive data leakage*: Models inadvertently including confidential information in responses, either from training data or from retrieval-augmented context.
+- *Model misuse*: Unauthorized or abusive use of AI capabilities that violates organizational policies, detectable through token usage anomalies and Defender signals.
+- *Task drift*: Agents gradually or suddenly beginning to take actions outside their defined scope, detectable via the task adherence guardrail and drift monitoring.
+
+
+
+## Summary
+
+Agent management in Microsoft Foundry is a layered discipline. Guardrails handle runtime safety at the signal level: they inspect every prompt, tool call, tool response, and completion against a configurable risk profile and either annotate or block content that exceeds your thresholds.
+
+The Foundry Control Plane handles operational governance at the fleet level: it surfaces every agent, model, and tool in a single inventory; enforces subscription-wide guardrail policies; tracks costs and performance across projects; integrates with Entra ID for durable agent identity; and connects with Defender and Purview for security and compliance.
+
+The two systems are complementary. A *guardrail* catches a harmful tool call from a specific agent in real time. The *Control Plane* tells you, the next morning, that seven agents across three projects have drifting task adherence scores and two of them triggered Microsoft Defender alerts overnight. Together they give you both the reflexes and the situational awareness that production AI systems require.
+
+In the next chapter, we'll learn about deploying agents to local and edge environments. This is a different set of challenges than cloud deployment: connectivity constraints, latency requirements, and hardware limitations all come into play. Foundry provides tools to help you navigate these complexities while maintaining as much consistency with your cloud-based workflows as possible.

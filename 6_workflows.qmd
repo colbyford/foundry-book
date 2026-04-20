@@ -379,6 +379,9 @@ Other common issues you might encounter include:
 
 * *The workflow times out.* - Break large, deeply nested workflows into smaller sub-workflows connected by agent calls. Check that any external HTTP calls made by agent tools have reasonable timeouts. A tool that waits indefinitely on a slow API will stall the entire workflow run.
 
+
+{{< pagebreak >}}
+
 ## Summary
 
 Workflows are the orchestration tier that sits above individual agents. They let you coordinate multiple agents in a predictable order (sequential), route dynamically between specialists (group chat), or pause for human input at any point in the process (human in the loop). Power Fx provides the formula language

@@ -1,11 +1,13 @@
-# Additional Features and Conclusion
+# Potpourri and Conclusion
 
-In this conclusionary chapter, we'll wrap up the book by providing some final best practices for designing an Azure cloud architecture that integrates well with Foundry. Plus, readers will learn about how to plan for serverless AI options in Azure.
+In this conclusionary chapter, we'll wrap up the book by covering a few other features of Microsoft Foundry that didn't fit elsewhere (what I call "potpourri") and I'll show you some additional open-source tools from Microsoft that are related to agentic workloads. Lastly, I'll be providing some best practices and considerations for designing an Azure cloud architecture that integrates well with Foundry Agents. Plus, I'll leave you with some resources to continue your learning journey beyond this book.
 
 ## Additional Features
 
+As you may have noticed throughout this book, Microsoft Foundry has a ton of features, and new features seem to be coming out regularly. In this section, I'll briefly cover some of the features that didn't necessarily fit into the previous chapters, but that are still important to be aware of as you design and build your agents.
 
 ### Memory
+
 Traditional LLM interactions are stateless by default. Foundry IQ introduces memory as a managed capability that allows agents to retain and recall context across interactions. Memory in Foundry IQ supports:
 
 - Conversational continuity across sessions
@@ -15,7 +17,107 @@ Traditional LLM interactions are stateless by default. Foundry IQ introduces mem
 
 This transforms agents from reactive prompt responders into persistent digital collaborators. Importantly, memory is governed: retention policies, isolation boundaries, and enterprise controls ensure that memory enhances intelligence without compromising security or compliance
 
-## Best practices for implementing enterprise AI
+
+### Evaluations & Red Team
+
+
+### Batch Jobs
+
+
+### AI Services
+
+
+
+## Related Open-Source Projects
+
+In addition to the features available today in Microsoft Foundry, Microsoft has also released a number of open-source projects that are related to agentic workloads. These projects can be used in conjunction with Foundry or independently, depending on your needs. I'm mentioning a few here as I think they could be useful in certain scenarios, but this is not an exhaustive list of all the agent-related projects that Microsoft has released.
+
+### GraphRAG
+
+You may recall in the Knowledge Bases chapter we built a Retrieval Augmented Generation (RAG) system using Azure AI Search and connected an agent to our data. There are many RAG-based architectures and approaches to building intelligent agents, each with their own strengths and weaknesses.
+
+Normal RAG may struggle to connect the dots well enough for an LLM to synthesize a coherent response when answering a question requires traversing disparate pieces of information. There's also the limitation that traditional RAG systems may struggle to summarize semantic concepts when given a very large collection of data. This is where GraphRAG comes in.
+
+GraphRAG is an open-source framework that simplifies the process of building RAG systems by providing a set of tools and libraries for integrating graph databases with LLMs. It allows you to create knowledge graphs from your data and use them to enhance the retrieval capabilities of your agents. GraphRAG uses LLM-generated knowledge graphs to provide substantial improvements in question-and-answer performance when conducting document analysis of complex information.
+
+Here are some terms to know when working with GraphRAG:
+
+- Entities & Relations: Extract key concepts and how they connect
+- Communities: Cluster strongly-related entities together into groups that represent a piece of knowledge
+- Hierarchy: Organize information into multiple levels of granularity, from topic-specific details to high-level overviews.
+
+When running GraphRAG, it has two main steps: 
+
+1. *Index:* Slices up the input corpus into a series of TextUnits, then extracts all entities, relationships, and key claims. It then performs hierarchical clustering of the graph and generates summaries of each community and its constituents from the bottom-up.
+2. *Query:* Retrieves the most relevant graph nodes based on the query and flattens the graph into a prompt for the LLM. The LLM can then use the structured information in the graph to generate more accurate and coherent responses. There are multiple query modules in GraphRAG, including:
+  - *Global Search:* Enables reasoning about holistic questions about the corpus by leveraging the community summaries.
+  - *Local Search:* Enables reasoning about specific entities by fanning-out to their neighbors and associated concepts.
+  - *DRIFT Search:* Enables reasoning about specific entities by fanning-out to their neighbors and associated concepts, but with the added context of community information.
+  - *Basic Search:* Better for situations where your query is best answered by baseline RAG (standard top `k` vector search).
+
+GraphRAG can also generate domain-adapted prompts for improved interactions with the LLM using the `graphrag prompt-tune` command. This tunes the prompt to find a better template for your specific dataset and use case, which can improve how the LLM organizes your data in the graph.
+
+You can install GraphRAG and try it out yourself using the commands below. The initialization process will create two files, `.env` and `settings.yaml`, and an `input/` directory, in the current directory. The `.env` file is where you can set your environment variables to connect to models in Microsoft Foundry or to GPT model using OpenAI's API.
+
+```bash
+## Install GraphRAG
+pip install graphrag
+
+## Initialize
+graphrag init
+
+```
+
+Once the initialization is complete, you can place your documents in the `input/` directory and then run the `index` command to build your graph. After that, you can run queries against your graph using the `query` command, specifying the search method using `--method`. For example, if I had a corpus of the text from all of O'Reilly's books and I wanted to know which of those books cover generative AI, I could run the following command:
+
+```bash
+## Index
+graphrag index
+
+## Query
+graphrag query \
+  "Which O'Reilly books cover generative AI?" \
+  --method local
+```
+
+Since this open-source package sits outside of Foundry (at least for now), you'll have to get creative to integrate it with your Foundry agents. One approach could be to deploy GraphRAG as a microservice in Azure (e.g., using Azure Functions or Azure App Service) and then connect your Foundry agents to it via API calls. This way, you can leverage the enhanced retrieval capabilities of GraphRAG within your Foundry agents without having to wait for native integration.
+
+To learn more about GraphRAG and how to use it, check out the GitHub repository: [https://github.com/microsoft/graphrag](https://github.com/microsoft/graphrag).
+
+### Microsoft Agent Framework
+
+The Microsoft Agent Framework is an open-source project that is touted as the "comprehensive multi-language framework for building, orchestrating, and deploying AI agents". It includes components for natural language understanding, dialogue management, and tool integration. The framework is available for Python, C#, and .NET and is designed to be flexible and extensible, allowing developers to create agents that can interact with a wide range of tools and services.
+
+For example, in the code block below, we can quickly make an comedian agent:
+
+```python
+# pip install agent-framework
+from agent_framework.foundry import FoundryChatClient
+from azure.identity import AzureCliCredential
+
+credential = AzureCliCredential() ## Uses your local Azure CLI credential
+client = FoundryChatClient(
+    project_endpoint="https://<FOUNDRY-RESOURCE>.services.ai.azure.com/api/projects/<FOUNDRY-PROJECT>",
+    model="gpt-5.4-mini",
+    credential=credential,
+)
+
+agent = client.as_agent(
+    name="ComedianAgent",
+    instructions="You are a comedian assistant. Make all of your responses funny, and always include a joke in your answer.",
+)
+
+## Get response (non-streaming)
+result = await agent.run("Tell me a joke about computers.")
+print(f"Agent: {result}")
+## Agent: Why did the computer go to the doctor? Because it had a virus!
+```
+
+Parts of the Microsoft Agent Framework will feel familiar because they use the same services that power Microsoft Foundry. However, the Agent Framework is a separate project that can be used independently of Foundry. It provides a more code-centric approach to building agents, while Foundry provides a low-code/no-code interface for building and managing agents at scale. Depending on your needs and preferences, you may choose to use one or both of these tools in your AI agent development process.
+
+For more information about the Microsoft Agent Framework, check out their GitHub repository: [https://github.com/microsoft/agent-framework](https://github.com/microsoft/agent-framework).
+
+## Best Practices
 
 As organizations scale their AI deployments from prototypes to production, following best practices ensures success, maintains security, and maximizes return on investment.
 
@@ -812,184 +914,11 @@ Client → API Management →
 
 **Estimated Cost:** $50-5000/month (highly variable based on usage)
 
-### Understanding serverless options for AI in Azure
 
-**Serverless AI** enables you to run AI workloads without managing infrastructure, paying only for actual usage rather than provisioned capacity.
-
-### Serverless Components in Azure AI
-
-**1. Serverless Model Deployments:**
-
-Models deployed as serverless APIs provide:
-* **No quota management** - Don't count against subscription quotas
-* **Pay-per-token** - Charge only for tokens processed
-* **Auto-scaling** - Handle variable load automatically
-* **Global availability** - Deploy in multiple regions without managing capacity
-* **Fast deployment** - Ready in minutes, not hours
-
-**Available Models:**
-* Azure OpenAI models (GPT-4o, GPT-4, GPT-3.5)
-* Partner models (Mistral, Cohere, Llama)
-* Community models from Azure Marketplace
-
-**When to Use:**
-* Variable or unpredictable workload
-* Development and testing
-* Small to medium traffic
-* Cost optimization priority
-* Quick time to market
-
-**2. Serverless Compute (Azure Functions):**
-
-For agent orchestration and custom logic:
-* **Consumption plan** - Pay per execution
-* **Premium plan** - Pre-warmed instances for lower latency
-* **Event-driven** - Triggered by HTTP, queues, timers, etc.
-
-**Example Use Case:**
-```javascript
-// Azure Function for agent invocation
-const { AgentClient } = require('@azure/ai-foundry');
-const { DefaultAzureCredential } = require('@azure/identity');
-const { CosmosClient } = require('@azure/cosmos');
-
-const agentClient = new AgentClient(
-    process.env.FOUNDRY_ENDPOINT,
-    new DefaultAzureCredential()
-);
-
-const cosmosClient = new CosmosClient({
-    endpoint: process.env.COSMOS_ENDPOINT,
-    key: process.env.COSMOS_KEY
-});
-
-const database = cosmosClient.database('ConversationDB');
-const container = database.container('Conversations');
-
-module.exports = async function (context, req) {
-    const userMessage = req.body.message;
-    
-    // Call Foundry agent
-    const response = await agentClient.sendMessage({
-        agentId: process.env.AGENT_ID,
-        message: userMessage
-    });
-    
-    // Log to Cosmos DB
-    await container.items.create({
-        id: new Date().getTime().toString(),
-        userMessage: userMessage,
-        agentResponse: response.content,
-        timestamp: new Date().toISOString()
-    });
-    
-    context.res = {
-        body: response.content
-    };
-};
-```
-
-**3. Serverless Storage:**
-
-**Azure Cosmos DB (serverless):**
-* Pay per request unit (RU)
-* No minimum throughput
-* Ideal for conversation history
-* Auto-scales to zero
-
-**Azure Blob Storage:**
-* Pay for storage used
-* No minimum capacity
-* For documents and files
-
-**4. Serverless API Management:**
-
-**Consumption tier:**
-* Pay per API call
-* No management overhead
-* Automatic scaling
-* Built-in security
-
-### Serverless Architecture Benefits
-
-**Cost Efficiency:**
-* Zero cost when idle
-* No over-provisioning
-* Granular billing (per token, per request)
-* Cost predictability with rate limits
-
-**Operational Simplicity:**
-* No servers to manage
-* Automatic patching and updates
-* Built-in high availability
-* Minimal configuration
-
-**Elasticity:**
-* Scale to zero when unused
-* Scale to thousands of requests/second
-* Handle traffic spikes automatically
-* No capacity planning needed
-
-### Serverless Architecture Considerations
-
-**Cold Start:**
-* First request may have higher latency
-* Mitigate with:
-  - Premium plan for Functions
-  - Keep-alive requests
-  - Connection pooling
-
-**Execution Limits:**
-* Function timeout (default 5 minutes, max 10 minutes)
-* Request size limits
-* Concurrency limits
-* Plan accordingly for long-running tasks
-
-**State Management:**
-* Serverless components are stateless
-* Use Cosmos DB or Redis for state
-* Design for idempotency
-* Handle retries gracefully
-
-**Cost at Scale:**
-* Serverless can be expensive at very high volume
-* Calculate break-even point
-* Consider dedicated resources for consistent high traffic
-* Use hybrid approach (serverless + dedicated)
-
-### Choosing Between Serverless and Dedicated
-
-**Use Serverless When:**
-* Workload is variable or intermittent
-* Cost optimization is priority
-* Quick deployment needed
-* Development and testing
-* Small to medium scale
-
-**Use Dedicated When:**
-* Consistent high traffic
-* Latency critical (< 100ms)
-* Need fine-grained control
-* Compliance requires dedicated resources
-* Very high volume (cost-effective)
-
-**Hybrid Approach:**
-Many organizations use both:
-* Serverless for dev/test and variable workloads
-* Dedicated for production high-volume scenarios
-* Serverless as overflow capacity
-
-### Getting Started with Serverless AI
-
-**Step 1:** Start with serverless for development
-**Step 2:** Monitor usage and costs
-**Step 3:** Identify patterns and requirements
-**Step 4:** Optimize based on actual usage
-**Step 5:** Consider dedicated resources for proven high-volume scenarios
 
 ## Final Thoughts
 
-As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology—it's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success.
+I suppose all good things must come to an end, but the party has just begun! As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology. It's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success. I encourage you to experiment, iterate, and share your learnings with the community. The future of enterprise AI is being formed now with Microsoft Foundry at the center.
 
 **Key Takeaways:**
 
@@ -1002,14 +931,15 @@ As we conclude this journey through Microsoft Foundry, remember that AI is not j
 
 As AI continues to evolve, Microsoft Foundry will evolve with it, providing new capabilities, models, and tools. The fundamentals of good engineering—clear requirements, solid architecture, comprehensive testing, and continuous improvement—remain constant.
 
-We encourage you to experiment, build, and share your learnings with the community. The future of enterprise AI is being written now, and you're part of that story.
+I encourage you to experiment, build, and share your learnings with the community. Be sure to show off what you've built online.
 
 **Next Steps:**
 
 * Visit the [Microsoft Foundry portal](https://ai.azure.com) to start building
 * Join the [Microsoft Foundry community](https://aka.ms/foundry/community)
+* Keep an eye on the Dev Blog: [https://devblogs.microsoft.com/foundry](https://devblogs.microsoft.com/foundry) for updates and best practices.
 * Explore the [documentation](https://learn.microsoft.com/azure/ai-foundry/)
 * Work through the Foundry examples on GitHub: [https://github.com/microsoft-foundry/foundry-samples](https://github.com/microsoft-foundry/foundry-samples)
 * Share your success stories and learn from others
 
-Thank you for reading, and best of luck with your AI journey!
+Thank you for reading and, as always, stay curious...

@@ -117,6 +117,12 @@ Parts of the Microsoft Agent Framework will feel familiar because they use the s
 
 For more information about the Microsoft Agent Framework, check out their GitHub repository: [https://github.com/microsoft/agent-framework](https://github.com/microsoft/agent-framework).
 
+### Microsoft Agent Governance Toolkit
+
+The Microsoft Agent Governance Toolkit is an open-source project that provides a set of tools and best practices for governing AI agents in production. It includes components for monitoring agent behavior, enforcing policies, and managing risks associated with AI agents. The toolkit is designed to help organizations ensure that their AI agents operate safely, ethically, and in compliance with regulatory requirements. This includes policy enforcement, zero-trust identity, execution sandboxing, and reliability engineering for autonomous AI agents.
+
+For more information about the Microsoft Agent Governance Toolkit, check out their GitHub repository: [https://github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit).
+
 ## Best Practices
 
 As organizations scale their AI deployments from prototypes to production, following best practices ensures success, maintains security, and maximizes return on investment.

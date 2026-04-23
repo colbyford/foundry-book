@@ -20,13 +20,13 @@ Not every multi-step task needs a workflow. If you can express the logic inside 
 
 Workflows earn their keep when you need at least one of the following:
 
-* *Multiple agents with distinct roles.* - A triage agent that classifies an incoming request, a retrieval agent that fetches relevant documents, and a summarization agent that drafts the response each have a clear boundary of responsibility. Stitching them in a single prompt muddies those boundaries and makes debugging harder.
+* *Multiple agents with distinct roles.* A triage agent that classifies an incoming request, a retrieval agent that fetches relevant documents, and a summarization agent that drafts the response each have a clear boundary of responsibility. Stitching them in a single prompt muddies those boundaries and makes debugging harder.
 
-* *Branching logic that belongs outside the model.* - If your flow depends on structured conditions, "if the customer tier is Enterprise, route to the premium support agent; otherwise, route to the self-serve agent", encode that logic in the workflow, not in a prompt. Prompts are not reliable for controlling flow.
+* *Branching logic that belongs outside the model.* If your flow depends on structured conditions, "if the customer tier is Enterprise, route to the premium support agent; otherwise, route to the self-serve agent", encode that logic in the workflow, not in a prompt. Prompts are not reliable for controlling flow.
 
-* *Human checkpoints.* - Approval gates, clarifying questions, and escalations all require pausing execution and waiting for a person to respond. Workflows have a dedicated node type for this pattern; there is no clean way to implement it inside a single agent loop.
+* *Human checkpoints.* Approval gates, clarifying questions, and escalations all require pausing execution and waiting for a person to respond. Workflows have a dedicated node type for this pattern; there is no clean way to implement it inside a single agent loop.
 
-* *Auditable, reusable pipelines.* - Versioning is built into the workflow engine. Every save creates a new, immutable version. That makes it straightforward to roll back, compare runs across versions, and meet compliance requirements that ask "what logic produced this output?"
+* *Auditable, reusable pipelines.* Versioning is built into the workflow engine. Every save creates a new, immutable version. That makes it straightforward to roll back, compare runs across versions, and meet compliance requirements that ask "what logic produced this output?"
 
 ## Multi-Agent Orchestration Patterns
 
@@ -38,7 +38,7 @@ In many of such orchestration patterns, you'll find a recurring theme: the divis
 
 ### Sequential
 
-The simplest and most common pattern. Each agent receives the output of the previous one and passes its result downstream. The order is fixed at design time.
+Sequential workflows are the simplest and most common pattern. Each agent receives the output of the previous one and passes its result downstream. The order is fixed at design time.
 
 Sequential workflows are a good choice for *pipeline-style tasks*: ingest → enrich → validate → format → deliver. They are predictable, easy to test step-by-step, and easy to explain to stakeholders.
 
@@ -46,7 +46,7 @@ Use this pattern when the stages of a task are well-defined and the output of on
 
 ### Group Chat
 
-The group chat pattern introduces an *orchestrator agent* that routes control to specialist agents dynamically, based on the conversation context or on explicit rules. After a specialist responds, control returns to the orchestrator, which decides the next step.
+The group chat pattern introduces an *orchestrator agent* that routes ("orchestrates") control to specialist agents dynamically, based on the conversation context or on explicit rules. After a specialist responds, control returns to the orchestrator, which decides the next step.
 
 This is the right pattern for *escalation and handoff scenarios*: a general intake agent that decides whether a request needs a legal reviewer, a compliance checker, or a technical expert. It is also useful when you cannot enumerate all routing paths at design time, the orchestrator's prompt or tools handle the decision at runtime.
 
@@ -54,7 +54,7 @@ The trade-off is observability. A sequential workflow is trivially traceable; th
 
 ### Human in the Loop
 
-This pattern inserts a pause node at any point in the workflow, Foundry halts execution and waits for a human response before proceeding. The human's input is then available as a variable to downstream nodes.
+The human-in-the-loop pattern inserts a pause node at any point in the workflow. Foundry halts execution and waits for a human response before proceeding. The human's input is then available as a variable to downstream nodes.
 
 Common applications include:
 
@@ -71,7 +71,7 @@ Other patterns exist beyond these three, but there aren't templates for them in 
 
 * *Concurrent*: Multiple agents to work on the same task in parallel. Each agent processes the input independently, and their results are collected and aggregated before the output is formed. This pattern is useful for "brainstorming" or "voting" scenarios, where you want diverse perspectives on the same input.
 * *Handoff*: Agents to transfer control to one another based on the context or user request. This pattern works well in customer support, expert systems, or scenarios requiring dynamic delegation.
-* *Group Chat*: Multiple agents collaborate in a shared conversation that is coordinated by an orchestrator agent. The orchestrator routes messages between specialists and may iterate the responses before providing a final response. This pattern is ideal for complex decision-making, multi-domain tasks, or when the flow cannot be predetermined.
+<!-- * *Group Chat*: Multiple agents collaborate in a shared conversation that is coordinated by an orchestrator agent. The orchestrator routes messages between specialists and may iterate the responses before providing a final response. This pattern is ideal for complex decision-making, multi-domain tasks, or when the flow cannot be predetermined. -->
 * *Magentic*: A manager agent dynamically coordinates specialized agents. The manager assigns tasks, sets goals, and integrates results. This pattern is suitable for complex projects that require high-level planning and adaptability.
 
 
@@ -86,11 +86,17 @@ Every expression that references a variable needs a scope prefix:
 - `Local.` for variables defined within this workflow (for example, user responses saved by an Ask-a-question node, or JSON output saved by an agent node).
 - `System.` for runtime context provided by the platform (for example, `System.LastMessage.Text`, `System.User.Language`, or `System.Conversation.Id`).
 
-Forgetting the prefix is the single most common Power Fx mistake. If you see a "Name isn't valid" error, the prefix is almost certainly missing.
+::: {.callout-tip}
+
+Forgetting the prefix is the single most common Power Fx mistake. If you see a "Name isn't valid" error, the prefix is almost certainly missing. Also, Power Fx is case-sensitive, so `local.` or `system.` will not work.
+
+:::
+
+
 
 ### Useful Formulas by Type
 
-The table below maps data types to the Power Fx functions you will reach for most often. This is not exhaustive. The full reference is available in Microsoft's Power Fx documentation, but these will covers most of your workflow expression needs.
+@tbl-powerfx maps data types to the Power Fx functions you will reach for most often. This is not exhaustive. The full reference is available in Microsoft's Power Fx documentation, but these will covers most of your workflow expression needs.
 
 | Type | Formulas you will use |
 |------|----------------------|

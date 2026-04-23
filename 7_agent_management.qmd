@@ -21,7 +21,7 @@ A *Guardrail* is a named, reusable collection of *Controls*.
 Each control specifies three things:
 
 1. *Risk*: What to detect: hate speech, prompt injection, task drift.
-2. *Intervention point*: Where in the pipeline to scan for that risk:  user input, tool call, tool response, output.
+2. *Intervention point*: Where in the pipeline to scan for that risk: user input, tool call, tool response, output.
 3. *Action*: What to do when the risk is detected: annotate or block.
 
 
@@ -41,7 +41,7 @@ Navigate to the *Build* tab at the top of the Foundry Portal and click on the *G
 
 ![Locating Guardrails from the Foundry UI](figures/am/ss_guardrails_001_ann.png){#fig-D83D}
 
-You'll notice that there are a couple Guardrails that are pre-defined for you, such as `Microsoft.DefaultV2`. These are Microsoft-created baseline Guardrails that you can assign directly to your agents and model deployments, or use as a starting point to customize your own.
+You'll notice a couple Guardrails are pre-defined for you, such as `Microsoft.DefaultV2`. These are Microsoft-created baseline Guardrails that you can assign directly to your agents and model deployments, or use as a starting point to customize your own.
 
 Click on the *Create* button to the top-right corner of the Guardrails list to act like you're creating a new one. This will bring you to the *Create guardrail controls* page, where you can select from a list of risks to define the controls for your new guardrail, as shown in @fig-2829. Click the dropdown arrow under *Risks* and you'll see the full list of risks that Foundry's guardrail system can detect. 
 
@@ -78,14 +78,17 @@ Select one of the Risks and the UI will update to show the intervention points a
 Where a control fires matters as much as what it fires on. Foundry supports four intervention points, each corresponding to a distinct stage in the agentic execution loop:
 
 - *User Input*: The prompt sent by the end user to the model or agent. This is the most common place to block prompt injection attempts and harmful requests before any model processing occurs.
-- *Tool Call*: The action and parameters the agent proposes to send to a tool. For example, the SQL query it is about to execute or the API endpoint it intends to call. Scanning here catches unsafe or off-task actions *before* the tool executes, which is critical for agentic workflows with side effects.
+- *Tool Call*: The action and parameters the agent proposes to send to a tool. For example, the SQL query it is about to execute or the API endpoint it intends to call. Scanning here catches unsafe or off-task actions *before* the tool executes, which is critical for agentic workflows with side effects. This can be extremely useful as a security measure to prevent harmful actions such as SQL injection or prompt inject attempts. 
 - *Tool Response*: The content returned from the tool back to the agent. Malicious or sensitive data returned from an external data source can be caught and blocked here before the model incorporates it into its reasoning.
 - *Output*: The final completion returned to the user. This is the last line of defense and the only intervention point available for non-agentic model deployments.
 
-Together, these four points form a perimeter around every stage of the agent's execution.
+Together, these four points form a perimeter around every stage of the agent's execution, as shown in @fig-515E.
+
+![Control intervention points in an Agent response flow](figures/am/il_controls_001_clean.png){#fig-515E}
 
 
-For some Risks, you can also set the severity level (low, medium, and high blocking), which will determine how strict the detection should be. Setting this to a higher severity level results in stronger filtering and intervention. For example, you might want to block high-severity hate speech but only annotate low-severity profanity.
+
+For some Risks, such as Hate, Sexual, Self-harm, Violence, you can also set the severity level (low, medium, and high blocking). This will determine how strict the detection should be. Setting this to a higher severity level results in stronger filtering and intervention. For example, you might want to block high-severity hate speech but only annotate low-severity profanity. 
 
 Click the *Add control* button when you've made you selection(s).
 
@@ -106,9 +109,9 @@ The *Select agents and models* step is where you can choose to which agents and 
 
 
 ::: {.callout-important}
-Note that agent-assigned Guardrails override model Guardrails. When you assign a custom guardrail directly to an agent, that Guardrail fully overrides the Guardrail of the underlying model deployment. It does not merge with it.
+Agent-assigned Guardrails override model Guardrails. When you assign a custom guardrail directly to an agent, that Guardrail fully overrides the Guardrail of the underlying model deployment. It does not merge with it.
 
-If the agent has no custom Guardrail assigned, it inherits the Model's guardrail. An Agent only uses the `Microsoft.DefaultV2` Guardrail if its model deployment uses that Guardrail, or if you explicitly assign it. Design your agent-level guardrails to be complete and self-contained.
+If the agent has no custom Guardrail assigned, it inherits the Model's guardrail. An Agent only uses the `Microsoft.DefaultV2` Guardrail if its model deployment uses that Guardrail, or if you explicitly assign it. Design your agent-level guardrails to be complete and self-contained by including all the controls you want, because they will not inherit any controls from the model-level Guardrail.
 :::
 
 
@@ -198,15 +201,17 @@ Let's see what else we can manage at the Model-level.
 
 The *Compliance* pane in the Control Plane is where we can define policies that govern agent usage and deployment. It consolidates four distinct security layers into a single interface:
 
--* Policies*: A way to more broadly enforce Controls across a Subscription or Resource Group, such as mandatory risks, intervention points, and actions.
+- *Policies*: A way to more broadly enforce Controls across a Subscription or Resource Group, such as mandatory risks, intervention points, and actions.
 
-- *Guardrails**: An alternate view of the Guardrails you've configured. The compliance view shows which deployments have guardrails assigned, which meet policy minimums, and which are non-compliant with direct links to remediate.
+- *Guardrails*: An alternate view of the Guardrails you've configured. The compliance view shows which deployments have guardrails assigned, which meet policy minimums, and which are non-compliant with direct links to remediate.
 
 - *Security posture*: Uses Microsoft Defender for Cloud to surface security posture recommendations and threat protection alerts. Defender specifically detects jailbreak attempts and user input attacks targeting Foundry Tool endpoints. Enabling Defender requires the `Security Admin` or `Owner` role on the subscription.
 
 - *Data security and governance*: Integrates with Microsoft Purview to provide auditing, sensitive information type (SIT) classification, and data loss prevention for AI. When enabled, by clicking the toggle shown in @fig-AB2E, Purview captures prompt and response data from Foundry agents and classifies it for compliance purposes. This is useful for regulated industries that need to demonstrate what data their AI systems processed and when.
 
 ![Enabling Microsoft Purview monitoring of your Foundry Project](figures/am/ss_compliance_001_ann.png){#fig-AB2E}
+
+Enabling the Purview integration will send interactions data from Foundry models to your tenant's Purview account. This does not slow down your agents, but it does have cost implications based on the volume of interactions and the classification actions taken by Purview. For example, monitoring traffic through Purview's "In Transit Protection" service costs ~$0.50/10k requests. Be sure to monitor your Purview costs after enabling this integration, especially if you have a large or active agent fleet.
 
 These compliance features provide multiple defense mechanisms for in-depth control of enterprise AI deployments. Each layer is independently configurable and surfaced in a single location, making it practical to maintain a coherent security posture even as your agent fleet grows.
 
@@ -219,7 +224,7 @@ Click on the *Quotas* tab in the left-hand menu of the *Operate* tab, as shown i
 
 ![Viewing the Quotas table in the Control Plane](figures/am/ss_quotas_001_ann.png){#fig-34A7}
 
-Click on one of the models that you have deployed. This will open a panel that show the current deployment details, including the current quote and some statistics around token usage and rate limit hits over the last week. If you click the *Edit* button, you can modify the TPM (tokens per minute) value and grant more/less quota allocation to the model. Click the *Save* button to save your changes.
+Click on one of the models that you have deployed. This will open a panel that show the current deployment details, including the current quote and some statistics around token usage and rate limit hits over the last week. If you click the *Edit* button, you can modify the tokens per minute (TPM) value and grant more/less quota allocation to the model. Click the *Save* button to save your changes.
 
 ![Editing the quota for a model](figures/am/ss_quotas_002_ann.png){#fig-C4B3}
 
@@ -228,7 +233,7 @@ Note that there are two deployment modes that impact how quotas are enforced:
 - *Tokens per minute*: a rate limit that restricts the number of tokens consumed per minute, which is suitable for most workloads and provides a straightforward way to prevent runaway costs.
 - *Provisioned throughput units*: a capacity reservation that guarantees a certain level of throughput regardless of token size, which can be more cost-effective for workloads with predictable, high-volume traffic.
 
-Limits apply at the project level. So, each project can have independent TPM and quota settings, which makes this mechanism well-suited for:
+Limits apply at the Project level. That is, each Project can have independent TPM and quota settings, which makes this mechanism well-suited for:
 
 - Multi-team token containment (preventing one project from monopolizing shared capacity).
 - Cost control by capping aggregate usage across a billing period.

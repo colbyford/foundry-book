@@ -253,6 +253,21 @@ Design for scalability by leaning on Azure's managed services. These include Azu
 Cost management is often an afterthought with AI workloads, but it shouldn't be. Token costs compound quickly at scale. Set up Azure Cost Management budgets and alerts scoped to your Foundry resources from the very beginning. Tag all Foundry-related resources consistently (e.g., `workload: foundry-agents`, `env: prod`) so you can slice cost reports by agent, by team, or by environment without guesswork.
 
 
+### Reference Architecture
+
+Lastly, I'd like to show a couple reference architectures of varying complexity that illustrate how you might integrate Foundry agents into an Azure-based cloud estate. These are not prescriptive templates, but rather examples to spark ideas for how you can design your own architecture based on your specific use case and constraints.
+
+Remember that one main benefit of Microsoft Foundry is that you get a simple model or agent endpoint that you can easily integrate into your apps. So, in many cases, your architecture might be as simple as a web app that calls out to Foundry for AI capabilities. However, as your needs grow, you might find it beneficial to introduce additional Azure services for orchestration, integration, or security.
+
+@fig-F9BA shows a basic architecture where the ingestion and processing of enterprise data is orchestrated by Azure Data Factory and lands in an Azure Storage Account (data lake). Then, that data is indexed using Azure AI Search and stored in a Cosmos DB vector store. Then, an Agent deployed in Foundry can communicate with the data via a knowledge base (for a RAG-based approach). Then, the Foundry agent is integrated into a web application that users will access. While simple, this is a pretty common architecture pattern for an enterprise AI application, and it leverages a number of standard Azure data services in conjunction with Foundry to provide a robust and scalable solution.
+
+![A basic, mostly serverless architecture for AI](figures/co/il_architecture_001_clean.png){#fig-F9BA}
+
+Next, let's get a bit more technical with networking and security. In <FIGURE>, we have a similar architecture to the previous one, but this time it's deployed within a Virtual Network (VNet) with private endpoints for all services. The Foundry agent is deployed in a private subnet with no outbound internet access, and it communicates with the data services over private endpoints. This architecture provides an additional layer of security by isolating all resources within a VNet and eliminating any public internet exposure.
+
+
+These examples are just two of many possible architectures for integrating Foundry agents into an Azure-based cloud environment.For more reference architectures related to Microsoft Foundry, check out the Azure Architecture Center: [https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry](https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry).
+
 ## Final Thoughts
 
 I suppose all good things must come to an end, but the party has just begun! As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology. It's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success. I encourage you to experiment, iterate, and share your learnings with the community. The future of enterprise AI is being formed now with Microsoft Foundry at the center.
@@ -272,11 +287,11 @@ I encourage you to experiment, build, and share your learnings with the communit
 
 Next Steps:
 
-* Visit the [Microsoft Foundry portal](https://ai.azure.com) to start building
+* Visit the [Microsoft Foundry portal](https://ai.azure.com) to start building.
 * Join the [Microsoft Foundry community](https://aka.ms/foundry/community)
 * Keep an eye on the Dev Blog: [https://devblogs.microsoft.com/foundry](https://devblogs.microsoft.com/foundry) for updates and best practices.
 * Explore the [documentation](https://learn.microsoft.com/azure/ai-foundry/)
 * Work through the Foundry examples on GitHub: [https://github.com/microsoft-foundry/foundry-samples](https://github.com/microsoft-foundry/foundry-samples)
-* Share your success stories and learn from others
+* Share your success stories and learn from others.
 
 Thank you for reading and, as always, stay curious...

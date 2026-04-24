@@ -8,25 +8,88 @@ As you may have noticed throughout this book, Microsoft Foundry has a ton of fea
 
 ### Memory
 
-Traditional LLM interactions are stateless by default. Foundry IQ introduces memory as a managed capability that allows agents to retain and recall context across interactions. Memory in Foundry IQ supports:
+Traditional LLM interactions are stateless by default. So, if I spin up a new instance of a model and ask it "What is my name?" it won't know the answer because it has no memory of our previous interactions. However, if you've used public AI tools like ChatGPT or Claude, you may have noticed that it seems to learn a bit about you over time. It remembers the context of your previous conversations within a session, and it can even recall some information about you across sessions (e.g., your name, your preferences). This is because these tools have a form of memory that allows them to retain and recall information across interactions.
+
+In Foundry, we can also give our Agents the ability to remember information about our previous chat session. Foundry IQ introduces memory as a managed capability that allows agents to retain and recall context across interactions. Memory in Foundry IQ supports:
 
 - Conversational continuity across sessions
 - User preference retention
 - Task and workflow state
 - Adaptive behavior based on historical interactions
 
-This transforms agents from reactive prompt responders into persistent digital collaborators. Importantly, memory is governed: retention policies, isolation boundaries, and enterprise controls ensure that memory enhances intelligence without compromising security or compliance
+This transforms agents from reactive prompt responders into persistent digital collaborators. Importantly, memory is governed: retention policies, isolation boundaries, and enterprise controls ensure that memory enhances intelligence without compromising security or compliance. See @fig-9BA0 for a high-level illustration of how a memory store works in the context of an agent's interactions with a user.
+
+![How a memory store recalls previous context](figures/co/il_memory_001_clean.png){#fig-9BA0}
 
 
-### Evaluations & Red Team
+To add a memory store to your Agent, navigate to the *Memory* section of your Agent's Playground. Click the *Add* button and then select *+ Create memory store*, as shown in @fig-D4BD. You can have multiple memory stores per agent, which can be useful for separating different types of information (e.g., user preferences vs. task state). Each memory store has its own configuration and retention policies. 
 
+![Locating the memory capability on an Agent](figures/co/ss_memory_001_ann.png){#fig-D4BD}
+
+Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `{{$userId}}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will fall back to the caller's Microsoft Entra token (`{tenant-id}_{object-id}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
+
+![Editing the memory store](figures/co/ss_memory_002_clean.png){#fig-4132}
+
+Memory stores can be reused between different agents. So, you could have multiple agents that all reference the same memory store if you want them to share information about a given user. You can also choose to have separate memory stores for different agents if you want to keep their contexts isolated. Either way, memory is a really useful capability that can help your agents provide a more personalized and contextually relevant experience for users (that feels similar to what we experience when using AI tools like ChatGPT or Claude).
+
+### Evaluations
+
+If you need to evaluate the quality and safety of your generative AI applications, the *Evaluations* feature in Microsoft Foundry allows you to use multiple industry standard metrics and other evaluators to assess the performance of your agents. You can use this to evaluate your agents during development and testing, and you can also set up ongoing evaluation in production to monitor for any issues or degradation in performance over time.
+
+To test out the Evaluations feature, navigate to the *Evaluations* screen from the left-hand menu of the Foundry Portal under *Build*. Click the *Create* button, as shown in @fig-AB12, to set up a new evaluation.
+
+![Locating the Evaluations screen](figures/co/ss_evaluations_001_ann.png){#fig-AB12}
+
+The next screen will allow you to pick whether to evaluate a model, an agent, or a dataset. Then, you can either upload a set of input test prompt or have synthetic data generated for you. Lastly, you'll pick the criteria on which to form the evaluation. This includes a wide variety of standard evaluation metrics such as task adherence, tool call accuracy, fluency, etc. This is shown in @fig-510E. If you were to run the evaluation, you would get a detailed report that breaks down the performance of your agent across the different metrics and test cases. This can be really helpful for identifying areas of strength and weakness in your agent's performance, and for tracking improvements over time as you make changes to your agent's design, the underlying model it uses, or its instructions.
+
+![Configuring the evaluation process for an agent using synthetic data](figures/co/ss_evaluations_002_clean.png){#fig-510E}
+
+Back on the *Evaluations* page, under *Evaluator catalog*, you will see a list of built-in evaluators that you can use to evaluate your agents. These include a wide variety of purpose, from operational evaluations (e.g., "Did the agent follow the instructions and pick the right tool?") and safety evaluations (e.g., "Is the agent's generating vulnerable code?") to functional evaluations (e.g., "How well does this agent handle customer service situations?"). You can also create your own custom evaluators if you have specific criteria that you want to assess that are not covered by the built-in options. When you click on one, as shown in @fig-CB0B, you can read more about what the evaluator does.
+
+![The Evaluator catalog show the details of a built-in evaluator](figures/co/ss_evaluations_003_ann.png){#fig-CB0B}
+
+Lastly, to automate the identification of safety and security risks, Foundry provides a *Red team* feature that simulates adversarial attacks on your agents to identify vulnerabilities. More specifically, it probes for novel risks (both content and security-related) by attempting to cause your AI system to misbehave.
 
 ### Batch Jobs
+
+Usually, when we're talking about using LLMs, we think about real-time interactions, such as a user asking a question and the model generating a response. However, there are also many use cases where you might want to use LLMs in a batch processing mode asynchronously. For example, you might want to analyze a large corpus of documents, generate summaries for a set of articles, or perform data transformation on a big dataset.
+
+The *Batch Jobs* feature in Microsoft Foundry allows you to run LLM workloads in a batch processing mode, which can be more efficient and cost-effective for certain types of tasks that don't require real-time responses.
+
+To create a batch job, navigate to the *Models* screen from the left-hand menu of the Foundry Portal under *Build* and click the *Batch jobs* tab, as shown in @fig-17AA. Then, you can click the *Create batch job* button to set up a new batch job.
+
+![Locating the Batch jobs feature under Models](figures/co/ss_batchjobs_001_ann.png){#fig-17AA}
+
+
+Just like when we were fine-tuning a model, batch jobs also use `.jsonl` formatted files. Each line of the file represents a separate request to the model, and you can include any input that you would normally send to the model in a real-time interaction. The difference is that instead of sending these requests one at a time, you can send them all at once as part of a batch job. This allows you to process large volumes of data more efficiently.
+
+```jsonl
+{"custom_id": "task-0", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a convolutional neural network?"}]}}
+{"custom_id": "task-1", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a transformer model?"}]}}
+{"custom_id": "task-2", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is the difference between supervised and unsupervised learning?"}]}}
+```
+
+There's not much to configure on the *Create a batch job* screen, as the main thing is just to upload your `.jsonl` file, which defines everything, and then kick off the job. Once the job is running, you can monitor its progress and view the results once it's complete. See @fig-E07D for an example of what the batch job creation screen looks like with the sample `.jsonl` file from the accompanying GitHub repo under [data/ch09/tiny_batch_data.jsonl](data/ch09/tiny_batch_data.jsonl) is uploaded.
+
+![Uploading .jsonl data to create a batch job](figures/co/ss_batchjobs_002_clean.png){#fig-E07D}
 
 
 ### AI Services
 
+For the majority of this book, we've been focused on LLMs, but there are certainly many other AI models that can be deployed and used within Microsoft Foundry. In addition to LLMs, Foundry also supports a variety of other AI services, such as text-to-speech, translation, language detection, personally identifiable information (PII) detection, content understanding, and more. These services can be used in conjunction with your agents to provide additional capabilities and enhance the overall user experience.
 
+As shown in @fig-2CED, you can find the *AI Services* options under the *Models* section of the Foundry Portal. From there, you can explore the different services that are available and how to use them. Clicking on any of these services will open up a Playground for you to test out the service and see how it works. (Also, if you click the bullet beside the service name, it will show you the Target URI and Key to call the service programmatically.) For example, let's click on one of the newer AI Services: *Azure Speech - Voice Live*.
+
+![Locating the AI Services options under Models](figures/co/ss_aiservices_001_ann.png){#fig-2CED}
+
+In the Playground for the *Azure Speech - Voice Live* service, you can scroll through a few sample configurations such as customer service, language learning, or casual chat. Then, after clicking the *Start* button, you can have a live conversation with the model using your microphone, and it will respond back to you in real-time using text-to-speech. Try tweaking the response instructions, temperature, or even the voice that's being used. You can get some pretty comical (or weird) voice agents this way.
+
+This is a really fun way to experience the capabilities of these AI services and to see how they can be used in different scenarios. You could even integrate this service into your agents (by clicking the *Add to agent* button) to enable voice interactions for users, which could be especially useful for accessibility or for use cases where typing is not ideal, like in a mobile app.
+
+![Testing out the Voice Live AI service in a Playground](figures/co/ss_aiservices_002_clean.png){#fig-C30F}
+
+
+Try out a few of the AI Services to get a feel for what other AI capabilities exist outside the realm of LLMs. You might find some that are really useful for your agents or for other applications you'll need for future projects.
 
 ## Related Open-Source Projects
 
@@ -121,825 +184,93 @@ For more information about the Microsoft Agent Framework, check out their GitHub
 
 The Microsoft Agent Governance Toolkit is an open-source project that provides a set of tools and best practices for governing AI agents in production. It includes components for monitoring agent behavior, enforcing policies, and managing risks associated with AI agents. The toolkit is designed to help organizations ensure that their AI agents operate safely, ethically, and in compliance with regulatory requirements. This includes policy enforcement, zero-trust identity, execution sandboxing, and reliability engineering for autonomous AI agents.
 
+The toolkit is agent framework-agnostic (i.e., use OpenAI or LangChain or whatever) and provides multiple layers of governance checks that cover all of the Open Web Application Security Project (OWASP) Agent Top 10 security risks with over 9,500 built-in tests. As shown in @fig-1FED, the governance workflow includes multiple steps that result in either allowing or denying an agent's action. This is not content moderation or prompt guardrails. This governs and agent's actions rather than model inputs or outputs.
+
+![Governance workflow of the Microsoft Agent Governance Toolkit](figures/co/il_govframework_001_clean.png){#fig-1FED}
+
+Similar to zero-trust paradigms for human users, this toolkit also includes a zero-trust model for agent identity and access management. The toolkit defines 4 privilege rings for agent identity, which are shown in @fig-5BE2. Each ring has different levels of access and permissions, with Ring 0 being the most privileged and Ring 3 being the least privileged. All agents start at Ring 3, which locks the agent's capabilities to a sandbox. Then, after earning trust through safe actions, an agent can be granted access to higher privilege rings with more capabilities. This approach helps to mitigate risks by ensuring that agents only have access to the resources and permissions they need to perform their tasks, and that they must earn trust over time through their behavior.
+
+![The 4 privilege rings of zero-trust Agent identity](figures/co/il_govframework_002_clean.png){#fig-5BE2}
+
+An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the code block below. In this example, we create a simple policy that blocks any tool calls to "execute_code" or "delete_file". We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
+
+```python
+## pip install agent-governance-toolkit[full]
+from agent_os.policies import *
+
+evaluator = PolicyEvaluator(policies=[PolicyDocument(
+    name="my-policy", version="1.0",
+    defaults=PolicyDefaults(action=PolicyAction.ALLOW),
+    rules=[PolicyRule(
+        name="block-dangerous-tools",
+        condition = PolicyCondition(
+          field="tool_name",
+          operator=PolicyOperator.IN,
+          value=["execute_code", "delete_file"]
+        ),
+        action=PolicyAction.DENY, priority=100,
+    )],
+)])
+
+result = evaluator.evaluate({"tool_name": "web_search"})    ## Allowed
+result = evaluator.evaluate({"tool_name": "delete_file"})   ## Blocked
+```
+
 For more information about the Microsoft Agent Governance Toolkit, check out their GitHub repository: [https://github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit).
 
-## Best Practices
 
-As organizations scale their AI deployments from prototypes to production, following best practices ensures success, maintains security, and maximizes return on investment.
 
-### 1. Start with Clear Use Cases
+## Best Practices in Azure
 
-**Define Business Value:**
-* Identify specific problems to solve
-* Quantify expected benefits (cost savings, efficiency gains, revenue increase)
-* Set measurable success criteria
-* Align AI initiatives with business objectives
+As we've traversed through the various chapters of this book, we've touched on different technical considerations for building agents with Microsoft Foundry. However, I wanted to take a moment here at the end to summarize some of the best practices for cloud architecture that you can use as a starting point when designing your own Azure architecture for Foundry agents.
 
-**Prioritize Use Cases:**
-* Quick wins - High value, low complexity
-* Strategic investments - High value, high complexity
-* Learning opportunities - Low value, low complexity (for skill building)
-* Avoid - Low value, high complexity
+### Infrastructure and Configuration Management
 
-**Example Prioritization:**
-* **High Priority:** Customer support automation (high ROI, proven technology)
-* **Medium Priority:** Document analysis (valuable but requires data preparation)
-* **Low Priority:** General chatbot (unclear value proposition)
+When designing an Azure-based architecture for your AI use cases, treat your infrastructure as software from day one. Use Azure Resource Manager (ARM) templates, Bicep, or Terraform to define your infrastructure as code. This allows you to version control your infrastructure, easily replicate it across environments, and avoid the painful "works in dev, broken in prod" problem that plagues manually provisioned systems. For Foundry-specific resources (model deployments, agent configurations, and knowledge base connections) consider keeping these definitions alongside your application code in source control so that infrastructure changes go through the same review process as code changes.
 
-### 2. Build with Security by Design
 
-**Implement Zero Trust Architecture:**
-* Verify explicitly - Always authenticate and authorize
-* Use least privilege access - Grant minimum necessary permissions
-* Assume breach - Minimize blast radius and monitor continuously
+### Security and Identity
 
-**Data Protection:**
-* Encrypt data at rest and in transit
-* Use customer-managed keys for sensitive data
-* Implement data residency controls
-* Apply sensitivity labels automatically
-* Enable audit logging for all data access
+AI agents can be surprisingly powerful actors in your organization, and with that power comes risk. Leverage Azure's native security and identity services such as Microsoft Entra ID for authentication and Azure Key Vault for secrets management. Never embed API keys or connection strings directly in your agent's instructions or tool definitions — these will inevitably end up in logs, conversation histories, and screenshots. Instead, use managed identities wherever possible so that your agents authenticate to downstream services without any credentials ever being stored.
 
-**Identity and Access Management:**
-* Use managed identities instead of credentials
-* Implement role-based access control (RBAC)
-* Enable multi-factor authentication (MFA)
-* Regular access reviews and revocation
+Follow the principle of least privilege rigorously: an agent that only needs to read from a database should never be granted write access, even if it's "more convenient." If you're using the Microsoft Agent Governance Toolkit discussed earlier in this chapter, the privilege ring model provides a concrete framework for operationalizing this principle across your agent fleet.
 
-**Network Security:**
-* Deploy in private virtual networks (VNets)
-* Use private endpoints for Azure services
-* Implement firewall rules and NSGs
-* Monitor network traffic for anomalies
 
-### 3. Establish Governance and Compliance
+### Observability
+You cannot improve what you cannot see. Use Azure Monitor and Application Insights to set up end-to-end observability for your agents. At a minimum, you should be tracking latency per tool call, token consumption per session, error rates by agent and by model, and the ratio of successful task completions to abandoned sessions. Foundry's native tracing integrates with Application Insights, so you can correlate a user-facing error all the way back to the specific tool call or model response that caused it.
 
-**Policy Framework:**
-* Define acceptable use policies for AI
-* Set content filtering requirements
-* Establish model deployment policies
-* Create cost management policies
-* Document data handling procedures
+Beyond standard telemetry, consider instrumenting your agents with semantic logging — capturing not just that a tool was called, but what the agent was trying to accomplish when it called it. This makes post-incident analysis and prompt tuning significantly easier.
+Compute and Integration Patterns
 
-**Compliance Requirements:**
-* Identify applicable regulations (GDPR, HIPAA, SOC 2, etc.)
-* Implement required controls
-* Maintain audit trails
-* Conduct regular compliance assessments
-* Document compliance posture
+Azure Functions and Azure Logic Apps are natural complements to Foundry agents for anything that needs to happen asynchronously or event-driven. For instance, when an agent kicks off a long-running document analysis job (perhaps using the Batch Jobs feature covered earlier), an Azure Function can handle the completion callback and notify the user rather than keeping an agent session alive and waiting. Logic Apps are particularly useful for orchestrating multi-step integrations with third-party services — connecting your agent's outputs to CRM systems, ticketing platforms, or notification pipelines without writing bespoke integration code.
 
-**Responsible AI Practices:**
-* Implement fairness evaluations
-* Test for bias in model outputs
-* Ensure transparency and explainability
-* Provide human oversight mechanisms
-* Document AI system capabilities and limitations
+Azure API Management (APIM) deserves special attention when your agents expose capabilities to external consumers or when they call external APIs. APIM gives you a centralized layer for rate limiting, authentication enforcement, request transformation, and usage analytics. This is especially important if you're building agents that serve multiple business units or external customers, where you need fine-grained control over who can call what and at what volume.
 
-### 4. Design for Observability
+### Scalability and Cost Management
 
-**Comprehensive Monitoring:**
-* Log all agent interactions
-* Track performance metrics (latency, throughput, error rates)
-* Monitor cost and usage patterns
-* Capture user feedback
-* Alert on anomalies and issues
+Design for scalability by leaning on Azure's managed services. These include Azure Kubernetes Service (AKS) for containerized workloads, Azure App Service for web-facing components, and Azure Service Bus or Event Grid for decoupling high-throughput agent pipelines. However, resist the urge to over-engineer upfront. Start with simpler, fully-managed services and migrate to more complex orchestration only when you have real workload data justifying the operational overhead.
 
-**Distributed Tracing:**
-* Trace requests across services
-* Identify performance bottlenecks
-* Debug complex agent workflows
-* Understand tool usage patterns
-
-**Continuous Evaluation:**
-* Assess quality metrics (groundedness, relevance, coherence)
-* Monitor safety metrics (content filtering, jailbreak attempts)
-* Track business metrics (task completion, user satisfaction)
-* Detect model drift over time
-
-**Dashboard and Reporting:**
-* Create executive dashboards for business metrics
-* Operational dashboards for technical teams
-* Compliance reports for auditors
-* Regular reviews of trends and patterns
-
-### 5. Optimize Cost and Performance
-
-**Right-Size Resources:**
-* Start with smaller models for simple tasks
-* Use serverless deployments for variable workload
-* Scale to dedicated compute for high-volume scenarios
-* Leverage regional pricing differences
-
-**Caching and Optimization:**
-* Cache frequent queries and responses
-* Implement semantic caching for similar questions
-* Batch API requests when possible
-* Use content delivery networks (CDNs) for static content
-
-**Token Optimization:**
-* Set appropriate max_tokens limits
-* Use stop sequences to end responses early
-* Optimize prompts for clarity and brevity
-* Implement prompt compression techniques
-
-**Cost Monitoring:**
-* Set budgets and alerts
-* Allocate costs to business units
-* Track ROI for each use case
-* Identify and eliminate waste
-
-### 6. Plan for Scale
-
-**Scalability Considerations:**
-* Design stateless agents when possible
-* Use message queues for async processing
-* Implement auto-scaling policies
-* Plan for regional deployment
-* Consider multi-region for high availability
-
-**Capacity Planning:**
-* Forecast growth based on adoption rates
-* Monitor quota limits and request increases proactively
-* Plan for seasonal variations
-* Load test before major rollouts
-
-**Performance Testing:**
-* Conduct load testing with realistic scenarios
-* Measure response times under various loads
-* Identify breaking points
-* Optimize before production deployment
-
-### 7. Enable Continuous Improvement
-
-**Feedback Loops:**
-* Collect user feedback on agent responses
-* Implement thumbs up/down mechanisms
-* Provide channels for detailed feedback
-* Act on feedback systematically
-
-**A/B Testing:**
-* Test prompt variations
-* Compare model versions
-* Evaluate new tools and capabilities
-* Roll out improvements gradually
-
-**Model Updates:**
-* Stay current with model improvements
-* Test new versions in staging first
-* Monitor for regression
-* Maintain rollback capability
-
-**Knowledge Base Maintenance:**
-* Regularly update documentation
-* Remove outdated information
-* Add new content based on queries
-* Validate accuracy periodically
-
-### 8. Foster Team Collaboration
-
-**Cross-Functional Teams:**
-* Include developers, data scientists, UX designers, security experts
-* Establish clear roles and responsibilities
-* Foster communication and knowledge sharing
-* Create shared documentation
-
-**Training and Enablement:**
-* Provide training on Foundry capabilities
-* Share best practices across teams
-* Create internal documentation and examples
-* Encourage experimentation in sandbox environments
-
-**Center of Excellence:**
-* Establish AI Center of Excellence for guidance
-* Define standards and patterns
-* Review and approve production deployments
-* Share learnings across organization
-
-
-
-## Additional Agent Services and Apps
-
-Next, we will get an introduction to the other agent services in Foundry and learn how to deploy their first chat AI application.
-
-###	Introduction to Purview SDK integration
-
-Microsoft Purview integration provides governance, compliance, and data protection capabilities for your AI agents and applications. This integration helps organizations meet regulatory requirements and maintain control over sensitive data.
-
-### What is Microsoft Purview?
-
-Microsoft Purview is a unified data governance service that helps you:
-
-* **Discover and catalog** - Automatically discover and classify data across your organization
-* **Protect sensitive data** - Apply sensitivity labels and data loss prevention policies
-* **Ensure compliance** - Meet regulatory requirements (GDPR, HIPAA, SOC 2)
-* **Monitor usage** - Track how data is accessed and used by AI agents
-* **Audit activities** - Maintain detailed logs of agent interactions with data
-
-### Microsoft Agent 365 and Purview
-
-**Microsoft Agent 365** is the control plane for enterprise AI agents, providing centralized management and governance. Through its integration with Purview, it enables organizations to:
-
-* Manage hosted agents at scale with unified identity and lifecycle controls
-* Enforce least-privilege access and compliance with Defender, Microsoft Entra, and Purview
-* Boost productivity through native integration with Microsoft 365 apps
-* Monitor agent activity and apply policies from a single, secure registry
-
-### Purview Capabilities for AI Agents
-
-**Data Classification:**
-Automatically classify data that agents access:
-* Personally Identifiable Information (PII)
-* Financial data
-* Health records
-* Confidential business information
-
-**Sensitivity Labels:**
-Apply and enforce sensitivity labels on:
-* Agent conversations and threads
-* Documents retrieved by agents
-* Generated content
-* Training data
-
-**Data Loss Prevention (DLP):**
-Prevent agents from:
-* Exposing sensitive data in responses
-* Sharing confidential information outside authorized channels
-* Processing data that violates policies
-
-**Compliance Monitoring:**
-Track and report on:
-* Data access patterns
-* Policy violations
-* Compliance status
-* Risk indicators
-
-### Implementing Purview with Foundry Agents
-
-**1. Enable Purview Integration**
-
-In your Foundry project:
-1. Navigate to **Settings** → **Governance**
-2. Click **Connect Purview**
-3. Select your Purview account
-4. Authorize the connection
-
-**2. Apply Sensitivity Labels**
-
-Configure sensitivity labels for your agents:
-1. In the agent configuration, go to **Security**
-2. Select **Sensitivity labeling**
-3. Choose appropriate labels:
-   * Public
-   * Internal
-   * Confidential
-   * Highly Confidential
-4. Enable automatic labeling based on content
-
-**3. Configure DLP Policies**
-
-Set up Data Loss Prevention:
-1. Navigate to **Policies** → **DLP**
-2. Create a new DLP policy
-3. Define sensitive information types to protect
-4. Specify actions when policy is violated:
-   * Block response
-   * Notify administrator
-   * Log incident
-5. Apply policy to agents
-
-**4. Monitor Compliance**
-
-View compliance reports in the Purview portal:
-* Agent data access logs
-* Policy violation incidents
-* Compliance score
-* Risk assessment
-
-##	Integrating with ChatKit and CopilotKit
-
-While Microsoft Foundry provides native integration with Microsoft 365 and Teams, you can also integrate agents with popular chat frameworks and UI libraries for custom applications.
-
-### Publishing to Microsoft 365 Ecosystem
-
-Microsoft Foundry provides seamless integration with the Microsoft 365 ecosystem, allowing you to deploy agents where your users already work.
-
-**Microsoft 365 Copilot:**
-Deploy agents as extensions to Microsoft 365 Copilot:
-* Appear in the Copilot agent store
-* Accessible across Microsoft 365 apps (Word, Excel, PowerPoint, Outlook)
-* Maintain context across applications
-* Leverage Microsoft Graph for data access
-
-**Microsoft Teams:**
-Deploy agents as Teams applications:
-* Personal chat bots
-* Team collaboration bots
-* Meeting assistants
-* Channel notifications
-
-**BizChat:**
-Make agents available in BizChat for business conversations:
-* Enterprise search integration
-* Document summarization
-* Meeting notes and follow-ups
-
-### Publishing Process
-
-To publish your agent to Microsoft 365:
-
-1. In the Foundry portal, select your agent
-2. Click **Publish** → **Publish to Teams and Microsoft 365 Copilot**
-3. Configure the Azure Bot Service (auto-generated)
-4. Fill in metadata:
-   * App name and description
-   * Icons (color and outline)
-   * Publisher information
-   * Privacy policy URL
-   * Terms of use URL
-5. Click **Prepare Agent**
-6. Choose your publish scope:
-   * **Shared Scope** - Appears under "Your agents" in the agent store
-   * **Organization Scope** - Appears under "Built by your org" (requires admin approval)
-7. Download the package or publish directly
-
-### Custom Web Applications
-
-For custom web applications, you can:
-
-**Embed via iframe:**
-```html
-<iframe 
-  src="https://your-agent-endpoint.azure.com/chat"
-  width="400" 
-  height="600"
-  frameborder="0">
-</iframe>
-```
-
-**Use REST API:**
-```javascript
-fetch('https://your-agent-endpoint.azure.com/api/chat', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer YOUR_API_KEY'
-  },
-  body: JSON.stringify({
-    messages: [{
-      role: 'user',
-      content: 'Hello, how can you help me?'
-    }]
-  })
-})
-.then(response => response.json())
-.then(data => console.log(data));
-```
-
-**Use Foundry SDK:**
-Python example:
-```python
-from azure.ai.agent import AgentClient
-from azure.identity import DefaultAzureCredential
-
-client = AgentClient(
-    endpoint="https://your-endpoint.azure.com",
-    credential=DefaultAzureCredential()
-)
-
-response = client.send_message(
-    agent_id="your-agent-id",
-    message="Hello, how can you help me?"
-)
-
-print(response.content)
-```
-
-##	Deploying your first AI app
-
-Now let's deploy a complete chat application that users can interact with through a web interface.
-
-###	Exercise: Deploy your first chat app
-
-In this exercise, we'll deploy a web-based chat application using Microsoft Foundry.
-
-**Step 1: Prepare Your Agent**
-
-Ensure you have a working agent (we'll use the Product Support Agent from Chapter 3):
-1. Test the agent thoroughly in the playground
-2. Verify all tools and connections are working
-3. Ensure content filtering is enabled
-4. Configure appropriate rate limits
-
-**Step 2: Deploy to Web App**
-
-1. Navigate to your agent in the Foundry portal
-2. Click **Deploy** → **Web app**
-3. Configure the web app:
-   * **App name**: product-support-chat
-   * **Authentication**: Choose one:
-     - Anonymous (for public demos)
-     - Azure AD (for enterprise apps)
-     - API key (for controlled access)
-   * **Branding**: Upload logo and customize colors
-   * **Welcome message**: "Hello! I'm your product support assistant. How can I help you today?"
-4. Click **Deploy**
-
-**Step 3: Configure Web App Settings**
-
-Customize the chat experience:
-
-1. **Appearance**:
-   * Primary color: #0078D4
-   * Font family: Segoe UI
-   * Chat bubble style: Modern
-   * Avatar: Upload company logo
-
-2. **Behavior**:
-   * Show typing indicators: Yes
-   * Enable file uploads: No (for this example)
-   * Suggested prompts: Add common questions:
-     - "What products do you offer?"
-     - "Tell me about hiking shoes"
-     - "What's your return policy?"
-
-3. **Advanced**:
-   * Session timeout: 30 minutes
-   * Message retention: 7 days
-   * Maximum conversation length: 50 messages
-
-**Step 4: Test the Web App**
-
-1. Click on the generated URL (e.g., `https://product-support-chat.azurewebsites.net`)
-2. Test the chat interface:
-   * Send a message: "What hiking shoes do you have?"
-   * Verify the agent responds with product information
-   * Test suggested prompts
-   * Try edge cases (unclear questions, requests for unavailable information)
-
-**Step 5: Customize with Code (Optional)**
-
-For advanced customization, download the web app template:
-
-1. Click **Download source code**
-2. Extract the zip file
-3. The package includes:
-   * HTML/CSS/JavaScript for the UI
-   * Configuration files
-   * Deployment scripts
-
-Customize the template:
-```javascript
-// config.js
-const chatConfig = {
-  endpoint: 'https://your-agent-endpoint.azure.com',
-  apiKey: 'YOUR_API_KEY',
-  theme: {
-    primaryColor: '#0078D4',
-    botMessageColor: '#F3F2F1',
-    userMessageColor: '#0078D4'
-  },
-  features: {
-    showTimestamp: true,
-    enableFeedback: true,
-    allowFileUpload: false
-  }
-};
-```
-
-**Step 6: Deploy to Azure App Service**
-
-For production deployment:
-
-1. Create an Azure App Service:
-```bash
-az webapp create \
-  --resource-group myResourceGroup \
-  --plan myAppServicePlan \
-  --name product-support-chat \
-  --runtime "NODE:18-lts"
-```
-
-2. Deploy your customized code:
-```bash
-az webapp deployment source config-zip \
-  --resource-group myResourceGroup \
-  --name product-support-chat \
-  --src app.zip
-```
-
-3. Configure environment variables:
-```bash
-az webapp config appsettings set \
-  --resource-group myResourceGroup \
-  --name product-support-chat \
-  --settings \
-    AGENT_ENDPOINT="https://your-endpoint.azure.com" \
-    AGENT_API_KEY="@Microsoft.KeyVault(SecretUri=...)"
-```
-
-**Step 7: Add Analytics (Optional)**
-
-Track usage with Application Insights:
-
-1. Enable Application Insights for your web app
-2. Add tracking code:
-```javascript
-// Track chat interactions
-appInsights.trackEvent('ChatMessage', {
-  messageCount: messageCount,
-  sessionDuration: sessionDuration,
-  userSatisfaction: feedbackScore
-});
-```
-
-3. Create dashboards in Azure Portal to monitor:
-   * Active users
-   * Message volume
-   * Response times
-   * User satisfaction scores
-
-**Step 8: Share with Users**
-
-Distribute your chat app:
-
-1. **Direct link**: Share the URL with users
-2. **Embed**: Add iframe to existing websites
-3. **QR code**: Generate QR code for mobile access
-4. **Teams**: Add as a Teams tab
-
-**Step 9: Monitor and Iterate**
-
-After deployment, continuously improve:
-
-1. Monitor usage in the **Operate** section
-2. Review conversation logs for common issues
-3. Analyze user feedback
-4. Update agent instructions based on real usage
-5. Add new tools as needs evolve
-
-### Best Practices for Production Apps
-
-**Security:**
-* Use Azure AD authentication for enterprise apps
-* Store API keys in Azure Key Vault
-* Enable HTTPS only
-* Implement rate limiting
-* Monitor for abuse
-
-**Performance:**
-* Enable caching for common queries
-* Use CDN for static assets
-* Optimize images and resources
-* Monitor response times
-
-**User Experience:**
-* Provide clear onboarding instructions
-* Handle errors gracefully
-* Show loading indicators
-* Allow users to provide feedback
-* Respect user privacy
-
-**Maintenance:**
-* Set up automated testing
-* Monitor error rates
-* Keep dependencies updated
-* Plan for scaling
-* Document customizations
-
-Congratulations! You've successfully deployed your first AI chat application. This web app can now serve as a 24/7 assistant for your users, answering questions and providing information based on your data.
-
-
-
-
-
-
-## Reference architectures for Foundry in Azure
-
-Reference architectures provide proven patterns for deploying AI solutions at scale with proper security, compliance, and operational excellence.
-
-### Architecture 1: Basic Enterprise Chat Agent
-
-**Use Case:** Customer support chatbot with access to product documentation
-
-**Components:**
-* **Microsoft Foundry** - Agent platform
-* **Azure OpenAI Service** - LLM (GPT-4o)
-* **Azure AI Search** - Knowledge base (product docs)
-* **Azure Cosmos DB** - Conversation history
-* **Application Insights** - Monitoring and logging
-* **Azure Key Vault** - Secrets management
-
-**Architecture Diagram (Conceptual):**
-```
-Internet → Azure Front Door → 
-  → Foundry Agent (in VNet) →
-    → Azure OpenAI (Private Endpoint)
-    → AI Search (Private Endpoint)
-    → Cosmos DB (Private Endpoint)
-  → Application Insights (Monitoring)
-  → Key Vault (Secrets)
-```
-
-**Key Features:**
-* Private endpoints for all data services
-* Managed identity for authentication
-* Content filtering enabled
-* Audit logging to Log Analytics
-
-**Estimated Cost:** $500-2000/month depending on usage
-
----
-
-### Architecture 2: Multi-Agent Enterprise Solution
-
-**Use Case:** Multiple specialized agents for different departments
-
-**Components:**
-* **Microsoft Foundry** - Multi-project setup
-* **Agent 365** - Centralized agent registry
-* **Multiple Azure OpenAI instances** - Per-department deployments
-* **Azure AI Search** - Shared knowledge bases
-* **Azure SQL Database** - Structured data
-* **Databricks** - Data analytics
-* **Microsoft 365** - Publishing target
-* **Purview** - Data governance
-* **Foundry Control Plane** - Fleet management
-
-**Architecture Pattern:**
-```
-Microsoft 365 Apps → Agent 365 →
-  → Finance Agent (Foundry Project 1)
-    → Azure OpenAI (GPT-4)
-    → SQL Database (Financial data)
-  → HR Agent (Foundry Project 2)
-    → Azure OpenAI (GPT-3.5)
-    → SharePoint (HR policies)
-  → Sales Agent (Foundry Project 3)
-    → Azure OpenAI (GPT-4o)
-    → Databricks (Sales analytics)
-    
-Control Plane → Monitors all agents
-Purview → Governs all data access
-```
-
-**Key Features:**
-* Centralized governance through Control Plane
-* Department-specific agents with isolated data
-* Unified publishing to Microsoft 365
-* Role-based access control
-* Comprehensive audit logging
-
-**Estimated Cost:** $5000-20000/month depending on scale
-
----
-
-### Architecture 3: High-Availability Production System
-
-**Use Case:** Mission-critical AI application with 99.9% uptime SLA
-
-**Components:**
-* **Multi-region Foundry deployment** - Primary and secondary regions
-* **Azure Traffic Manager** - Global routing
-* **Azure OpenAI (multi-region)** - Failover capability
-* **Cosmos DB** - Global distribution
-* **Azure Front Door** - Global load balancing and WAF
-* **Azure Monitor** - Comprehensive monitoring
-* **Azure Site Recovery** - Disaster recovery
-
-**Architecture Pattern:**
-```
-Global:
-  Azure Traffic Manager (DNS routing)
-  Azure Front Door (Load balancer + WAF)
-  
-Primary Region (East US):
-  Foundry Project
-  Azure OpenAI
-  Cosmos DB (primary)
-  AI Search (primary)
-  
-Secondary Region (West US):
-  Foundry Project (standby)
-  Azure OpenAI (standby)
-  Cosmos DB (replica)
-  AI Search (replica)
-  
-Monitoring:
-  Azure Monitor (both regions)
-  Application Insights (both regions)
-  Log Analytics (centralized)
-```
-
-**Key Features:**
-* Active-passive deployment across regions
-* Automatic failover on primary region failure
-* Geo-replicated data stores
-* Health probes and auto-healing
-* Comprehensive monitoring and alerting
-
-**Estimated Cost:** $10000-50000/month
-
----
-
-### Architecture 4: Hybrid Cloud with Edge Deployment
-
-**Use Case:** Retail stores with local AI for low-latency and offline capability
-
-**Components:**
-* **Foundry Local** - Edge devices in stores
-* **Microsoft Foundry Cloud** - Central management
-* **Azure IoT Hub** - Device management
-* **Azure Stack Edge** - Edge compute (optional)
-* **Azure Synapse** - Data aggregation
-* **Control Plane** - Fleet monitoring
-
-**Architecture Pattern:**
-```
-Retail Stores (Edge):
-  Foundry Local on PC/Server
-    → Local models (Phi-4)
-    → Local data cache
-    → Sync to cloud (when connected)
-    
-Cloud (Azure):
-  Foundry Projects
-  Central knowledge bases
-  Model updates
-  Aggregated analytics
-  
-IoT Hub:
-  Device registration
-  Configuration management
-  Software updates
-  
-Control Plane:
-  Monitor edge deployments
-  Push policy updates
-  Collect telemetry
-```
-
-**Key Features:**
-* Offline operation capability
-* Low-latency responses (< 100ms)
-* Centralized model updates
-* Fleet management at scale
-* Aggregated analytics from all stores
-
-**Estimated Cost:** $1000-5000/month cloud + $100/device
-
----
-
-### Architecture 5: Serverless AI Application
-
-**Use Case:** Variable workload with unpredictable traffic patterns
-
-**Components:**
-* **Azure Functions** - Serverless compute
-* **Foundry serverless API deployments** - No quota required
-* **Azure Cosmos DB (serverless)** - Pay-per-request
-* **Azure Storage** - Document storage
-* **Azure API Management** - API gateway
-* **Application Insights** - Monitoring
-
-**Architecture Pattern:**
-```
-Client → API Management →
-  → Azure Functions (consumption plan) →
-    → Foundry Agent (serverless deployment)
-    → Cosmos DB (serverless)
-    → Blob Storage (files)
-  → Application Insights (monitoring)
-```
-
-**Key Features:**
-* True pay-per-use pricing
-* Automatic scaling from zero
-* No idle capacity costs
-* Suitable for variable workloads
-* Quick deployment
-
-**Estimated Cost:** $50-5000/month (highly variable based on usage)
-
+Cost management is often an afterthought with AI workloads, but it shouldn't be. Token costs compound quickly at scale. Set up Azure Cost Management budgets and alerts scoped to your Foundry resources from the very beginning. Tag all Foundry-related resources consistently (e.g., `workload: foundry-agents`, `env: prod`) so you can slice cost reports by agent, by team, or by environment without guesswork.
 
 
 ## Final Thoughts
 
 I suppose all good things must come to an end, but the party has just begun! As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology. It's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success. I encourage you to experiment, iterate, and share your learnings with the community. The future of enterprise AI is being formed now with Microsoft Foundry at the center.
 
-**Key Takeaways:**
+Key Takeaways:
 
-1. **Start Simple** - Begin with a focused use case and expand gradually
-2. **Security First** - Build security and compliance in from the start
-3. **Measure Everything** - Use observability to understand and improve
-4. **Iterate Rapidly** - Collect feedback and continuously refine
-5. **Scale Thoughtfully** - Plan for growth but don't over-engineer initially
-6. **Stay Current** - AI technology evolves rapidly; keep learning
+1. *Start Simple*. Begin with a focused use case and expand gradually
+2. *Security First*. Build security and compliance in from the start
+3. *Measure Everything*. Use observability to understand and improve
+4. *Iterate Rapidly*. Collect feedback and continuously refine
+5. *Scale Thoughtfully*. Plan for growth but don't over-engineer initially
+6. *Stay Current*. AI technology evolves rapidly; keep learning
 
 As AI continues to evolve, Microsoft Foundry will evolve with it, providing new capabilities, models, and tools. The fundamentals of good engineering—clear requirements, solid architecture, comprehensive testing, and continuous improvement—remain constant.
 
 I encourage you to experiment, build, and share your learnings with the community. Be sure to show off what you've built online.
 
-**Next Steps:**
+Next Steps:
 
 * Visit the [Microsoft Foundry portal](https://ai.azure.com) to start building
 * Join the [Microsoft Foundry community](https://aka.ms/foundry/community)

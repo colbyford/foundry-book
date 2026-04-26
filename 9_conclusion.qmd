@@ -224,36 +224,91 @@ For more information about the Microsoft Agent Governance Toolkit, check out the
 
 As we've traversed through the various chapters of this book, we've touched on different technical considerations for building agents with Microsoft Foundry. However, I wanted to take a moment here at the end to summarize some of the best practices for cloud architecture that you can use as a starting point when designing your own Azure architecture for Foundry agents.
 
+
 ### Infrastructure and Configuration Management
 
-When designing an Azure-based architecture for your AI use cases, treat your infrastructure as software from day one. Use Azure Resource Manager (ARM) templates, Bicep, or Terraform to define your infrastructure as code. This allows you to version control your infrastructure, easily replicate it across environments, and avoid the painful "works in dev, broken in prod" problem that plagues manually provisioned systems. For Foundry-specific resources (model deployments, agent configurations, and knowledge base connections) consider keeping these definitions alongside your application code in source control so that infrastructure changes go through the same review process as code changes.
+When designing an Azure-based architecture for your AI use cases, treat your infrastructure as software from day one. Use Azure Resource Manager (ARM) templates, Bicep, or Terraform to define your infrastructure as code. This allows you to version control your infrastructure, easily replicate it across environments, and avoid the painful "works in dev, broken in prod" problem that plagues manually provisioned systems. For Foundry-specific resources (model deployments, agent configurations, and knowledge base connections) consider keeping these definitions alongside your application code in source control so that infrastructure changes go through the same review process as code changes. An example Bicep snippet for deploying a Foundry resource and related components is shown below.
+
+
+```bicep
+// Base Foundry resource
+resource aiFoundry 'Microsoft.CognitiveServices/accounts@2025-06-01' = {
+  name: aiFoundryName
+  location: location
+  kind: 'AIServices'
+  ...
+}
+
+// Deploy a Project
+resource aiProject 'Microsoft.CognitiveServices/accounts/projects@2025-06-01' = {
+  name: aiProjectName
+  parent: aiFoundry
+  location: location
+  ...
+}
+
+// Deploy a Model to the Project
+resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-06-01'= {
+  parent: aiFoundry
+  name: 'gpt-4.1-mini'
+  ...
+}
+```
+
+Microsoft provides multiple Bicep and Terraform templates on their GitHub repo: [https://github.com/microsoft-foundry/foundry-samples/tree/main/infrastructure/infrastructure-setup-bicep](https://github.com/microsoft-foundry/foundry-samples/tree/main/infrastructure/infrastructure-setup-bicep)
 
 
 ### Security and Identity
 
-AI agents can be surprisingly powerful actors in your organization, and with that power comes risk. Leverage Azure's native security and identity services such as Microsoft Entra ID for authentication and Azure Key Vault for secrets management. Never embed API keys or connection strings directly in your agent's instructions or tool definitions — these will inevitably end up in logs, conversation histories, and screenshots. Instead, use managed identities wherever possible so that your agents authenticate to downstream services without any credentials ever being stored.
+AI agents can be surprisingly powerful actors in your organization, and with that power comes risk. Leverage Azure's native security and identity services such as Microsoft Entra ID for authentication and Azure Key Vault for secrets management. Never embed API keys or connection strings directly in your agent's instructions or tool definitions. These will inevitably end up in logs, conversation histories, and screenshots. Instead, use managed identities wherever possible so that your agents authenticate to downstream services without any credentials ever being stored.
 
-Follow the principle of least privilege rigorously: an agent that only needs to read from a database should never be granted write access, even if it's "more convenient." If you're using the Microsoft Agent Governance Toolkit discussed earlier in this chapter, the privilege ring model provides a concrete framework for operationalizing this principle across your agent fleet.
+Also, using role-based access controls (RBAC) can be applied on each resource to ensure that only authorized users can perform specific actions. For example, as shown in @fig-285E, you can set up RBAC for your Foundry resources separately from the RBAC for your Azure resources (e.g., the Subscription and Resource Group). This allows you to have fine-grained control over who can access and manage your Foundry agents and projects, which is especially important in larger organizations with multiple teams and stakeholders involved in AI initiatives.
+
+![Role-based access controls for Foundry resources](figures/co/ss_identity_001_clean.png){#fig-285E}
+
+
+::: {.callout-tip}
+Follow the principle of *least privilege* rigorously. That is, an agent that only needs to read from a database should never be granted write access, even if it's "more convenient."
+
+If you're using the Microsoft Agent Governance Toolkit discussed earlier in this chapter, the privilege ring model provides a concrete framework for operationalizing this principle across your agent fleet.
+:::
+
 
 
 ### Observability
-You cannot improve what you cannot see. Use Azure Monitor and Application Insights to set up end-to-end observability for your agents. At a minimum, you should be tracking latency per tool call, token consumption per session, error rates by agent and by model, and the ratio of successful task completions to abandoned sessions. Foundry's native tracing integrates with Application Insights, so you can correlate a user-facing error all the way back to the specific tool call or model response that caused it.
 
-Beyond standard telemetry, consider instrumenting your agents with semantic logging — capturing not just that a tool was called, but what the agent was trying to accomplish when it called it. This makes post-incident analysis and prompt tuning significantly easier.
-Compute and Integration Patterns
+You cannot improve what you cannot see. Use Azure Monitor and Application Insights to set up end-to-end observability for your agents. At a minimum, you should be tracking latency per tool call, token consumption per session, error rates by agent and by model, and the ratio of successful task completions to abandoned sessions. From the Foundry Portal, you can see an Agent's telemetry in the *Monitor* tab, as shown in @fig-30D0. This provides a high-level overview of the agent's performance and can help you identify any issues or bottlenecks in your agent's interactions.
 
-Azure Functions and Azure Logic Apps are natural complements to Foundry agents for anything that needs to happen asynchronously or event-driven. For instance, when an agent kicks off a long-running document analysis job (perhaps using the Batch Jobs feature covered earlier), an Azure Function can handle the completion callback and notify the user rather than keeping an agent session alive and waiting. Logic Apps are particularly useful for orchestrating multi-step integrations with third-party services — connecting your agent's outputs to CRM systems, ticketing platforms, or notification pipelines without writing bespoke integration code.
+![Viewing the Monitor tab of an Agent](figures/co/ss_monitor_001_ann.png){#fig-30D0}
 
-Azure API Management (APIM) deserves special attention when your agents expose capabilities to external consumers or when they call external APIs. APIM gives you a centralized layer for rate limiting, authentication enforcement, request transformation, and usage analytics. This is especially important if you're building agents that serve multiple business units or external customers, where you need fine-grained control over who can call what and at what volume.
+
+Then, if you click on the *Open in Azure Monitor* button, it will redirect you to the Application Insights service, where you can access the detailed monitoring information for the Foundry Project. Foundry's native tracing integrates with Application Insights automatically, so you can correlate a user-facing error all the way back to the specific tool call or model response that caused it. See @fig-9A1E for what the Application Insights screen looks like for a Foundry Project. This level of observability is crucial for maintaining the reliability and performance of your agents, especially as they grow in complexity and scale.
+
+![Viewing the Application Insights service for the Foundry Project](figures/co/ss_monitor_002_clean.png){#fig-9A1E}
+
+
+Spend some time clicking around the Application Insights pages to see the different types of telemetry that are available and how to use them to analyze your agent's behavior. Beyond standard telemetry, consider instrumenting your agents with semantic logging, capturing not just that a tool was called, but what the agent was trying to accomplish when it called it. This makes post-incident analysis and prompt tuning significantly easier.
+
+
+<!-- ### Compute and Integration Patterns
+
+Azure Functions and Azure Logic Apps are natural complements to Foundry agents for anything that needs to happen asynchronously or event-driven. For instance, when an agent kicks off a long-running document analysis job (perhaps using the Batch Jobs feature covered earlier), an Azure Function can handle the completion callback and notify the user rather than keeping an agent session alive and waiting. Logic Apps are particularly useful for orchestrating multi-step integrations with third-party services, connecting your agent's outputs to CRM systems, ticketing platforms, or notification pipelines without writing bespoke integration code.
+
+Azure API Management (APIM) deserves special attention when your agents expose capabilities to external consumers or when they call external APIs. APIM gives you a centralized layer for rate limiting, authentication enforcement, request transformation, and usage analytics. This is especially important if you're building agents that serve multiple business units or external customers, where you need fine-grained control over who can call what and at what volume. -->
+
 
 ### Scalability and Cost Management
 
 Design for scalability by leaning on Azure's managed services. These include Azure Kubernetes Service (AKS) for containerized workloads, Azure App Service for web-facing components, and Azure Service Bus or Event Grid for decoupling high-throughput agent pipelines. However, resist the urge to over-engineer upfront. Start with simpler, fully-managed services and migrate to more complex orchestration only when you have real workload data justifying the operational overhead.
 
-Cost management is often an afterthought with AI workloads, but it shouldn't be. Token costs compound quickly at scale. Set up Azure Cost Management budgets and alerts scoped to your Foundry resources from the very beginning. Tag all Foundry-related resources consistently (e.g., `workload: foundry-agents`, `env: prod`) so you can slice cost reports by agent, by team, or by environment without guesswork.
+Cost management is often an afterthought with AI workloads, but it shouldn't be. Token costs compound quickly at full scale. Set up Azure Cost Management budgets and alerts scoped to your Foundry resources from the very beginning. Tag all Foundry-related resources consistently (e.g., `workload: foundry-agents`, `env: prod`) so you can slice cost reports by agent, by team, or by environment without guesswork.
+
+As shown in @fig-DD24, you can view the Cost Management screen in the Azure Portal for your Foundry-related resources. This view allows you to monitor and analyze your spending patterns. This will help you identify any unexpected cost spikes and optimize your agent's performance and cost-efficiency over time.
+
+![Viewing the Cost Management screen for the Foundry-related resources](figures/co/ss_costs_001_clean.png){#fig-DD24}
 
 
-### Reference Architecture
+### Reference Architectures
 
 Lastly, I'd like to show a couple reference architectures of varying complexity that illustrate how you might integrate Foundry agents into an Azure-based cloud estate. These are not prescriptive templates, but rather examples to spark ideas for how you can design your own architecture based on your specific use case and constraints.
 
@@ -263,10 +318,16 @@ Remember that one main benefit of Microsoft Foundry is that you get a simple mod
 
 ![A basic, mostly serverless architecture for AI](figures/co/il_architecture_001_clean.png){#fig-F9BA}
 
-Next, let's get a bit more technical with networking and security. In <FIGURE>, we have a similar architecture to the previous one, but this time it's deployed within a Virtual Network (VNet) with private endpoints for all services. The Foundry agent is deployed in a private subnet with no outbound internet access, and it communicates with the data services over private endpoints. This architecture provides an additional layer of security by isolating all resources within a VNet and eliminating any public internet exposure.
+Next, let's get a bit more technical with networking and security. In @fig-BDB5, we have a similar architecture to the previous one, but this time it's deployed within a Virtual Network (VNet) with private endpoints for all services. The Foundry agent is deployed in a private subnet with no outbound internet access, and it communicates with the data services over private endpoints. This architecture provides an additional layer of security by isolating all resources within a VNet and eliminating any public internet exposure. You'll likely see this type of architecture in more security-conscious organizations or for use cases that involve sensitive data. It does add some complexity in terms of setup and maintenance, but it can be worth it for the enhanced security posture.
+
+![A more sophisticated architecture with private networking](figures/co/il_architecture_002_clean.png){#fig-BDB5}
 
 
 These examples are just two of many possible architectures for integrating Foundry agents into an Azure-based cloud environment.For more reference architectures related to Microsoft Foundry, check out the Azure Architecture Center: [https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry](https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry).
+
+
+
+{{< pagebreak >}}
 
 ## Final Thoughts
 
@@ -281,7 +342,7 @@ Key Takeaways:
 5. *Scale Thoughtfully*. Plan for growth but don't over-engineer initially
 6. *Stay Current*. AI technology evolves rapidly; keep learning
 
-As AI continues to evolve, Microsoft Foundry will evolve with it, providing new capabilities, models, and tools. The fundamentals of good engineering—clear requirements, solid architecture, comprehensive testing, and continuous improvement—remain constant.
+As AI continues to evolve, Microsoft Foundry will evolve with it, providing new capabilities, models, and tools. The fundamentals of good engineering will remain: clear requirements, solid architecture, comprehensive testing, and continuous improvement.
 
 I encourage you to experiment, build, and share your learnings with the community. Be sure to show off what you've built online.
 

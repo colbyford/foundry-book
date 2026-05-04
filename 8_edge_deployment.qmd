@@ -6,7 +6,7 @@ In this chapter, we will learn about local model inferencing through Foundry Loc
 
 There are many scenarios where running AI models locally on your device can be beneficial compared to relying on cloud-based inference. Some of the key themes include: privacy, remote settings, and cost/latency optimization. 
 
-Running AI models in a local environment allows you to keep sensitive data on that device. This is useful for applications handling medical records, financial data, or proprietary information. While Microsoft Foundry's cloud services are designed with strong security, privacy, and compliance in mind, some organizations or use cases may have policies that require data to remain on-premises or on specific devices. Local deployment can help meet these requirements while still enabling AI capabilities.
+Running AI models in a local environment allows you to keep sensitive data on that device. This is useful for applications such as handling medical records, financial data, or proprietary information. While Microsoft Foundry's cloud services are designed with strong security, privacy, and compliance in mind, some organizations or regulatory standards may have policies that require data to remain on-premises or on specific devices. Local deployment can help meet these requirements while still enabling AI capabilities.
 
 Secondly, if you're building an application that needs to operate in a remote location with limited or no internet connectivity, such as a field operation or an air-gapped network, running AI models locally allows you to provide functionality without relying on cloud access. Additionally, for real-time applications that require very low latency responses (e.g., under 100 milliseconds), local inferencing can help achieve those performance requirements by eliminating the round-trip time to the cloud and back.
 
@@ -26,7 +26,7 @@ Many popular open-source model families have versions of the models at various s
 
 ### GPU Acceleration
 
-Using a GPU (Graphics Processing Unit) can significantly speed up the inference of AI models compared to using a CPU (Central Processing Unit). GPUs are designed to handle the parallel processing required for the large matrix operations. Such matrix operations are commonly seen in rendering graphics, but it just so happens that similar math needs to be performed when computing weights in a neural network. So, GPUs have become the piece of hardware that AI models rely on, which is why they are often necessary for running larger models efficiently.
+Using a Graphics Processing Unit (GPU) can significantly speed up the inference of AI models compared to using a CPU (Central Processing Unit). GPUs are designed to handle the parallel processing required for the large matrix operations. Such matrix operations are commonly seen in rendering graphics, but it just so happens that similar math needs to be performed when computing weights in a neural network. So, GPUs have become the piece of hardware that AI models rely on, which is why they are often necessary for running larger models efficiently.
 
 When running models locally, leveraging GPU acceleration can reduce latency and improve throughput, making it feasible to run more complex models or serve more requests in a given time frame. The usage of GPUs usually depends on brand-specific software ecosystems, which provide the necessary libraries and drivers to enable GPU acceleration for various tasks, including AI workloads.
 
@@ -36,9 +36,13 @@ Some common GPU options (and their corresponding software ecosystems) include:
 * *AMD GPUs* - An alternative option supported through [ROCm](https://www.amd.com/en/products/software/rocm.html) (Radeon Open Compute), which is an open-source platform for GPU computing. Their Radeon series of GPUs are popular in gaming and are increasingly being adopted for consumer AI workloads, along with their Instinct series of data center GPUs.
 * *Apple Silicon* - While not for enterprise use, Apple Silicon chips are now found in all of the newer M-series Macs. They utilize frameworks called [Metal](https://developer.apple.com/metal/) and [CoreML](https://developer.apple.com/documentation/coreml) for efficient on-device inferencing. So, in the larger Mac Studio devices with lots of VRAM, many users are able to run decently-sized models locally with good performance, which is great for development and experimentation.
 
+Some chips, like Apple's M-series chips, are now integrated with "unified memory," which means that the CPU and GPU can access the same memory pool without needing to copy data back and forth. This can improve performance and reduce latency when running models locally, as it eliminates the overhead of transferring data between separate memory spaces. Others, like NVIDIA and AMD GPUs, use dedicated VRAM that is separate from the system RAM, so data needs to be copied to and from the GPU for processing. This is an important consideration when running models locally, as VRAM/RAM constraints dictate the maximum model size and inference speed.
+
+GPU options will certainly grow and change over time as chip makers design specialized hardware for AI workloads. This list isn't exhaustive, but the key is to be aware of the common options for training and running models today.
+
 ### NPU Acceleration
 
-Recently, NPUs (Neural Processing Units) have emerged as specialized hardware designed specifically for accelerating AI inferencing workloads on-device. NPUs can provide even greater performance and efficiency for certain types of models, particularly those optimized for low precision (INT8, INT4) inference. Since they're smaller and cheaper than GPUs, these chips are becoming more common in consumer devices, especially mobile phones and laptops (like in Microsoft Copilot-enabled devices), as they enable some local AI capabilities without relying on cloud connectivity.
+Recently, Neural Processing Units (NPUs) have emerged as specialized hardware designed specifically for accelerating AI inferencing workloads on-device. NPUs can provide even greater performance and efficiency for certain types of models, particularly those optimized for low precision (INT8, INT4) inference. Since they're smaller and cheaper than GPUs, these chips are becoming more common in consumer devices, especially mobile phones and laptops (like in Microsoft Copilot-enabled devices), as they enable some local AI capabilities without relying on cloud connectivity.
 
 Some common NPU options include:
 
@@ -229,7 +233,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ``` -->
 
-I've also include an example Python script that uses the Foundry Local Python SDK under the `data/ch08` directory. Navigate to this directory and run the script using the following commands:
+I've also include an example Python script that uses the Foundry Local Python SDK under the `data/ch08` directory in the accompanying GitHub repository. Navigate to this directory and run the script using the following commands:
 
 ```bash
 cd data/ch08
@@ -325,14 +329,18 @@ Let's walk through the FP32 to INT4 quantization process for a different number 
 * Keep in mind that `0.37` is stored as `0.37000000476837158203125` in FP32, which is represented as `00111110011000000000000000000000` in binary.
 * Also, 4-bit quantization can only represent 16 discrete values (`[-8, 7]`). So, we need to determine how to map the range of weights in the model to these 16 values.
 
-1. We first determine the range of values in the model's weights, which is necessary for quantization. Let's say the weights in the model range from `-1.0` to `1.0`. We can then calculate the scale factor for quantization and divide the max value in the quantized space. So, the max of the original range is `1.0` and the max of the quantized space is `max(-8, 7) = 7`, giving a scale factor of `1/7 ≈ 0.1429`.
+Here are the steps for quantizing `0.37` from FP32 to INT4:
 
-2. Next, we quantize the weight by dividing it by the scale factor and rounding to the nearest integer. So, `0.37 / 0.1429 ≈ 2.59`, which rounds to `3`. This means that `0.37` in FP32 is quantized to `3` in INT4, which is represented as `0011` in binary.
+1. We first determine the range of values in the model's weights, which is necessary for quantization. Let's say the weights in the model range from `-1.0` to `1.0`. We can then calculate the scale factor for quantization and divide the max value in the quantized space. So, the max of the original range is `1.0` and the max of the quantized space is $\max(-8, 7) = 7$, giving a scale factor of $1/7 \approx 0.1429$.
 
-3. If we want to see how this quantized value maps back to the original range, we can de-quantize it by multiplying the quantized value by the scale factor. So, `3 * 0.1429 ≈ 0.4287`. This means that after quantization and de-quantization, our original weight of `0.37` is approximated as `0.4287`, which is a loss of precision by `-0.0587`, but this allows us to represent the weight using only 4 bits instead of 32 bits.
+2. Next, we quantize the weight by dividing it by the scale factor and rounding to the nearest integer. So, $0.37 / 0.1429 \approx 2.59$, which rounds to `3`. This means that `0.37` in FP32 is quantized to `3` in INT4, which is represented as `0011` in binary.
+
+3. If we want to see how this quantized value maps back to the original range, we can de-quantize it by multiplying the quantized value by the scale factor. So, $3 \times 0.1429 \approx 0.4287$. This means that after quantization and de-quantization, our original weight of `0.37` is approximated as $0.4287$, which is a loss of precision by about $-0.0587$, but this allows us to represent the weight using only 4 bits instead of 32 bits. This is a reduction in memory usage by 87.5%.
 
 
 Over-quantization can lead to significant performance improvements, but it can cause LLMs to erroneously generate outputs or hallucinate more, especially for complex tasks that require nuanced understanding. The key is to experiment with different quantization levels and evaluate the impact on model performance for your specific use case. For some applications, INT8 quantization may provide a good balance between performance and accuracy, while for others, you may need to stick with higher precision or use techniques like mixed-precision quantization to optimize certain parts of the model while keeping critical components at higher precision.
+
+Keep an eye out for the latest advancements in quantization techniques. Some advancements in 4-bit and 2-bit quantization (like GGUF/EXL2) have enabled some users to run 100B+ models on high-end consumer setups (e.g., a Mac Studio with 256GB of Unified Memory). So, as hardware and quantization techniques continue to evolve, we may see even more efficient ways to run larger models locally without sacrificing too much quality.
 
 Now that you understand the basics of quantization and how it can help us optimize models for local deployment, let's learn about the tools that can assist us in this process, such as ONNX and Olive.
 
@@ -369,7 +377,7 @@ torch.onnx.export(
 )
 ```
 
-The ONNX exporter runs your model once using some (dummy) data you provide. It traces through the model's logic, exporting the operators which were actually run during this singular run. (Thus, this doesn't work on models that change in behavior based on the input data, such as with control flow or dynamic shapes. For those, you have to use a more advanced exporter that can handle those cases, such as TorchDynamo for PyTorch models.)
+The ONNX exporter runs your model once using some (dummy) data you provide. It traces through the model's logic, exporting the operators which were actually run during this singular run. Thus, this doesn't work on models that change in behavior based on the input data, such as with control flow or dynamic shapes. For those, you have to use a more advanced exporter that can handle those cases, such as TorchDynamo for PyTorch models.
 
 Once we have an ONNX-formatted model, we can use ONNX Runtime to run it efficiently on various hardware. ONNX Runtime provides execution providers that are optimized for different types of hardware, operating systems, and programming languages. Plus, there are other ONNX tools that can help with model optimization, simplification, and deployment. Together, this allows you to get the best performance out of your model regardless of your unique setup.
 
@@ -389,7 +397,7 @@ print(outputs)
 
 But what if we don't want to manually handle the conversion and optimization process? This is where Olive (ONNX Live) comes in.
 
-Olive (ONNX Live) is Microsoft's toolchain for optimizing machine learning models for deployment. Given a model and targeted hardware, Olive composes the best suitable optimization techniques to output the most efficient ONNX model. It applies a sequence of optimizations to improve model performance, reduce size, and ensure compatibility with target hardware. This is useful for inferencing on lower-end hardware, such as in edge deployments, while taking a set of constraints such as accuracy and latency into consideration.
+Olive is Microsoft's toolchain for optimizing machine learning models for deployment. Given a model and targeted hardware, Olive composes the best suitable optimization techniques to output the most efficient ONNX model. It applies a sequence of optimizations to improve model performance, reduce size, and ensure compatibility with target hardware. This is useful for inferencing on lower-end hardware, such as in edge deployments, while taking a set of constraints such as accuracy and latency into consideration.
 
 
 Olive capabilities:
@@ -423,7 +431,7 @@ pip install transformers
 
 Next, let's quantize the 0.5B Qwen 2.5 model that we use used before, but this time we'll make it even smaller with Olive and then run it locally on our CPU.
 
-Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory.
+Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory. Note that the `--precision int4` flag tells Olive to apply 4-bit quantization, which can significantly reduce the model size and improve inference speed on CPU, albeit with some loss in accuracy.
 
 ```bash
 olive auto-opt \
@@ -436,6 +444,8 @@ olive auto-opt \
     --precision int4 \
     --log_level 1
 ```
+
+The `--provider CPUExecutionProvider` flag specifies that we want to optimize the model for CPU inference using ONNX Runtime's CPU execution provider. There are multiple providers available for different hardware, such as CUDAExecutionProvider for NVIDIA GPUs, OpenVINOExecutionProvider for Intel hardware, and so on. By specifying the provider, Olive can apply optimizations that are tailored to the capabilities of that specific hardware, ensuring that the model runs as efficiently as possible in your local environment.
 
 As shown in @fig-C0FB, Olive will automatically pull the model weights and tokenizer from Hugging Face. Then it will determine the best optimization techniques for the Qwen 2.5 0.5B model to run efficiently on your CPU. In this case, it applies INT4 quantization to reduce the model size and improve inference speed while maintaining reasonable accuracy for local deployment.
 

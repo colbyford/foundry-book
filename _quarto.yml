@@ -17,9 +17,10 @@ book:
     - 3_agent_deployment.qmd
     - 4_knowledge_bases.qmd
     - 5_model_customization.qmd
-    # - 6_agent_management.qmd
-    # - 7_edge_deployment.qmd
-    # - 8_conclusion.qmd
+    - 6_workflows.qmd
+    - 7_agent_management.qmd
+    - 8_edge_deployment.qmd
+    - 9_conclusion.qmd
 
 # bibliography: references.bib
 

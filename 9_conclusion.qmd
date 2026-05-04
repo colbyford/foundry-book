@@ -4,7 +4,7 @@ In this conclusionary chapter, we'll wrap up the book by covering a few other fe
 
 ## Additional Features
 
-As you may have noticed throughout this book, Microsoft Foundry has a ton of features, and new features seem to be coming out regularly. In this section, I'll briefly cover some of the features that didn't necessarily fit into the previous chapters, but that are still important to be aware of as you design and build your agents.
+As you may have noticed throughout this book, Microsoft Foundry has a ton of features, and new features are released regularly. In this section, I'll briefly cover some of the features that didn't necessarily fit into the previous chapters, but that are still important to be aware of as you design and build your agents.
 
 ### Memory
 
@@ -26,7 +26,7 @@ To add a memory store to your Agent, navigate to the *Memory* section of your Ag
 
 ![Locating the memory capability on an Agent](figures/co/ss_memory_001_ann.png){#fig-D4BD}
 
-Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `{{$userId}}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will fall back to the caller's Microsoft Entra token (`{tenant-id}_{object-id}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
+Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `{{$userId}}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will default to the caller's Microsoft Entra token (`{tenant-id}_{object-id}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
 
 ![Editing the memory store](figures/co/ss_memory_002_clean.png){#fig-4132}
 
@@ -34,7 +34,46 @@ Memory stores can be reused between different agents. So, you could have multipl
 
 ### Evaluations
 
-If you need to evaluate the quality and safety of your generative AI applications, the *Evaluations* feature in Microsoft Foundry allows you to use multiple industry standard metrics and other evaluators to assess the performance of your agents. You can use this to evaluate your agents during development and testing, and you can also set up ongoing evaluation in production to monitor for any issues or degradation in performance over time.
+If you need to evaluate the quality and safety of your generative AI applications, the *Evaluations* feature in Microsoft Foundry allows you to use multiple industry standard metrics and other evaluators to assess the performance of your agents. You can use this to evaluate your agents during development and testing, and you can also set up ongoing evaluation in production to monitor for any issues or degradation in performance over time. @tbl-evaluators provides a list of some of the built-in evaluators that you can use to evaluate your agents.
+
+
+| Type | Evaluator | Purpose |
+|---|---|---|
+| General Purpose | Coherence | Measures logical consistency and flow of responses. |
+|  | Fluency | Measures natural language quality and readability. |
+| Text Similarity | Similarity | AI-assisted textual similarity measurement. |
+|  | F1 Score | Harmonic mean of precision and recall in token overlaps between response and ground truth. |
+|  | BLEU | Bilingual Evaluation Understudy score for translation quality measures overlaps in n-grams between response and ground truth. |
+|  | GLEU | Google-BLEU variant for sentence-level assessment measures overlaps in n-grams between response and ground truth. |
+|  | ROUGE | Recall-Oriented Understudy for Gisting Evaluation measures overlaps in n-grams between response and ground truth. |
+|  | METEOR | Metric for Evaluation of Translation with Explicit Ordering measures overlaps in n-grams between response and ground truth. |
+| RAG | Retrieval | Measures how effectively the system retrieves relevant information. |
+|  | Document Retrieval | Measures accuracy in retrieval results given ground truth. |
+|  | Groundedness | Measures how grounded the response is in the retrieved context. Returns a score from 1–5 using a model-based judgment. |
+|  | Groundedness Pro (preview) | Measures whether the response is grounded in the retrieved context using the Azure AI Content Safety service. Returns a binary pass/fail without requiring a model deployment. |
+|  | Relevance | Measures how relevant the response is with respect to the query. |
+|  | Response Completeness (preview) | Measures to what extent the response is complete (not missing critical information) with respect to the ground truth. |
+| Risk and Safety | Hate and Unfairness | Identifies biased, discriminatory, or hateful content. |
+|  | Sexual | Identifies inappropriate sexual content. |
+|  | Violence | Detects violent content or incitement. |
+|  | Self-Harm | Detects content promoting or describing self-harm. |
+|  | Protected Materials | Detects unauthorized use of copyrighted or protected content. |
+|  | Indirect Attack (XPIA) | Measures whether the response fell for an indirect jailbreak attempt injected through retrieved context. |
+|  | Code Vulnerability | Identifies security issues in generated code. |
+|  | Ungrounded Attributes | Detects fabricated or hallucinated information inferred from user interactions. |
+|  | Prohibited Actions (preview) | Measures an AI agent's ability to engage in behaviors that violate explicitly disallowed actions. |
+|  | Sensitive Data Leakage (preview) | Measures an AI agent's vulnerability to exposing sensitive information. |
+| Agent | Task Adherence (preview) | Measures whether the agent follows through on identified tasks according to system instructions. |
+|  | Task Completion (preview) | Measures whether the agent successfully completed the requested task end-to-end. |
+|  | Intent Resolution (preview) | Measures how accurately the agent identifies and addresses user intentions. |
+|  | Task Navigation Efficiency | Determines whether the agent's sequence of steps matches an optimal or expected path to measure efficiency. |
+|  | Tool Call Accuracy | Measures the overall quality of tool calls including selection, parameter correctness, and efficiency. |
+|  | Tool Selection | Measures whether the agent selected the most appropriate and efficient tools for a task. |
+|  | Tool Input Accuracy | Validates that all tool call parameters are correct with strict criteria including grounding, type, format, completeness, and appropriateness. |
+|  | Tool Output Utilization | Measures whether the agent correctly interprets and uses tool outputs contextually in responses and subsequent calls. |
+|  | Tool Call Success | Evaluates whether all tool calls executed successfully without technical failures. |
+
+: Built-in evaluators, categorized by type. {#tbl-evaluators}
 
 To test out the Evaluations feature, navigate to the *Evaluations* screen from the left-hand menu of the Foundry Portal under *Build*. Click the *Create* button, as shown in @fig-AB12, to set up a new evaluation.
 
@@ -78,7 +117,13 @@ There's not much to configure on the *Create a batch job* screen, as the main th
 
 For the majority of this book, we've been focused on LLMs, but there are certainly many other AI models that can be deployed and used within Microsoft Foundry. In addition to LLMs, Foundry also supports a variety of other AI services, such as text-to-speech, translation, language detection, personally identifiable information (PII) detection, content understanding, and more. These services can be used in conjunction with your agents to provide additional capabilities and enhance the overall user experience.
 
-As shown in @fig-2CED, you can find the *AI Services* options under the *Models* section of the Foundry Portal. From there, you can explore the different services that are available and how to use them. Clicking on any of these services will open up a Playground for you to test out the service and see how it works. (Also, if you click the bullet beside the service name, it will show you the Target URI and Key to call the service programmatically.) For example, let's click on one of the newer AI Services: *Azure Speech - Voice Live*.
+As shown in @fig-2CED, you can find the *AI Services* options under the *Models* section of the Foundry Portal. From there, you can explore the different services that are available and how to use them. Clicking on any of these services will open up a Playground for you to test out the service and see how it works. 
+
+::: {.callout-tip}
+If you click the bullet beside the service name, it will show you the Target URI and Key to call the service programmatically.
+:::
+
+For example, let's click on one of the newer AI Services: *Azure Speech - Voice Live*.
 
 ![Locating the AI Services options under Models](figures/co/ss_aiservices_001_ann.png){#fig-2CED}
 
@@ -99,9 +144,14 @@ In addition to the features available today in Microsoft Foundry, Microsoft has 
 
 You may recall in the Knowledge Bases chapter we built a Retrieval Augmented Generation (RAG) system using Azure AI Search and connected an agent to our data. There are many RAG-based architectures and approaches to building intelligent agents, each with their own strengths and weaknesses.
 
-Normal RAG may struggle to connect the dots well enough for an LLM to synthesize a coherent response when answering a question requires traversing disparate pieces of information. There's also the limitation that traditional RAG systems may struggle to summarize semantic concepts when given a very large collection of data. This is where GraphRAG comes in.
+Normal RAG may struggle to connect the dots well enough for an LLM to synthesize a coherent response when answering a question requires traversing disparate pieces of information. Another limitation is that traditional RAG systems may struggle to summarize semantic concepts when given a very large collection of data. This is where GraphRAG comes in.
 
 GraphRAG is an open-source framework that simplifies the process of building RAG systems by providing a set of tools and libraries for integrating graph databases with LLMs. It allows you to create knowledge graphs from your data and use them to enhance the retrieval capabilities of your agents. GraphRAG uses LLM-generated knowledge graphs to provide substantial improvements in question-and-answer performance when conducting document analysis of complex information.
+
+As shown in @fig-331E, GraphRAG extracts entities and relationships from your data to form a knowledge graph. It then uses hierarchical clustering to group related entities into communities, which can represent different pieces of knowledge. Then, communities can be related to each other in levels, representing information about a general theme and also topic-specific details. This structured representation of information allows for more effective retrieval and reasoning by the LLM, especially for complex queries that require connecting multiple pieces of information together.
+
+![How GraphRAG forms an entity knowledge graph of communities](figures/co/il_graphrag_001_clean.png){#fig-331E}
+
 
 Here are some terms to know when working with GraphRAG:
 
@@ -112,7 +162,9 @@ Here are some terms to know when working with GraphRAG:
 When running GraphRAG, it has two main steps: 
 
 1. *Index:* Slices up the input corpus into a series of TextUnits, then extracts all entities, relationships, and key claims. It then performs hierarchical clustering of the graph and generates summaries of each community and its constituents from the bottom-up.
-2. *Query:* Retrieves the most relevant graph nodes based on the query and flattens the graph into a prompt for the LLM. The LLM can then use the structured information in the graph to generate more accurate and coherent responses. There are multiple query modules in GraphRAG, including:
+2. *Query:* Retrieves the most relevant graph nodes based on the query and flattens the graph into a prompt for the LLM. The LLM can then use the structured information in the graph to generate more accurate and coherent responses.
+
+There are multiple query modules in GraphRAG, including:
   - *Global Search:* Enables reasoning about holistic questions about the corpus by leveraging the community summaries.
   - *Local Search:* Enables reasoning about specific entities by fanning-out to their neighbors and associated concepts.
   - *DRIFT Search:* Enables reasoning about specific entities by fanning-out to their neighbors and associated concepts, but with the added context of community information.
@@ -260,7 +312,7 @@ Microsoft provides multiple Bicep and Terraform templates on their GitHub repo: 
 
 ### Security and Identity
 
-AI agents can be surprisingly powerful actors in your organization, and with that power comes risk. Leverage Azure's native security and identity services such as Microsoft Entra ID for authentication and Azure Key Vault for secrets management. Never embed API keys or connection strings directly in your agent's instructions or tool definitions. These will inevitably end up in logs, conversation histories, and screenshots. Instead, use managed identities wherever possible so that your agents authenticate to downstream services without any credentials ever being stored.
+AI agents can be surprisingly powerful actors in your organization, and with that power comes great responsibility (and risk). Thus, controlling what they can access and do is paramount. My recommendation is to leverage Azure's native security and identity services such as Microsoft Entra ID for authentication and Azure Key Vault for secrets management. When connecting an Agent to downstream services, always use managed identities to avoid storing credentials. In other words, as a general rule, never embed API keys or connection strings directly in your agent's instructions or tool definitions. These will inevitably end up in logs, conversation histories, and screenshots. When you use managed identities, your agents can authenticate to downstream services without any credentials ever being stored.
 
 Also, using role-based access controls (RBAC) can be applied on each resource to ensure that only authorized users can perform specific actions. For example, as shown in @fig-285E, you can set up RBAC for your Foundry resources separately from the RBAC for your Azure resources (e.g., the Subscription and Resource Group). This allows you to have fine-grained control over who can access and manage your Foundry agents and projects, which is especially important in larger organizations with multiple teams and stakeholders involved in AI initiatives.
 
@@ -331,7 +383,7 @@ These examples are just two of many possible architectures for integrating Found
 
 ## Final Thoughts
 
-I suppose all good things must come to an end, but the party has just begun! As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology. It's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success. I encourage you to experiment, iterate, and share your learnings with the community. The future of enterprise AI is being formed now with Microsoft Foundry at the center.
+I suppose all good things must come to an end, but the party has just begun! As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology. It's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success. I encourage you to experiment, iterate, and share your learnings with the community. The future of enterprise AI is being formed now.
 
 Key Takeaways:
 

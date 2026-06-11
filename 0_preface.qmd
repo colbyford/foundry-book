@@ -87,4 +87,6 @@ Watch us on YouTube: <https://youtube.com/oreillymedia>
 
 ## Acknowledgments
 
+Thank you to my peer reviewers who had an uncanny attention to detail and provided valuable (and brutally honest) feedback: Jonah Andersson, Kushaagra Goyal, Jack Lee, Leif Håkan Silfvernagel, Malar K., Samaresh Kumar Singh.
+
 <!-- Fill in... -->

@@ -1,6 +1,6 @@
 # Orchestrating Agents with Workflows {#sec-workflows}
 
-In the previous chapters, you learned how to deploy models, configure agents with tools, and fine-tune those agents for specialized tasks. A single, well-tuned agent can carry a conversation, call an API, and synthesize results, but it hits a ceiling quickly when a task requires distinct phases of work, conditional logic, or human sign-off. That is where Workflows come in.
+In the previous chapters, you learned how to deploy models, configure agents with tools, and customize those agents for specialized tasks. A single, well-tuned agent can carry a conversation, call an API, and synthesize results, but it hits a ceiling quickly when a task requires distinct phases of work, conditional logic, or human sign-off. That is where Workflows come in.
 
 Workflows are Microsoft Foundry's visual orchestration layer. They let you string together multiple agents, data transformations, branching logic, and human checkpoints into a repeatable, auditable process. This is provided as a low-code builder that makes multi-agent workflows approachable. Think of a workflow as a
 directed graph: nodes are actions (invoke an agent, set a variable, ask a question), and edges encode order and conditions.
@@ -9,14 +9,16 @@ This chapter covers the core orchestration patterns Foundry ships as templates, 
 digs into Power Fx, the formula language you will use any time you need more than a straight-line flow.
 
 ::: {.callout-note}
-Workflows are currently a UI-based, no-code/low-code feature. If you want to manage workflow definitions as code, say, to version them in Git or deploy them through a CI pipeline, see Foundry's VS Code extensions, which surface the same YAML that backs the visual builder. The YAML view and the visual view stay in sync; changes to one appear immediately in the other.
+<!-- Workflows are currently a UI-based, no-code/low-code feature. If you want to manage workflow definitions as code, say, to version them in Git or deploy them through a CI pipeline, see Foundry's VS Code extensions, which surface the same YAML that backs the visual builder. The YAML view and the visual view stay in sync; changes to one appear immediately in the other. -->
 
-Later on, Workflows may also be exposed as part of the Foundry SDKs. The orchestration logic and patterns should remain the same regardless of the interface you use to author them.
+At the time of writing, Foundry workflows can be authored visually, and declarative workflow definitions can also be represented in YAML for source control and developer workflows. Check the current Foundry SDK and Microsoft Agent Framework documentation before relying on SDK support, because the workflow authoring surface is evolving
+
+The orchestration logic and patterns should remain the same regardless of the interface you use to author them.
 :::
 
 ## When to Opt for a Workflow
 
-Not every multi-step task needs a workflow. If you can express the logic inside a single agent's system prompt and tool calls, keep it there, the overhead of a visual orchestration layer is rarely justified for a two-step chain.
+Not every multi-step task needs a workflow. If you can express the logic inside a single agent's system prompt and tool calls, keep it there, the overhead of a visual orchestration layer may not be justified for a two-step chain. However, if your process requires a human-in-the-loop approval strep, external data writing, or other high risk actions, the explicit checkpoints and branching logic of a workflow can provide safety and auditability that a single agent cannot.
 
 Workflows earn their keep when you need at least one of the following:
 
@@ -28,29 +30,26 @@ Workflows earn their keep when you need at least one of the following:
 
 * *Auditable, reusable pipelines.* Versioning is built into the workflow engine. Every save creates a new, immutable version. That makes it straightforward to roll back, compare runs across versions, and meet compliance requirements that ask "what logic produced this output?"
 
+
+::: {.callout-tip}
+Keep in mind that language models produce probabilistic outputs rather than deterministic routing decisions, which means prompt-based branching can silently produce wrong paths without any error signals or notifications. However, conditions implemented in a workflow produce more predictable, auditable routing.
+:::
+
 ## Multi-Agent Orchestration Patterns
 
 Foundry provides three template patterns, shown in @fig-965B. While you can start from a blank canvas, these templates cover the common real-world cases.
 
 ![Workflow template patterns](figures/wf/il_types_001_clean.png){#fig-965B}
 
-In many of such orchestration patterns, you'll find a recurring theme: the division of labor between the workflow and the agents. The workflow is responsible for *control flow*: sequencing steps, routing between agent specialists, and/or pausing for human input. The agents are responsible for *language tasks*: understanding user input, generating messages, and making decisions that require linguistic reasoning. Keeping this separation of concerns clear in your design will lead to more maintainable and robust systems.
+In many of these orchestration patterns, you'll find a recurring theme: the division of labor between the workflow and the agents. The workflow is responsible for the deterministic parts of the *control flow*: sequencing steps, routing between agent specialists, and/or pausing for human input. The agents are responsible for *language tasks*: understanding user input, generating messages, and making decisions that require linguistic reasoning. They also are responsible for calling tools, accessing external data, and making probabilistic decisions. Keeping this separation of concerns clear in your design will lead to more maintainable and robust systems.
 
 ### Sequential
 
 Sequential workflows are the simplest and most common pattern. Each agent receives the output of the previous one and passes its result downstream. The order is fixed at design time.
 
-Sequential workflows are a good choice for *pipeline-style tasks*: ingest → enrich → validate → format → deliver. They are predictable, easy to test step-by-step, and easy to explain to stakeholders.
+Sequential workflows are a good choice for *pipeline-style tasks*: ingest → enrich → validate → format → deliver. They are deterministic, easy to test step-by-step, and easy to explain to stakeholders.
 
-Use this pattern when the stages of a task are well-defined and the output of one stage is always the input to the next. If the routing between stages depends on content or context, look at the group chat pattern instead.
-
-### Group Chat
-
-The group chat pattern introduces an *orchestrator agent* that routes ("orchestrates") control to specialist agents dynamically, based on the conversation context or on explicit rules. After a specialist responds, control returns to the orchestrator, which decides the next step.
-
-This is the right pattern for *escalation and handoff scenarios*: a general intake agent that decides whether a request needs a legal reviewer, a compliance checker, or a technical expert. It is also useful when you cannot enumerate all routing paths at design time, the orchestrator's prompt or tools handle the decision at runtime.
-
-The trade-off is observability. A sequential workflow is trivially traceable; the group chat pattern requires you to instrument the orchestrator carefully to understand why the flow went the path it took.
+Use this pattern when the stages of a task are well-defined, generally linear, and the output of one stage is always the input to the next. 
 
 ### Human in the Loop
 
@@ -64,15 +63,27 @@ Common applications include:
 
 Human-in-the-loop steps can be composed freely with the other patterns. A sequential workflow might include one human approval gate; a group chat workflow might escalate to a human as one of its routing paths.
 
+### Group Chat
+
+The group chat pattern introduces an *orchestrator agent* that routes ("orchestrates") control to specialist agents dynamically, based on the conversation context or on explicit rules. After a specialist responds, control returns to the orchestrator, which decides the next step.
+
+This is the right pattern for *escalation and handoff scenarios*: a general intake agent that decides whether a request needs a legal reviewer, a compliance checker, or a technical expert. It is also useful when you cannot enumerate all routing paths at design time, the orchestrator's prompt or tools handle the decision at runtime.
+
+The trade-off is observability. A sequential workflow is trivially traceable; the group chat pattern requires you to instrument the orchestrator carefully to understand why the flow took the path it went.
+
+::: {.callout-warning}
+Group chats can become expensive, non-deterministic, and difficult to test if the orchestrator prompt is underspecified. They may result in excess work being done by specialist agents if the orchestrator routes to the wrong one, or if it loops back and forth between specialists.
+
+If you choose this pattern, invest time in crafting a clear, detailed prompt for the orchestrator and consider adding guardrails, such as a maximum number of turns or fallback paths, to mitigate risks.
+:::
 
 ### Other Patterns
 
-Other patterns exist beyond these three, but there aren't templates for them in the Workflow builder (yet). Some other examples include:
+Other patterns exist beyond these three, but there aren't templates for them in the Workflow builder (as of June 2026). Some other examples include:
 
 * *Concurrent*: Multiple agents to work on the same task in parallel. Each agent processes the input independently, and their results are collected and aggregated before the output is formed. This pattern is useful for "brainstorming" or "voting" scenarios, where you want diverse perspectives on the same input.
 * *Handoff*: Agents to transfer control to one another based on the context or user request. This pattern works well in customer support, expert systems, or scenarios requiring dynamic delegation.
-<!-- * *Group Chat*: Multiple agents collaborate in a shared conversation that is coordinated by an orchestrator agent. The orchestrator routes messages between specialists and may iterate the responses before providing a final response. This pattern is ideal for complex decision-making, multi-domain tasks, or when the flow cannot be predetermined. -->
-* *Magentic*: A manager agent dynamically coordinates specialized agents. The manager assigns tasks, sets goals, and integrates results. This pattern is suitable for complex projects that require high-level planning and adaptability.
+<!-- * *Magentic*: A manager agent dynamically coordinates specialized agents. The manager assigns tasks, sets goals, and integrates results. This pattern is suitable for complex projects that require high-level planning and adaptability. -->
 
 
 ## Expressing Logic with Power Fx
@@ -88,7 +99,7 @@ Every expression that references a variable needs a scope prefix:
 
 ::: {.callout-tip}
 
-Forgetting the prefix is the single most common Power Fx mistake. If you see a "Name isn't valid" error, the prefix is almost certainly missing. Also, Power Fx is case-sensitive, so `local.` or `system.` will not work.
+Forgetting the prefix is the single most common Power Fx mistake. If you see a "Name isn't valid" error, the prefix is almost certainly missing. Also, Power Fx commands are case-sensitive and presented in PascalCase, so `local.` or `system.` will not work.
 
 :::
 
@@ -115,13 +126,13 @@ Now that we've covered some of the core design patterns and logical functions, l
 
 The best way to internalize how workflows are assembled is to build one. This exercise walks through a concrete example: a multi-agent workflow that processes a mathematical problem, breaks it down into steps, and generates Python code to solve it. 
 
-To start, navigate to *Agents* tab of the *Build* section of the Foundry portal. Beside the *Agents* tab at the top, click the *Workflows* tab, as shown in @fig-693E.
+To start, navigate to *Agents* tab of the *Build* section of the Foundry portal. Beside the *Agents* tab at the top, click the *Workflows* tab, as shown in @fig-CFD6.
 
-![Locating Workflows from the Foundry UI](figures/wf/ss_portal_001_ann.png){#fig-693E}
+![Locating Workflows from the Foundry UI](figures/wf/ss_wfportal_001_ann.png){#fig-CFD6}
 
-Click the *Create workflow* dropdown button and select *Human in loop*. See @fig-992A. This template gives you a head start with the right node types arranged in a common pattern, which we will be modifying to fit our specific use case.
+Click the *Create workflow* dropdown button and select *Human in loop*. See @fig-3FC2. This template gives you a head start with the right node types arranged in a common pattern, which we will be modifying to fit our specific use case.
 
-![Selecting the blank workflow template](figures/wf/ss_portal_002_ann.png){#fig-992A}
+![Selecting the Human in Loop workflow template](figures/wf/ss_wfportal_002_ann.png){#fig-3FC2}
 
 Foundry will open the visual builder with a template containing placeholder nodes arranged in a branching chain. See @fig-F349.
 
@@ -163,7 +174,7 @@ A node configuration panel will open on the right. Set the following values:
 * *Question*: `Please enter your math problem:`
 * *Expected input type*: String
 * *Save user response as*: Create a new variable called `Local.MathProblem`
-* *Node ID*: `question_math_input`
+* *Node ID*: `question\_math\_input`
 
 Click the *Done* button to save the node configuration. You should now see the new "Ask a question" node on the canvas, connected to the "Start" node, as shown in @fig-BC17. This node will ask the user to input a math problem when the workflow runs, and it will save their response in a variable called `Local.MathProblem` for downstream nodes to use.
 
@@ -175,7 +186,7 @@ Create a new *Set variable* node by clicking the *+* icon after the last "Ask a 
 
 * *Set variable*: Create a new variable called `Local.LatestMessage`
 * *To value*: `UserMessage(Local.MathProblem)`
-* *Node ID*: `set_variable_input_task`
+* *Node ID*: `set\_variable\_input\_task`
 
 Click the *Done* button to save the node configuration, as shown in @fig-8C31.
 
@@ -185,7 +196,7 @@ Repeat this process to create another *Set variable* node that initializes `Loca
 
 * *Set variable*: Create a new variable called `Local.TurnCount`
 * *To value*: `0`
-* *Node ID*: `set_variable_turn_count`
+* *Node ID*: `set\_variable\_turn\_count`
 
 Click the *Done* button to save the node configuration, as shown in @fig-1C3C.
 
@@ -203,27 +214,27 @@ You are an expert mathematician and problem analyst. Your sole responsibility is
 
 ![Configuring the Math Evaluator Agent node](figures/wf/ss_canvas_006_ann.png){#fig-EC28}
 
-A more complete and verbose version of this prompt is available in the `data/ch06/math_evaluator_agent_prompt.md` file. The expanded prompt better defines how the agent should respond, such as recommending a strategy and Python libraries to use. You can copy and paste it into the system prompt of your new agent. Also, my new agent defaulted to use the `gpt-4o` model. Feel free to experiment with different models to see how it impacts the quality of the solution plan.
+A more complete and verbose version of this prompt is available in the `data/ch06/math\_evaluator\_agent\_prompt.md` file. The expanded prompt better defines how the agent should respond, such as recommending a strategy and Python libraries to use. You can copy and paste it into the system prompt of your new agent. Also, my new agent defaulted to use the `gpt-4o` model. Feel free to experiment with different models to see how it impacts the quality of the solution plan.
 
 Next, on the *Node settings* tab of the configuration panel, set the following values:
 
 * *Save agent output message to variable*: `Local.LatestMessage`
-* *Node ID*: `math_evaluator_agent`
+* *Node ID*: `math\_evaluator\_agent`
 
 As shown in @fig-7C25, click the *Done* button once your instructions and settings are configured.
 
 ![Configuring the Math Evaluator Agent's behavior](figures/wf/ss_canvas_007_ann.png){#fig-7C25}
 
-Now we need to handle if the agent is unable to solve the problem. You may have noticed in the prompt that the agent should return `[COMPLETE]` as part of its response if it was able to produce a complete solution plan. We will add a conditional branch that checks if the agent's response contains the `[COMPLETE]` flag. If it does not, it will tell the user that it was unable to solve the problem.
+Now we need to handle if the agent is unable to solve the problem. You may have noticed in the prompt that the agent should return `\[COMPLETE\]` as part of its response if it was able to produce a complete solution plan. We will add a conditional branch that checks if the agent's response contains the `\[COMPLETE\]` flag. If it does not, it will tell the user that it was unable to solve the problem.
 
 Click on the *+* icon after the "math-evaluator-agent" node and select the *If/else condition* node type. In the configuration panel, set the following value:
 
-* *Node ID*: `check_evaluator_exit`
+* *Node ID*: `check\_evaluator\_exit`
 
 Under the *If* section, add the following condition:
 
-* *Condition 1*: `=!IsBlank(Find("[COMPLETE]", Upper(Last(Local.LatestMessage).Text)))`
-* *Node ID*: `evaluator_flagged_complete`
+* *Condition 1*: `=!IsBlank(Find("\[COMPLETE\]", Upper(Last(Local.LatestMessage).Text)))`
+* *Node ID*: `evaluator\_flagged\_complete`
 
 If you don't see an *If* condition block, click the *+ Add a path* button to add one. This is also where you would add additional *Else if* blocks if you wanted to check for other conditions.
 
@@ -236,8 +247,8 @@ Lastly, we will change the message given to the user depending on whether the ev
 Click on the *+* icon after the "If" node and select the *Deliver a message* node type. (This shows up as "Send message" on the node itself).
 This node will compile a message back to the user in the chat interface without expecting a response. Set the following values:
 
-* *Message*: `The Math Evaluator was unable to proceed: {Last(Local.LatestMessage).Text}`
-* *Node ID*: `send_evaluator_exit`
+* *Message*: `The Math Evaluator was unable to proceed: \{Last(Local.LatestMessage).Text\}`
+* *Node ID*: `send\_evaluator\_exit`
 
 As shown in @fig-1C69, click the *Done* button to save the configuration.
 
@@ -247,7 +258,7 @@ As shown in @fig-1C69, click the *Done* button to save the configuration.
 Similarly, click on the *+* icon after the "Else" node and add another *Deliver a message* node. This will be the message sent to the user when the evaluator does flag the response as complete. Set the following values:
 
 * *Message*: `Math Evaluator complete. Handing solution plan to the Python Coder agent...`
-* *Node ID*: `send_evaluator_done`
+* *Node ID*: `send\_evaluator\_done`
 
 As shown in @fig-8952, click the *Done* button to save the configuration.
 
@@ -260,17 +271,17 @@ Are you tired of making all these nodes by hand yet? Let's zoom out and see what
 
 We still need another agent to take the solution plan from the evaluator and generate Python code, plus some additional logic to handle multiple turns of evaluation and coding if the problem is complex. Then, we'll need a few nodes to handle the messages back to the user (on success, failure, or waiting on another iteration) and an *End* node.
 
-Let me show you how to do the rest of the workflow using YAML.
+Let's switch to YAML mode to complete the remaining nodes and see how both approaches relate to each other.
 
 ### Using YAML for Workflow Authoring
 
-In lieu of using the visual editor, we can also configure Workflows using YAML, which is a text-based way to define workflows that can be faster for complex logic and easier to manage in version control. Plus, coding tools can easily generate YAML, so if you prefer to design your workflow in a language model and then paste it in, YAML is the way to go.
+In lieu of using the visual editor, we can also configure Workflows using YAML, which is a text-based way to define workflows that can be faster for complex logic and easier to manage in version control. Plus, we can programmatically generate YAMLs files right from a Python script or even have an LLM do it. So, if you prefer to design your workflow in a language model and then paste it in, YAML is the way to go.
 
 Click on the *YAML* tab at the top right of the canvas, as shown in @fig-E94B. This will switch you from the visual editor to the YAML editor, where you can see the underlying YAML definition of your workflow.
 
 ![Seeing the YAML version of what you've built](figures/wf/ss_canvas_012_ann.png){#fig-E94B}
 
-Grab the provided YAML file from `data/ch06/math_coder_workflow.yaml` and paste it into the editor, replacing all of the existing YAML. This file contains the full definition of the workflow we are building, including the second half that we didn't yet build in the visual editor.
+Grab the provided YAML file from `data/ch06/math\_coder\_workflow.yaml` and paste it into the editor, replacing all of the existing YAML. This file contains the full definition of the workflow we are building, including the second half that we didn't yet build in the visual editor.
 
 Switch back to the *Visualizer* tab to see the full workflow on the canvas. You should see that the YAML you pasted in has rendered as a visual workflow, as shown in @fig-7946. You'll now see a "python-coder-agent" node that will take the solution plan from the evaluator and generates Python code (to be configured next). This is connected to additional nodes that handle multiple turns of evaluation and coding, nodes to handle messages back to the user, and *End* nodes.
 
@@ -309,7 +320,7 @@ Once you're done reviewing the workflow, make sure to click the *Save* button to
 
 Click the *Preview* button to open the Preview chat panel on the right. This lets you run the workflow step-by-step and see the output of each node in real time, which is essential for debugging and verifying that your workflow behaves as expected before deploying it to production.
 
-In the chat panel, ask your math solver workflow some questions to see how it performs. Perhaps start with a simple question, like `What is 2+2?`. Then, you cna increase the difficulty of the problems you ask to see how well the agents can break down and solve more complex problems. For example, you could ask some of the provided problems below, or come up with your own.
+In the chat panel, ask your math solver workflow some questions to see how it performs. Perhaps start with a simple question, like `What is 2\+2?`. Then, you can increase the difficulty of the problems you ask to see how well the agents can break down and solve more complex problems. For example, you could ask some of the provided problems below, or come up with your own.
 
 ::: {.callout-tip}
 ## Example Simple Inputs
@@ -383,17 +394,15 @@ Other common issues you might encounter include:
 
 * *Power Fx formula errors* - When defining formulae, click on the variables from the dropdown menu rather than typing them. Be sure to add the `Local.` or `System.` scope prefix. Foundry does not infer scope automatically. Also, check your data types to make sure they match between steps.
 
-* *The workflow times out.* - Break large, deeply nested workflows into smaller sub-workflows connected by agent calls. Check that any external HTTP calls made by agent tools have reasonable timeouts. A tool that waits indefinitely on a slow API will stall the entire workflow run.
+* *The workflow times out.* - Break large, deeply nested workflows into smaller tasks connected by agent calls. Check that any external HTTP calls made by agent tools have reasonable timeouts. A tool that waits indefinitely on a slow API will stall the entire workflow run.
 
 
 {{< pagebreak >}}
 
 ## Summary
 
-Workflows are the orchestration tier that sits above individual agents. They let you coordinate multiple agents in a predictable order (sequential), route dynamically between specialists (group chat), or pause for human input at any point in the process (human in the loop). Power Fx provides the formula language
-to express branching logic, transform variables, and route the flow without dropping into code.
+Workflows are the orchestration tier that sits above individual agents. They let you coordinate multiple agents in a predictable order (sequential), route dynamically between specialists (group chat), or pause for human input at any point in the process (human in the loop). Power Fx provides the formula language to express branching logic, transform variables, and route the flow without dropping into code.
 
-The most important design discipline with workflows is to resist the temptation to push control-flow logic into agent prompts. Prompts are for language; the
-workflow canvas is for logic. Keep them separate and your workflows will be easier to test, debug, and audit.
+The most important design discipline with workflows is to resist the temptation to push control-flow logic into agent prompts. Prompts are for language and result in probabilistic outcomes, whereas the workflow is for codifying more deterministic logic. In other words, prompts can express task instructions, tool use, and guidelines, but deterministic routing, approval flows, and retry logic can more reliably live in the workflow. Keep them separate and your workflows will be easier to test, debug, and audit.
 
 In the next chapter, we will will dive deeper into how to manage and monitor your deployed agents and workflows, including best practices for versioning, governing, and rolling out updates with confidence.

@@ -123,13 +123,13 @@ For this exercise, we will build a agent for delivering financial insights into 
 
 ### Part 1: Uploading Data to Azure Blob Storage
 
-Before we can make a knowledge base, we need to have some data to put in it! For this exercise, I've curated a set of files from Microsoft's public financial documents from their Q1 2026 report in the supplementary materials under [data/ch04/finance_docs](data/ch04/finance_docs/). This data includes earnings reports, financial statements, and transcripts from earnings calls and are in a variety of Office formats (DOCX, PPTX, XLSX). We will upload these files to the Azure Storage Account that was created in Chapter 1. 
+Before we can make a knowledge base, we need to have some data to put in it! For this exercise, I've curated a set of files from Microsoft's public financial documents from their Q1 2026 report in the supplementary materials under [data/ch04/finance\_docs](data/ch04/finance_docs/). This data includes earnings reports, financial statements, and transcripts from earnings calls and are in a variety of Office formats (DOCX, PPTX, XLSX). We will upload these files to the Azure Storage Account that was created in Chapter 1. 
 
 Navigate to the Azure Portal and find your Storage Account (mine was called `stfoundrybookdev001`). Then, under *Data storage* on the left-hand panel, as shown in @fig-693E, click on *Containers*. Create a new container by clicking on the *+ Add container* button and name it `data`.
 
 ![Creating a new Container in Azure Storage](figures/kb/ss_portal_001_ann.png){#fig-693E}
 
-Create a new directory by clicking the *+ Add directory* button and name it `ch04/finance-docs`. (This will actually create two directories, one under the other.) Click through the newly created `ch04` and `finance-docs` directories, and then click the *Upload* button to upload files into this directory. Select all of the files from the [data/ch04/finance_docs](data/ch04/finance_docs/) folder to upload them to the container. See @fig-72EE for an example of what this should look like once the files are uploaded.
+Create a new directory by clicking the *+ Add directory* button and name it `ch04/_docs`. (This will actually create two directories, one under the other.) Click through the newly created `ch04` and `finance_docs` directories, and then click the *Upload* button to upload files into this directory. Select all of the files from the [data/ch04/finance_docs](data/ch04/finance_docs/) folder to upload them to the container. See @fig-72EE for an example of what this should look like once the files are uploaded.
 
 ![Uploading the financial reports to Azure Storage](figures/kb/ss_storage_002_ann.png){#fig-72EE}
 
@@ -305,9 +305,9 @@ Spend some time asking different questions and seeing how the agent is able to g
 
 ## Summary
 
-Foundry IQ represents a shift in how enterprise AI systems are built. While custom RAG-based solutions will continue to pop up, Foundry IQ alleviates our need to build them ourselves. Instead of treating knowledge, memory, and observability as external concerns, it embeds them directly into the platform. By doing so, Microsoft Foundry enables developers to move beyond isolated prompts and toward intelligent systems that reason, remember, and improve over time.
+Foundry IQ represents a shift in how enterprise AI systems are built. While custom RAG-based solutions will continue to pop up, Foundry IQ alleviates our need to build them ourselves. Instead of treating knowledge, memory, and observability as external concerns, it embeds them directly into the platform. By doing so, Microsoft Foundry enables developers to move beyond isolated prompts and toward intelligent systems that retrieve data, reason with it, and ground their responses before providing a response.
 
 In the exercise in this chapter, we built a knowledge base that connected to an Azure AI Search index containing financial documents about Microsoft. We then connected that knowledge base to an agent and saw how it could ground its responses in the indexed information to answer questions about Microsoft's financial performance. This is just one example of how Foundry IQ can be used to create knowledge-aware agents, but the possibilities are vast. By connecting agents to the right knowledge sources, we can create AI systems that are not only intelligent but also informed, reliable, and trustworthy.
 
-In the next chapter, we’ll explore how Foundry IQ integrates with Foundry Agents and the broader agent lifecycle—from design and orchestration to deployment and continuous evaluation.
+In the next chapter, we’ll model fine-tuning, which is another powerful way to create more curated agents by customizing the underlying LLM itself with domain-specific data. We’ll explore how fine-tuning differs from retrieval-based approaches and when it may be the right choice for your use case.
 

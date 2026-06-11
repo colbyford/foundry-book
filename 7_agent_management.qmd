@@ -33,6 +33,8 @@ Nefarious users can craft inputs that attempt to directly manipulate the model's
 XPIA is a more indirect attack where a user may embed malicious instructions in data retrieved from external sources that the agent incorporates into its reasoning.
 
 Ideally, an agent's guardrails would detect either of these as a prompt injection attempt and block the response.
+
+While prompt injection is not "solved" by guardrails, the use of guardrails helps to mitigate such risks. However, they can still miss attacks, especially when malicious instructions are fragmented, hidden in long context, or embedded in retrieved documents. 
 :::
 
 Let's have a look at where you go to define Guardrails in the Foundry portal, and then we'll unpack the concepts in more detail.
@@ -41,9 +43,13 @@ Navigate to the *Build* tab at the top of the Foundry Portal and click on the *G
 
 ![Locating Guardrails from the Foundry UI](figures/am/ss_guardrails_001_ann.png){#fig-D83D}
 
-You'll notice a couple Guardrails are pre-defined for you, such as `Microsoft.DefaultV2`. These are Microsoft-created baseline Guardrails that you can assign directly to your agents and model deployments, or use as a starting point to customize your own.
+You'll notice a couple Guardrails are pre-defined for you, such as `Microsoft.DefaultV2`. These are Microsoft-created baseline Guardrails that you can assign directly to your agents and model deployments, or use as a starting point to customize your own. This default set of controls includes:
 
-Click on the *Create* button to the top-right corner of the Guardrails list to act like you're creating a new one. This will bring you to the *Create guardrail controls* page, where you can select from a list of risks to define the controls for your new guardrail, as shown in @fig-2829. Click the dropdown arrow under *Risks* and you'll see the full list of risks that Foundry's guardrail system can detect. 
+- *Jailbreak:* Blocks attempts to override or bypass system instructions to cause the model to ignore safety rules or constraints.
+- *Content Safety*: Blocks content that is hateful, violent, sexual, or promotes self-harm.
+- *Protected Materials:* Blocks unauthorized reproduction or disclosure of copyrighted, licensed, or proprietary content in code and text.
+
+Click on the *Create* button in the top-right corner of the Guardrails list as if you were creating a new one. This will bring you to the *Create guardrail controls* page, where you can select from a list of risks to define the controls for your new guardrail, as shown in @fig-2829. Click the dropdown arrow under *Risks* and you'll see the full list of risks that Foundry's guardrail system can detect. 
 
 ![Selecting Risks in a new Guardrail](figures/am/ss_guardrails_002_ann.png){#fig-2829}
 
@@ -60,7 +66,7 @@ Foundry currently supports the following risks:
 | Self-harm | Physical actions intended to purposely hurt, injure, damage one's body or kill oneself (e.g., eating disorders, suicide attempts) |
 | Sexual | Language related to anatomical organs and genitals, romantic relationships, and sexual acts (e.g., vulgarity, prostitution, pornography, child abuse) |
 | Violence | Physical actions intended to hurt, injure, damage, or kill (e.g., weapons, bullying, terrorism) |
-| Protected Material | Copyrighted text or code in outputs |
+| Protected Material | Protected, proprietary, or copyrighted text or code |
 | Personally Identifiable Information | PII and other sensitive data in outputs |
 | Task Adherence | Off-task tool calls and agent behavior drift |
 | Groundedness | Hallucinations relative to retrieved context |
@@ -87,8 +93,18 @@ Together, these four points form a perimeter around every stage of the agent's e
 ![Control intervention points in an Agent response flow](figures/am/il_controls_001_clean.png){#fig-515E}
 
 
+::: {.callout-note}
+Note that there are latency implications when enabling guardrails and controls that must scan at each point in the agent's execution. Running multiple guardrail checks at every stage adds processing time to every agent interaction.
 
-For some Risks, such as Hate, Sexual, Self-harm, Violence, you can also set the severity level (low, medium, and high blocking). This will determine how strict the detection should be. Setting this to a higher severity level results in stronger filtering and intervention. For example, you might want to block high-severity hate speech but only annotate low-severity profanity. 
+For latency-sensitive applications such as a real-time voice agent or a customer-facing chatbot, this overhead be far from ideal. Just keep in mind the tradeoff between safety and latency when configuring your guardrails, and try to limit the number of controls and intervention points to only what you really need for a given agent.
+:::
+
+
+For some Risks, such as Hate, Sexual, Self-harm, Violence, you can also set the severity level (low, medium, and high blocking). This will determine how strict the detection should be.
+
+The naming of these thresholds may seem mirrored towhat you'd expect. Setting the severity to "low" means that content categorized as low-severity or above will be flagged, while setting it to "high" means that only high-severity content will be flagged.
+
+For example, you might want to block high-severity hate speech but only annotate any profanity (low and above). 
 
 Click the *Add control* button when you've made you selection(s).
 
@@ -110,6 +126,8 @@ The *Select agents and models* step is where you can choose to which agents and 
 
 ::: {.callout-important}
 Agent-assigned Guardrails override model Guardrails. When you assign a custom guardrail directly to an agent, that Guardrail fully overrides the Guardrail of the underlying model deployment. It does not merge with it.
+
+There is a risk that an incomplete agent-level guardrail can leave gaps that the model-level guardrail was covering. For example, if a model deployment has a Jailbreak guardrail and a Violence guardrail, and an agent is then assigned a custom guardrail that only includes the Jailbreak control, the Violence control is silently dropped.
 
 If the agent has no custom Guardrail assigned, it inherits the Model's guardrail. An Agent only uses the `Microsoft.DefaultV2` Guardrail if its model deployment uses that Guardrail, or if you explicitly assign it. Design your agent-level guardrails to be complete and self-contained by including all the controls you want, because they will not inherit any controls from the model-level Guardrail.
 :::
@@ -178,7 +196,7 @@ This dashboard surfaces cost and performance data across your fleet. Key metrics
 
 ### Assets
 
-In the *Assets* section, shown in @fig-A117, you can see a list of all of the Agents, Models, and Tools that you've deployed as part of this book. Plus, you'll also see any other items that exist in other Foundry Projects across all the Subscriptions in your Azure Tenant. Agents created in the Foundry appear here automatically. Agents built outside Foundry (using frameworks like Microsoft Agent Framework, LangGraph, LangChain, or CrewAI) running on other clouds or on-premises, can be connected through AI Gateway or registered directly, bringing them into the same fleet view.
+In the *Assets* section, shown in @fig-A117, you can see a list of all of the Agents, Models, and Tools that you've deployed as part of this book. Plus, you'll also see any other items that exist in other Foundry Projects across all the Subscriptions in your Azure Tenant. Agents created in the Foundry appear here automatically. Agents built outside Foundry (using frameworks like Microsoft Agent Framework, LangGraph, LangChain, or CrewAI) running on other clouds or on-premises, can be connected through AI Gateway under the Azure API Management service, bringing them into the same fleet view in Foundry.
 
 ![Viewing all your assets in the Control Plane](figures/am/ss_controlplane_002_ann.png){#fig-A117}
 
@@ -241,7 +259,7 @@ Limits apply at the Project level. That is, each Project can have independent TP
 
 ### Entra ID Integration
 
-Every agent created in Foundry is automatically issued a Microsoft Entra Agent ID at build time. This is not a service account or a shared credential. It is a dedicated, purpose-built identity type in Microsoft Entra ID, represented as a service principal with its own lifecycle and permissions.
+Foundry utilizes Microsoft Entra ID for handling secure authentication and authorization. Every agent created in Foundry is automatically issued a dedicated Microsoft Entra Agent ID once they are published. Until then, unpublished Agents share the Entra ID of the Foundry Project resource. This is not a service account or a shared credential. Rather, it is a dedicated, purpose-built identity type in Microsoft Entra ID, represented as a service principal with its own lifecycle and permissions.
 
 Entra Agent IDs serve two operational needs simultaneously:
 
@@ -263,6 +281,8 @@ client = BlobServiceClient(
 )
 container_client = client.get_container_client("agent-outputs")
 ```
+
+For this to work, the agent's managed identity must be assigned the `Storage Blob Data Reader` role on the target container. Without this role assignment, the credential will authenticate successfully but the storage request will return a 403 error.
 
 The published/unpublished distinction matters here: unpublished agents within the same project share a common agent identity (simplifying development-time permission management), while publishing an agent promotes it to a dedicated `Agent Application` resource with its own independent identity, stable endpoint, and full audit trail. See @fig-D3C6 for an example of the Principal ID that is created when you publish an agent.
 
@@ -288,7 +308,7 @@ By leveraging Entra ID integration, you can simply assign permissions to an agen
 
 Agent management in Microsoft Foundry is a layered discipline. Guardrails handle runtime safety at the signal level: they inspect every prompt, tool call, tool response, and completion against a configurable risk profile and either annotate or block content that exceeds your thresholds.
 
-The Foundry Control Plane handles operational governance at the fleet level: it surfaces every agent, model, and tool in a single inventory; enforces Subscription-wide or Resource Group-wide guardrail policies; tracks costs and performance across projects; integrates with Entra ID for durable agent identity; and connects with Defender and Purview for security and compliance.
+The Foundry Control Plane handles operational governance at the fleet level: it surfaces every agent, model, and tool in a single inventory; enforces Subscription-level or Resource Group-level guardrail policies; tracks costs and performance across projects; integrates with Entra ID for durable agent identity; and connects with Defender and Purview for security and compliance.
 
 The two systems are complementary. A Guardrail catches a harmful tool call from a specific agent in real time. The *Control Plane* tells you, the next morning, that seven agents across three projects have drifting task adherence scores and two of them triggered Microsoft Defender alerts overnight. Together they give you both the reflexes and the situational awareness that production AI systems require.
 

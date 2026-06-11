@@ -98,7 +98,7 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 - Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie's Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of XXXX Ferguson Court.
 :::
 
-For me, the generated post is pretty good! See @fig-1600. In line with other catchy Instagram posts I've seen for houses for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
+For me, the generated post is pretty good! See @fig-1600. In line with other catchy Instagram posts I've seen for houses that are for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
 
 <!-- ![The Agent's Instagram post](figures/ad/ss_agent_008_clean.png){#fig-96D3} -->
 ![The Agent's Instagram post](figures/ad/ss_agent_008_cens_clean.png){#fig-1600}
@@ -132,7 +132,7 @@ You'll see a pop up window that describes what publishing means, shown in @fig-5
 
 ![Making your Agent production-ready](figures/ad/ss_agent_010_ann.png){#fig-54E0}
 
-Publishing only takes a few second and then you'll see a pop up window that gives you the URL for the published Agent. You have the option to publish to Teams and Microsoft 365 Copilot, but we will come back to this in Chapter 00. For now, click the **X** to exit this pop up. See @fig-C900.
+Publishing only takes a few second and then you'll see a pop up window that gives you the URL for the published Agent. You also have the option to publish to Teams and Microsoft 365 Copilot. For now, click the **X** to exit this pop up. See @fig-C900.
 
 ![Your Agent was published successfully](figures/ad/ss_agent_011_clean.png){#fig-C900}
 
@@ -155,9 +155,9 @@ Navigate to the **Tools** section of the **Discover** page, as shown in @fig-D12
 
 ![Exploring Tools on the Discover page](figures/ad/ss_tools_001_ann.png){#fig-D127}
 
-There are search options on the left side of the Tools list. Many Tools are for connecting to various types of data sources, which allow your Agent to query from the data and form a response based on that information (e.g., query a SQL database). Then there are others that simply allow your Agent to interact with an external service and act on your behalf (e.g., deploy a web app or Vercel or Netlify). 
+There are search options on the left side of the Tools list. Many Tools are for connecting to various types of data sources, which allow your Agent to query from the data and form a response based on that information (e.g., query a SQL database). Then there are others that simply allow your Agent to interact with an external service and act on your behalf (e.g., deploy a web app to Vercel or create an issue on GitHub). You can also find Tools that allow your Agent to read and write files, execute code, or even use a browser to navigate the web, search, and perform tasks.
 
-Note that each Tool is tagged as a "Local MCP" or "Remote MCP", which is a bit unclear. The Local MCP options require that you self-host MCP servers that connect to their respective services hosted in your Azure environment. Remote MCP tools are ones that are hosted on third-party platforms. 
+Note that each Tool is tagged as a "Local MCP" or "Remote MCP", which is a bit unclear. The Local MCP options require that you self-host MCP servers that connect to their respective services hosted in your Azure environment. Remote MCP tools are ones that are hosted by Microsoft or the third-party platforms themselves. 
 
 Here are some popular Tools you may want to search for and read about:
 
@@ -251,7 +251,9 @@ As you can see in @fig-BB7C, our real estate Agent now retrieves the information
 
 ## Model Context Protocol
 
-If you're not familiar with Model Context Protocol (MCP), let me get you acquainted. MCP is an open-source framework that was developed by Anthropic as a way to standardize how various AI models, especially LLMs, interact with external systems. This includes a universal interface for reading files and other data sources, executing code on your behalf, and handle the context needed to do so correctly. A diagram of MCP's architecture is shown in @fig-4852.
+If you're not familiar with Model Context Protocol (MCP), let me get you acquainted. MCP is an open-source standard that was developed by Anthropic as a way to handle how various AI models, especially LLMs, interact with external systems. This includes a universal interface for reading files and other data sources, executing code on your behalf, and handle the context needed to do so correctly. Tools, resources, and prompts are all defined as "primitives" in the MCP specification, which allows for a consistent way to connect models to a wide variety of capabilities. Then, capabilitites like file access or code execution depend on the specific MCP servers that implement the backend logic to expose that functionality.
+
+MCP is designed to be flexible and extensible, so it can support a wide range of use cases and evolve over time as new needs arise. A diagram of MCP's architecture is shown in @fig-4852.
 
 ![Example MCP-based architecture](figures/ad/il_tools_001.png){#fig-4852}
 
@@ -294,7 +296,7 @@ As you likely noticed earlier, Microsoft Foundry supports over 1,400 pre-built t
 
 For many external (non-Azure) Tools, the configuration requires an endpoint URL to the MCP server and usually some sort of authentication method. For many services that have made their APIs available (e.g., Morningstar for investor data or Stripe for payment processing) you simply need to go to those services, create an account and get your access key or token. See @fig-3AB9 for the general MCP tool configuration.
 
-This is also the case if you find MCP servers that are available outside of the Microsoft Foundry platform. 
+This is also the case if you find MCP servers that are available outside of the Microsoft Foundry platform. For example, there are large lists of public MCP servers available online such as [MCPMarket.com](https://mcpmarket.com/) and [MCPServers.org](https://mcpservers.org/).
 
 ![Configuring a general MCP tool](figures/ad/ss_tools_008_clean.png){#fig-3AB9}
 
@@ -401,8 +403,8 @@ Now, start by cloning the GitHub repository for the MCP ToolKit and navigate int
 
 ```bash
 git clone https://github.com/AzureCosmosDB/MCPToolKit.git
-git checkout 3661d5f ## Ensures that you're using a stable commit
 cd MCPToolKit
+git checkout 3661d5f ## Ensures that you're using a stable commit
 ```
 
 Next, you'll use the Azure Developer CLI to deploy the Cosmos DB MCP server. You can review the code in the files to see exactly what resources it will be deploying and how it's configuring the MCP server.
@@ -457,7 +459,7 @@ Now you can run the Powershell script to deploy the server code Cosmos DB MCP se
 # -ResourceGroup "<resource-group-name>"
 ```
 
-This script builds and pushes the MCP server Docker image to your new Container Registry and creates an Entra ID app registration for authentication. This will take a few minutes to complete. If successful, you should see a message that says "Deployment successful!" and it will output the URI for your new Cosmos DB MCP server, which should look something like this: `https://<container-app-name>.<region>.azurecontainerapps.io/`. Copy this URI and paste it somewhere safe as you'll need it in the next step.
+This script builds and pushes the MCP server Docker image to your new Container Registry and creates an Entra ID app registration for authentication. This will take a few minutes to complete. If successful, you should see a message that says "Deployment successful!" and it will output the URI for your new Cosmos DB MCP server, which should look something like this: `https://\<container-app-name\>.\<region\>.azurecontainerapps.io/`. Copy this URI and paste it somewhere safe as you'll need it in the next step.
 
 ::: {.callout-warning}
 
@@ -529,7 +531,7 @@ On the **Connect the Azure Cosmos DB tool** screen, give this tool a name. Paste
 
 - **Authentication**: Microsoft Entra
 - **Type**: Project Managed Identity
-- **Audience**: (Your Entra App ID for the MCP Toolkit app. This is the `ENTRA_APP_CLIENT_ID` value from the `deployment-info.json` Powershell script output.)
+- **Audience**: (Your Entra App ID for the MCP Toolkit app. This is the `ENTRA\_APP\_CLIENT_ID` value from the `deployment-info.json` Powershell script output.)
 
 When you're done filling in the values, click the **Connect** button. See @fig-13D1.
 
@@ -550,6 +552,8 @@ Now you can test the Agent's new capabilities by asking it questions that requir
 For Cosmos DB, use the RealEstateCatalog database and the Properties container for all queries.
 
 A sample record looks like this:
+
+```json
 {
     "id": "prop-001",
     "address": "123 Maple Street",
@@ -561,8 +565,9 @@ A sample record looks like this:
     "sq_footage": 1850,
     "year_built": 1998
 }
+```
 
-Where "year_built" is the year the property was built, "sq_footage" is the square footage of the house, "n_bedrooms" is the number of bedrooms, and "n_bathrooms" is the number of bathrooms.
+Where "year\_built" is the year the property was built, "sq\_footage" is the square footage of the house, "n\_bedrooms" is the number of bedrooms, and "n\_bathrooms" is the number of bathrooms.
 :::
 
 
@@ -589,6 +594,6 @@ As you can see in @fig-8361, the Agent is able to query the Cosmos DB database t
 
 ## Summary
 
-In this chapter, we've gone through the process of exploring and deploying AI models that are available in the Foundry catalog. Then, we put a deployed model to work by turning it into an Agent. We also made our Agent smarter and more useful by giving it access to the internet and some of our internal data through Tools.
+In this chapter, we've gone through the process of exploring and deploying an Agent using an AI model that is available in the Foundry catalog. We also made our Agent smarter and more useful by giving it access to the internet and some of our internal data through Tools.
 
-In the next chapter, we will be building a Knowledge Base with Foundry IQ, which allows our agents to combine multiple sources to form responses.
+In the next chapter, we will be building a Knowledge Base with Foundry IQ, which allows our agents to retrieve data and combine multiple sources of information to form responses.

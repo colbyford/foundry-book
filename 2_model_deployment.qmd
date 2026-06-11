@@ -2,20 +2,20 @@
 
 In this Chapter, we'll learn how to deploy models in Microsoft Foundry. Models are brains of any AI agentic solution, so picking the right model for your use case and knowing how to deploy it are critical first steps in building agentic solutions.
 
-Microsoft Foundry provides a wide variety of models that you can deploy with just a few clicks or lines of code. You can choose from popular proprietary models from  OpenAI and Anthropic, Microsoft-built models like Phi-4, and even open-source models from Hugging Face. In addition to the variety, Foundry also provides tools to help you compare models across various benchmarks and metrics to help you pick the best model for your specific use case. Once you've picked a model, you can deploy it in just a few minutes without needing to manage any infrastructure. After deployment, you'll then be able to interact with your model through an API endpoint or through the built-in Playground in the Foundry Portal.
+Microsoft Foundry provides a wide variety of models that you can deploy with just a few clicks or lines of code. You can choose from popular proprietary models from  OpenAI and Anthropic, Microsoft-built models like Phi-4, and even open-source models from Hugging Face. In addition to the variety, Foundry also provides tools to help you compare models across various benchmarks and metrics to help you pick the best model for your specific use case. Once you've picked a model, you can deploy it in just a few minutes without needing to manage any infrastructure. After deployment, you'll then be able to interact with your model through an API endpoint or through the built-in Playground in the Foundry portal.
 
 ## Explore Models in the Foundry Portal
 
-Let's learn how to explore and deploy various AI models from the Foundry Models registry. Then, we'll also explore the pre-built MCP tools to connect to data sources.
+Let's learn how to explore and deploy various AI models from the Foundry Models registry. In later chapters, we'll also explore some pre-built MCP tools for connecting to data sources.
 
-From the Foundry Portal, navigate to the **Discover** tab at the top of the screen as shown in @fig-CC76.
+From the Foundry portal, navigate to the **Discover** tab at the top of the screen as shown in @fig-CC76.
 
 ![Locating the Discover tab](figures/md/ss_portal_013_ann.png){#fig-CC76}
 
 
 You'll see a list of featured models can be deployed. You may notice that some are popular proprietary models like OpenAI's GPT-5.2 and Anthropic's Claude Opus 4.5 and others may be open-source models from Hugging Face or Microsoft.
 
-But why deploy a model like GPT or Claude on Foundry when we can just can use them for free online? The most simple answer to that is: privacy. When you use ChatGPT or other free models online, your inputs can be used for training future models. While this may be fine personally for writing cover letters or generating recipes, this may not sit well in the enterprise space with proprietary data. Thus, deploying instances of these foundation models in your own Azure Tenant give you much more control over where your data ends up. Plus, as you'll see soon, we have a lot more control over model behavior with Foundry-deployed models over the public versions of these models.
+But why deploy a model like GPT or Claude on Foundry when we can just can use them for free online? The most simple answer to that is: privacy. When you use ChatGPT or other free models online, your inputs can be used for training future models. While this may be fine personally for writing cover letters or generating blog content, this may not sit well in the enterprise space with proprietary data. Thus, deploying instances of these foundation models in your own Azure Tenant gives you much more control over where your data ends up. Plus, as you'll see soon, we have a lot more control over model behavior with Foundry-deployed models over the public versions of these models.
 
 Once you're done browsing the Discover page, click on **Models** on the left-hand menu, shown in @fig-BF54.
 
@@ -75,10 +75,14 @@ This is a good place to look at the specific aspects that are important to your 
 
 When choosing a model, consider:
 
-* **Task requirements** - Different models excel at different tasks (chat, completion, embedding, etc.)
-* **Context window size** - How much text the model can process at once
-* **Performance vs. cost** - Larger models typically offer better performance but at higher cost
-* **Latency requirements** - Some deployment options offer lower latency than others
+* **Task requirements** - Different models excel at different tasks (chat, completion, reasoning, coding, embedding, etc.)
+* **Context window size** - The maximum amount of information a model can take in at once. 
+* **Performance vs. cost** - Larger models typically offer better capabilities but at higher cost.
+* **Latency/throughput requirements** - Latency refers to the delay in response time, while throughput refers to the number of requests processed per unit time. Some deployment options offer lower latency and higher throughput than others.
+
+When selecting a model, it's important to consider the specific requirements of your use case. Models with larger context windows allow for more complex interactions but may come at higher cost and latency. 
+
+For example, if you're building a customer support chatbot, you may prioritize a model with strong conversational abilities and low latency over one that excels at coding tasks. On the other hand, if you're building an agent to help developers write code, you may want to prioritize a model with strong coding capabilities even if it's slower or more expensive.
 
 From a model's page, you can also see any deployments of the model that have been created, learn more about the responsible AI approaches that were taken, read the licensing details, go through the technical specifications, and more. Plus, you can even deploy the model right from this page.
 
@@ -86,13 +90,13 @@ Now that we've explored all that the **Models** page has to offer and learned ho
 
 ##	Deploying your First Model
 
-If you were to try and deploy a Large Language Models (LLM) using infrastructure services in Azure, you would have to first deploy a Virtual Machine (VM) with multiple GPUs, deploy the model, write the logic for handling the incoming API requests to and from the model, manage the authentication, manage the networking and scaling logic, etc. While this is certainly possible, it's a lot to manage on your own. Microsoft Foundry offers a more managed solution for model deployment that gets you up and running in just a few clicks or a few lines of code. The best part: no need to manage the infrastructure at all, which provides enterprise security while eliminating the need for manually maintaining compute resources on your Azure Subscription. Models are consumed through a simple API endpoint.
+If you were to try and deploy a Large Language Models (LLM) using infrastructure services in Azure, you would have to first deploy a Virtual Machine (VM) with multiple GPUs, deploy the model using a deployment tool, write the logic for handling the incoming API requests to and from the model, manage the authentication, manage the networking and scaling logic, etc. While this is certainly possible, it's a lot to manage on your own. Microsoft Foundry offers a more managed solution for model deployment that gets you up and running in just a few clicks or a few lines of code. The best part: there's no need to manage the infrastructure at all, which provides enterprise security while eliminating the need for manually maintaining compute resources on your Azure Subscription. Models are consumed through a simple API endpoint.
 
 ### Exercise: Deploy a Microsoft Phi-4 model
 
 We'll deploy a Microsoft Phi-4 model and then turn it into an agent. Phi-4 is an open-source, decoder-only transformer model from Microsoft Research. It is a 14-billion parameter model that was trained on a blend of synthetic datasets, data from websites in the public domain, academic books, and Q&A datasets. Phi-4 is a good foundation model to start with as it is quite fast and capable for its size and costs less than other models that are larger and/or proprietary.
 
-To start, navigate back to the **Models** page in the Foundry Portal.
+To start, navigate back to the **Models** page in the Foundry portal.
 
 Search for "Phi-4" in the model catalog. Click on the `Phi-4` option (not `Phi-4-mini` or other variants), as shown in @fig-FF9.
 
@@ -102,7 +106,7 @@ You can read more about the Phi-4 model, its benchmark performance, etc. When yo
 
 There are two options: **Default settings** and **Custom settings**. Go with the **Default settings**, as shown in @fig-FFED.
 
-If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardrails to use. We'll learn more about Guardrails in Chapter 5.
+If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardrails to use. We'll learn more about Guardrails in Chapter 7.
 
 ![Deploying Phi-4 with Default settings](figures/md/ss_deploy_002_ann.png){#fig-FFED}
 
@@ -146,7 +150,7 @@ This time, our alien friend Zorki gave me a more interstellar recipe with slight
 
 Here are some notes about these parameters:
 
-* **Max response:** Sets a limit on the number of tokens that can be generated in the model response. This number of tokens is shared between the prompt (system message, examples, message history, and user query) and the model's latest response.
+* **Max response:** Sets a limit on the number of tokens that can be generated in the model response. This goes hand-in-hand with the model's context window limits as the number of tokens is shared between the prompt (system message, examples, message history, and user query) and the model's latest response.
 * **Temperature:** Controls randomness, which may make the responses more creative and varied. Lowering the temperature means that the model will produce more repetitive and deterministic responses.
 * **Top P:** Also controls randomness, but uses a different method. Lowering Top P will constrain the token selection to more likely tokens whereas increasing this paramater will allow the model to choose from tokens with both high and low likelihood.
 * **Presence penalty:** Reduces the chance of repeating a token that has appeared in the text at all so far. Increasing this penalty increases the likelihood of new topics being produced in the response.
@@ -162,7 +166,7 @@ In the following example, I was able to have Zorki respond with new terms and co
 - Max response: 2000
 - Temperature: 0.15
 - Presence penalty: 2
-- Frequency penalt: 2
+- Frequency penalty: 2
 
 // Prompt
 
@@ -209,14 +213,13 @@ On the **Details** tab, shown in @fig-AFD2, you'll find:
 ![Deployment endpoint and key on the Details tab](figures/md/ss_deploy_007_ann.png){#fig-AFD2}
 
 
+There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in Chatper 7.
 
-There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in future chapters.
-
-Now that you know how to deploy a model, such as Phi-4, let's create our first Agent!
+Now that you know how to deploy a model, such as Phi-4, you're now ready to create your first Agent once we get to Chapter 3!
 
 ## Deploying Models with the Azure CLI
 
-While the Foundry Portal makes it easy to visually browse through and deploy various model, you can also explore and deploy models using the Azure CLI. This is helpful in scenarios where you might want to automating deployments or integrating into CI/CD pipelines.
+While the Foundry portal makes it easy to visually browse through and deploy various model, you can also explore and deploy models using the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli). This is helpful in scenarios where you might want to automating deployments or integrating into CI/CD pipelines.
 
 First, we can list all the models that are available in our Foundry Resource with the following command. (Make sure to replace the placeholders with your actual resource names.)
 
@@ -240,7 +243,7 @@ This will result in a long list. If you scroll a few miles, you'll find the Phi-
 }
 ```
 
-Then, if we want to deploy the Phi-4 model as we did from the Portal UI, the command looks like this:
+Then, if we want to deploy the Phi-4 model as we did from the portal UI, the command looks like this:
 
 ```bash
 az cognitiveservices account deployment create \
@@ -255,7 +258,7 @@ az cognitiveservices account deployment create \
 ```
 
 
-Once the deployment is complete, you can interact with it using the endpoint and key that are provided in the Portal UI or through the CLI. You can also manage the deployment, monitor its performance, and do everything as you would with a model deployment that was done through the Portal UI.
+Once the deployment is complete, you can interact with it using the endpoint and key that are provided in the portal UI or through the CLI. You can also manage the deployment, monitor its performance, and do everything as you would with a model deployment that was done through the portal UI.
 
 
 ```python
@@ -284,7 +287,7 @@ completion = client.chat.completions.create(
 print(completion.choices[0].message)
 ```
 
-Inferencing through the API endpoint is the same experience regardless of whether you deployed through the Foundry Portal UI or the Azure CLI. Getting comfortable with the OpenAI API spec is important for being able to interact with your deployed models programmatically and is a skill that will come in handy when you start incorporating these models into your applications.
+Inferencing through the API endpoint is the same experience regardless of whether you deployed through the Foundry portal UI or the Azure CLI. Getting comfortable with the OpenAI API spec is important for being able to interact with your deployed models programmatically and is a skill that will come in handy when you start incorporating these models into your applications.
 
 {{< pagebreak >}}
 

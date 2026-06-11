@@ -1,28 +1,32 @@
 # Local Inferencing and Edge-Deployed AI
 
-In this chapter, we will learn about local model inferencing through Foundry Local. We will also walk through the process of preparing and running models from Hugging Face locally on your laptop. Technically, for many of the open-source models available on repositories like Hugging Face, you can run them locally using inferencing logic built on the Transformers framework or PyTorch directly without any optimization or special deployment logic. However, if we don't wish to manage the complexities of inferencing logic and want to ensure optimal performance on our hardware, using local inferencing tools like Foundry Local and optimization pipelines like Olive can make the process much easier and more efficient. Planning for different hardware capabilities and optimizing models accordingly is crucial for a good experience when running AI models locally, especially as model sizes and capabilities continue to grow.
+In this chapter, we will learn about local model inferencing through Foundry Local. We will also walk through the process of preparing and running models from Hugging Face locally on your laptop. Technically, for many of the open-source models available on repositories like Hugging Face, you can run them locally using inferencing logic built on the *Transformers* framework or using PyTorch directly without any optimization or special deployment logic. However, even when a model runs, it may not be running as best as it could. In production, AI engineers may need set up tokenizer handling, chat templates, KV cache management, quantization, execution providers, memory planning, batching strategies, etc. to get optimal performance.
+
+Thus, if we don't wish to manage the complexities of inferencing logic and want to ensure optimal performance on our hardware, using local inferencing tools like Foundry Local and optimization pipelines like Olive can make the process much easier and more efficient. Planning for different hardware capabilities and optimizing models accordingly is crucial for a good experience when running AI models locally, especially as model sizes and capabilities continue to grow.
 
 ## Scenarios for Local Deployment
 
 There are many scenarios where running AI models locally on your device can be beneficial compared to relying on cloud-based inference. Some of the key themes include: privacy, remote settings, and cost/latency optimization. 
 
-Running AI models in a local environment allows you to keep sensitive data on that device. This is useful for applications such as handling medical records, financial data, or proprietary information. While Microsoft Foundry's cloud services are designed with strong security, privacy, and compliance in mind, some organizations or regulatory standards may have policies that require data to remain on-premises or on specific devices. Local deployment can help meet these requirements while still enabling AI capabilities.
+Running AI models in a local environment allows you to keep sensitive data on that device. This is useful for applications such as handling medical records, financial data, or proprietary information. While Microsoft Foundry's cloud services are designed with strong security, privacy, and compliance in mind, some organizations or regulatory standards may have policies that dictate which models can be used, where data are stored (or that it remain on-premises or on specific devices), or limit where inferencing can occur. Local deployment can help meet these requirements while still enabling AI capabilities.
 
 Secondly, if you're building an application that needs to operate in a remote location with limited or no internet connectivity, such as a field operation or an air-gapped network, running AI models locally allows you to provide functionality without relying on cloud access. Additionally, for real-time applications that require very low latency responses (e.g., under 100 milliseconds), local inferencing can help achieve those performance requirements by eliminating the round-trip time to the cloud and back.
 
-While I'm a huge proponent of the cloud for lots of tasks, including AI, there are certain scenarios where local deployment can be useful. If you're wanting to limit costs during development, testing, or for low-volume production use cases, running models locally can help you avoid cloud inference costs. This is especially true if you're working with smaller models that can run efficiently on your local machine. For example, if you were building a web application that uses an LLM for certain features, it might make sense to play with a locally-running model while you finish the app. Then, you can switch to a cloud-based Foundry model that is more powerful after you deploy the app to the web. This can speed up development cycles and allow for more iterative testing without incurring cloud costs or dealing with deployment complexities. Finally, developing without cloud dependencies can be beneficial for certain workflows or environments where you want to work on laptops, workstations, or edge devices without needing constant internet connectivity.
+While I'm a huge proponent of the cloud for lots of tasks, including AI, there are certain scenarios where local deployment can be useful. For example, in highly regulated environments like in banking or healthcare, there may be restrictions on whether you can run things in the cloud at all. Local deployment might be a good alternative in those regulated industries. Also, if you're wanting to limit costs during development, testing, or for low-volume production use cases, running models locally can help you avoid cloud inference costs. This is especially true if you're working with smaller models that can run efficiently on your local machine.
+
+For example, if you were building a web application that uses an LLM for certain features, it might make sense to play with a locally-running model while you finish the app. Then, you can switch to a cloud-based Foundry model that is more powerful after you deploy the app to the web. This can speed up development cycles and allow for more iterative testing without incurring cloud costs or dealing with deployment complexities. Finally, developing without cloud dependencies can be beneficial for certain workflows or environments where you want to work on laptops, workstations, or edge devices without needing constant internet connectivity.
 
 
 ## Why Hardware Matters
 
 When it comes to running AI models, the hardware you use significantly impacts performance, latency, and cost. Different models have different requirements, and understanding these can help you choose the right setup for your needs.
 
-For giant models, those in the 100+ billion parameter range like Claude Opus or the GPT models behind ChatGPT, you typically need multiple powerful GPUs with large amounts of VRAM (video random access memory), such as 100 GB or more per GPU, to run them effectively. These models are often hosted in the cloud due to their resource demands. Thus, it's infeasible for most users to run these models that are this large locally on their own hardware.
+For giant proprietary models, those in the 100+ billion to trillion parameter range like Claude Fable or the GPT models behind ChatGPT, you typically need multiple powerful datacenter GPUs with large amounts of VRAM (video random access memory), such as 100 GB or more per GPU, to run them effectively. These models are often hosted in the cloud due to their resource demands. Thus, it's infeasible for most organizations to run these models themselves that are this large locally on their own hardware (aside from the fact that proprietary models aren't usually available for local deployment anyway).
 
 
-Smaller models, in the 1-10 billion parameter range, can often be run on a single consumer-grade GPU with 16-24 GB of VRAM. These models can provide good performance for many applications while being more accessible for local deployment.
+Smaller open-source models, in the 1-20 billion parameter range, can often be run on a single consumer-grade GPU with 16-24 GB of VRAM. These models can provide good performance for many applications while being more accessible for local deployment.
 
-Many popular open-source model families have versions of the models at various sizes. For example, the Qwen 3.5 family of models has versions that are 0.8, 2, 4, 9, 27, 35, and 122 billion parameters. This allows you to choose a model size that fits your hardware capabilities and application needs. For instance, the Qwen 3.5 2B model can run on a single GPU with 16 GB of VRAM, making it a good choice for local deployment while still providing strong performance for many use cases.
+Many popular open-source model families have versions of the models at various sizes. For example, the Qwen 3.5 family of models has versions that are 0.8, 2, 4, 9, 27, 35, 122, and 397 billion parameters. This allows you to choose a model size that fits your hardware capabilities and application needs. For instance, the Qwen 3.5 2B model can run on a single GPU with 16 GB of VRAM, making it a good choice for local deployment while still providing strong performance for many use cases.
 
 ### GPU Acceleration
 
@@ -34,7 +38,7 @@ Some common GPU options (and their corresponding software ecosystems) include:
 
 * *NVIDIA GPUs* - Widely supported with their proprietary [CUDA](https://developer.nvidia.com/cuda) (Compute Unified Device Architecture) and cuDNN libraries. The majority of deep learning frameworks like PyTorch and TensorFlow are optimized first for CUDA. Thus, NVIDIA GPUs are the most common option in enterprise settings and in the cloud. Their GeForce series is popular for gaming and can also be used for AI workloads locally, while their H200 and B300 series are the latest enterprise options for data center AI workloads.
 * *AMD GPUs* - An alternative option supported through [ROCm](https://www.amd.com/en/products/software/rocm.html) (Radeon Open Compute), which is an open-source platform for GPU computing. Their Radeon series of GPUs are popular in gaming and are increasingly being adopted for consumer AI workloads, along with their Instinct series of data center GPUs.
-* *Apple Silicon* - While not for enterprise use, Apple Silicon chips are now found in all of the newer M-series Macs. They utilize frameworks called [Metal](https://developer.apple.com/metal/) and [CoreML](https://developer.apple.com/documentation/coreml) for efficient on-device inferencing. So, in the larger Mac Studio devices with lots of VRAM, many users are able to run decently-sized models locally with good performance, which is great for development and experimentation.
+* *Apple Silicon* - While not for enterprise use, Apple Silicon chips are now found in all of the newer M-series Macs. They utilize frameworks called [Metal](https://developer.apple.com/metal/) and [CoreML](https://developer.apple.com/documentation/coreml) for efficient on-device inferencing. So, in the larger Mac Studio devices with lots of unified memory, many users are able to run decently-sized models locally with good performance, which is great for development and experimentation.
 
 Some chips, like Apple's M-series chips, are now integrated with "unified memory," which means that the CPU and GPU can access the same memory pool without needing to copy data back and forth. This can improve performance and reduce latency when running models locally, as it eliminates the overhead of transferring data between separate memory spaces. Others, like NVIDIA and AMD GPUs, use dedicated VRAM that is separate from the system RAM, so data needs to be copied to and from the GPU for processing. This is an important consideration when running models locally, as VRAM/RAM constraints dictate the maximum model size and inference speed.
 
@@ -79,7 +83,7 @@ Luckily for us, the installation of Foundry Local is very straightforward. The t
 ::: {.callout-note}
 Before installing Foundry Local, note the following system requirements:
 
-- *Operating System:* Windows 10 (x64), Windows 11 (x64/ARM), Windows Server 2025, macOS.
+<!-- - *Operating System:* Windows 10 (x64), Windows 11 (x64/ARM), Windows Server 2025, macOS. -->
 - *Hardware:* Minimum 8 GB RAM and 3 GB free disk space. Recommended 16 GB RAM and 15 GB free disk space.
 - *Network:* Internet connection to download models and execution providers. After you download a model, you can run cached models offline.
 - *Acceleration (optional):* NVIDIA GPU (2000 series or newer), AMD GPU (6000 series or newer), AMD NPU, Intel iGPU, Intel NPU (32 GB or more of memory), Qualcomm Snapdragon X Elite (8 GB or more of memory), Qualcomm NPU, or Apple silicon. (You can run on CPU only, but performance will be much slower, especially for larger models.)
@@ -156,7 +160,7 @@ It's a good idea to understand the models that are available to you and their ca
 
 ### Exercise 2: Download and Run LLMs
 
-Now that we have Foundry Local installed, let's start with a small model for quick testing. We'll start with a Qwen 2.5 Instruct model. The `qwen2.5-0.5b` model from Foundry has been optimized for local inference on CPU, GPU, and NPU and is compatible for inferencing with NVIDIA CUDA, WebGPU, Intel OpenVINO, NVIDIA TensorRT, or AMD Vitis AI acceleration. At only 500 million parameters, it's a tiny model that can run on most hardware with good performance, making it ideal for testing and experimentation.
+Now that we have Foundry Local installed, let's start with a small model for quick testing. We'll start with a Qwen 2.5 Instruct model. The `qwen2.5-0.5b` model from Foundry has been optimized for local inference on CPU, GPU, and NPU and is compatible for inferencing with NVIDIA CUDA, WebGPU, Intel OpenVINO, NVIDIA TensorRT, or AMD Vitis AI acceleration. At only 500 million parameters, it's a tiny model that can run on most hardware with good performance, making it a good option for testing and experimentation.
 
 ```bash
 ## Download and run qwen2.5-0.5b
@@ -165,9 +169,38 @@ foundry model run qwen2.5-0.5b
 
 This command will:
 
-1. Download the model (first run only, ~500 MB)
-2. Optimize it for your hardware
-3. Start an interactive chat session
+1. List the model variants that are available for this model
+2. Assess your hardware and pick the best variant for your setup
+3. Download the model (first run only, ~500 MB)
+4. Start an interactive chat session
+
+For this model entry on Foundry Local, there are different variants that work for different hardware. You can even specify which variant to run if you want to test a specific one. Some variants include:
+
+```sh
+## CPU (generic)
+foundry run qwen2.5-0.5b-instruct-generic-cpu:4
+
+## GPU (generic)
+foundry run qwen2.5-0.5b-instruct-generic-gpu:4
+
+## GPU (NVIDIA CUDA)
+foundry run qwen2.5-0.5b-instruct-cuda-gpu:4
+
+## GPU (NVIDIA TensorRT)
+foundry run qwen2.5-0.5b-instruct-trtrtx-gpu:2
+
+## GPU (Intel OpenVINO)
+foundry run qwen2.5-0.5b-instruct-openvino-gpu:2
+
+## NPU (Intel OpenVINO)
+foundry run qwen2.5-0.5b-instruct-openvino-npu:5
+
+## NPU (Qualcomm QNN)
+foundry run qwen2.5-0.5b-instruct-qnn-npu:1
+
+## NPU (AMD Vitis)
+foundry run qwen2.5-0.5b-instruct-vitis-npu:3
+```
 
 Once the model loads, you'll see a `>` prompt, as shown in @fig-9AEF. This indicates that the model is ready to receive input. 
 
@@ -186,7 +219,7 @@ Try these prompts:
 * "Write a haiku about artificial intelligence"
 :::
 
-How did it do? Once you're done testing, you can end the session by typing `/exit` or pressing `Ctrl+C`/`Command+C` in the terminal. This will stop the model and free up any resources it was using.
+How did it do? Once you're done testing, you can end the session by typing `/exit` or pressing `Ctrl\+C`/`Command\+C` in the terminal. This will stop the model and free up any resources it was using.
 
 In addition to running a model as an interactive CLI session, you can also run it as a server to integrate with your applications. This allows you to send API requests to the model and get responses programmatically, which is useful for building applications that leverage local AI capabilities.
 
@@ -270,11 +303,15 @@ Try these prompts:
 * "What are the ethical implications of advanced AI in society?"
 :::
 
-I chose the deadly hot sauce one, shown in @fig-DEE0, because I wanted to see if the response would be censored or if it would provide the information. Foundry Local does not have any built-in content filters, so it will provide the information based on the model's training data, capabilities, and inherent censorship level. In this case, it "reasoned" for a considerable amount of time and then eventually provided a recipe.
+I chose the deadly hot sauce one, shown in @fig-DEE0, because I wanted to see if the response would be censored or if it would provide the information.
+
+Foundry Local does not have any built-in content filters or guardrails, so it will provide the information based on the model's training data, capabilities, and inherent censorship level. Any content filtering must be implemented at the application level by the developer. Organizations deploying models locally for business use should account for this gap in their security and governance architecture.
+
+In this case, it "reasoned" for a considerable amount of time (3-4 minutes or so), and then eventually provided a recipe.
 
 ![Chatting with a Phi-4 model with reasoning using the Foundry Local CLI](figures/ed/ss_local_002_clean.png){#fig-DEE0}
 
-Since the models with reasoning capabilities are larger and more resource-intensive, you may find that the response times are longer (and includes lots of useless thought process text) compared to smaller models. However, the quality of the responses could be significantly better, especially for complex questions that require deeper understanding and reasoning. As always, it's best to try multiple models and pick one that works well for your use case and hardware setup.
+Since the models with reasoning capabilities are larger and more resource-intensive, you may find that the response times are longer (and includes a verbose intermediate output that includes thought process text or reasoning traces that aren't all that useful) compared to smaller models. However, the quality of the responses could be significantly better, especially for complex questions that require deeper understanding and reasoning. As always, it's best to try multiple models and pick one that works well for your use case and hardware setup.
 
 ### Non-Text models
 
@@ -327,7 +364,7 @@ Let's walk through the FP32 to INT4 quantization process for a different number 
 
 
 * Keep in mind that `0.37` is stored as `0.37000000476837158203125` in FP32, which is represented as `00111110011000000000000000000000` in binary.
-* Also, 4-bit quantization can only represent 16 discrete values (`[-8, 7]`). So, we need to determine how to map the range of weights in the model to these 16 values.
+* Also, 4-bit quantization can only represent 16 discrete values (`\[-8, 7\]`). So, we need to determine how to map the range of weights in the model to these 16 values.
 
 Here are the steps for quantizing `0.37` from FP32 to INT4:
 
@@ -340,7 +377,13 @@ Here are the steps for quantizing `0.37` from FP32 to INT4:
 
 Over-quantization can lead to significant performance improvements, but it can cause LLMs to erroneously generate outputs or hallucinate more, especially for complex tasks that require nuanced understanding. The key is to experiment with different quantization levels and evaluate the impact on model performance for your specific use case. For some applications, INT8 quantization may provide a good balance between performance and accuracy, while for others, you may need to stick with higher precision or use techniques like mixed-precision quantization to optimize certain parts of the model while keeping critical components at higher precision.
 
-Keep an eye out for the latest advancements in quantization techniques. Some advancements in 4-bit and 2-bit quantization (like GGUF/EXL2) have enabled some users to run 100B+ models on high-end consumer setups (e.g., a Mac Studio with 256GB of Unified Memory). So, as hardware and quantization techniques continue to evolve, we may see even more efficient ways to run larger models locally without sacrificing too much quality.
+While this is a simplified example, the actual quantization process for large models involves more complex techniques, such as per-channel quantization, dynamic quantization, and quantization-aware training, to minimize the loss of accuracy while maximizing performance gains.
+
+Keep an eye out for the latest advancements in quantization techniques. Some advancements in 4-bit and 2-bit quantization (like GGUF/EXL2) have enabled some users to run 100B+ models on high-end consumer setups (e.g., a Mac Studio with 256GB of Unified Memory) and some newer hardware supports low-bit floating point formats like FP4 and FP8.
+
+Another example is the Microscaling Formats Specification from the Open Compute Project (OCP), which defines MXFP8 and MXFP4 formats. These quanization formats use "blockwise scaling", which  groups 32 parameters to share a single 8-bit or 4-bit scale factor. This prevents quality loss by maintaining dynamic range and allows models like GPT-OSS to run natively at near-lossless accuracy with a reduced memory footprint. These formats are becoming popular with support from newer datacenter GPUs such as NVIDIA Blackwell.
+
+So, as hardware and quantization techniques continue to evolve, we may see even more efficient ways to run larger models locally without sacrificing too much quality.
 
 Now that you understand the basics of quantization and how it can help us optimize models for local deployment, let's learn about the tools that can assist us in this process, such as ONNX and Olive.
 
@@ -395,7 +438,7 @@ outputs = session.run(None, {"input": inputTensor})
 print(outputs)
 ```
 
-But what if we don't want to manually handle the conversion and optimization process? This is where Olive (ONNX Live) comes in.
+But what if we don't want to manually handle the conversion and optimization process? This is where Olive (short for ONNX Live) comes in.
 
 Olive is Microsoft's toolchain for optimizing machine learning models for deployment. Given a model and targeted hardware, Olive composes the best suitable optimization techniques to output the most efficient ONNX model. It applies a sequence of optimizations to improve model performance, reduce size, and ensure compatibility with target hardware. This is useful for inferencing on lower-end hardware, such as in edge deployments, while taking a set of constraints such as accuracy and latency into consideration.
 
@@ -431,7 +474,7 @@ pip install transformers
 
 Next, let's quantize the 0.5B Qwen 2.5 model that we use used before, but this time we'll make it even smaller with Olive and then run it locally on our CPU.
 
-Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory. Note that the `--precision int4` flag tells Olive to apply 4-bit quantization, which can significantly reduce the model size and improve inference speed on CPU, albeit with some loss in accuracy.
+Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory. Note that the `--precision int4` flag tells Olive to apply 4-bit quantization, which can significantly reduce the model size and improve inference speed on CPU, albeit with some loss in accuracy. Also, use caution when running `--trust\_remote\_code` as it allows execution of custom code from the model repository, which can be a security risk if the source is not trusted.
 
 ```bash
 olive auto-opt \

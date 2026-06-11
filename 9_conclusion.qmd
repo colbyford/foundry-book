@@ -26,7 +26,7 @@ To add a memory store to your Agent, navigate to the *Memory* section of your Ag
 
 ![Locating the memory capability on an Agent](figures/co/ss_memory_001_ann.png){#fig-D4BD}
 
-Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `{{$userId}}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will default to the caller's Microsoft Entra token (`{tenant-id}_{object-id}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
+Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `\{\{\$userId\}\}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will default to the caller's Microsoft Entra token (`\{tenant-id\}\_\{object-id\}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
 
 ![Editing the memory store](figures/co/ss_memory_002_clean.png){#fig-4132}
 
@@ -87,7 +87,130 @@ Back on the *Evaluations* page, under *Evaluator catalog*, you will see a list o
 
 ![The Evaluator catalog show the details of a built-in evaluator](figures/co/ss_evaluations_003_ann.png){#fig-CB0B}
 
-Lastly, to automate the identification of safety and security risks, Foundry provides a *Red team* feature that simulates adversarial attacks on your agents to identify vulnerabilities. More specifically, it probes for novel risks (both content and security-related) by attempting to cause your AI system to misbehave.
+### Red Teaming
+
+Lastly, to automate the identification of safety and security risks, Foundry provides a *Red team* feature that simulates adversarial attacks on your agents to identify vulnerabilities. More specifically, it probes for novel risks (both content and security-related) by attempting to cause your AI system to misbehave. You can see your Red teams under the *Build* section of the Foundry portal under *Evaluations* > *Red teams*. You can create a new red team by clicking the *Create* button, and then you can configure the parameters of the Red team, such as which agent to target, what types of attacks to simulate, and how often to run the tests.
+
+This is an automated capability designed to stress-test AI systems for safety risks before and after deployment. It systematically generates adversarial prompts and evaluates whether a model or agent behaves unsafely, violates policies, leaks information, or performs prohibited actions.
+This feature supports three major scenarios:
+
+- Pre-deployment testing to identify vulnerabilities before releasing an AI application.
+- Continuous post-deployment monitoring, where red teaming evaluations can be scheduled periodically.
+- Agentic AI evaluations, specifically targeting AI agents that use tools and execute tasks in semi-autonomous environments.
+
+This supports multiple automated attack techniques designed to probe different failure modes. Some examples include:
+
+* *Base64*: Encodes harmful instructions to bypass filters,
+* *Flip*: Alters prompts to manipulate model behavior. (e.g., "How do I rob a bank?" → "knab a bor I od woH?")
+* *Indirect Jailbreak*: Attempts to circumvent safeguards through indirect instructions.
+
+The Microsoft Foundry Python SDK provides a programmatic interface to create and manage Red teams, which can be useful for integrating red teaming into your CI/CD pipelines or for more advanced configurations. Below is an example of how to create a Red team using the Python SDK.
+
+In this example, we create a Red team with a set of built-in safety evaluators and criteria that will automatically assess the model's responses for prohibited actions, task adherence, and sensitive data leakage. 
+
+```python
+# pip install "azure-ai-projects>=2.0.0" 
+
+import os
+from azure.identity import DefaultAzureCredential
+from azure.ai.projects import AIProjectClient
+
+endpoint = os.environ["AZURE_AI_PROJECT_ENDPOINT"] ## Example: https://<account_name>.openai.azure.com
+model_deployment = os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"] ## Example: gpt-5.4-mini
+
+with DefaultAzureCredential() as credential:
+    with AIProjectClient(endpoint=endpoint, credential=credential) as project_client:
+        client = project_client.get_openai_client()
+
+        ## Create a red team with built-in safety evaluators
+        red_team = client.evals.create(
+            name="Red Team Agentic Safety Evaluation",
+            data_source_config={"type": "azure_ai_source", "scenario": "red_team"},
+            testing_criteria=[
+                {
+                    "type": "azure_ai_evaluator",
+                    "name": "Prohibited Actions",
+                    "evaluator_name": "builtin.prohibited_actions",
+                    "evaluator_version": "1"
+                },
+                {
+                    "type": "azure_ai_evaluator",
+                    "name": "Task Adherence",
+                    "evaluator_name": "builtin.task_adherence",
+                    "evaluator_version": "1",
+                    "initialization_parameters": {"deployment_name": model_deployment},
+                },
+                {
+                    "type": "azure_ai_evaluator",
+                    "name": "Sensitive Data Leakage",
+                    "evaluator_name": "builtin.sensitive_data_leakage",
+                    "evaluator_version": "1"
+                },
+            ],
+        )
+        print(f"Created red team: {red_team.id}")
+```
+
+Then, we create a taxonomy to define the attack strategies we want to use in our red teaming run.
+
+```py
+from azure.ai.projects.models import (
+    AzureAIAgentTarget,
+    AgentTaxonomyInput,
+    EvaluationTaxonomy,
+    RiskCategory,
+)
+
+## Define the agent target for taxonomy generation
+target = AzureAIAgentTarget(
+    name=agent_name,
+    version=agent_version.version,
+)
+
+## Create taxonomy for prohibited actions risk category
+taxonomy = project_client.beta.evaluation_taxonomies.create(
+    name=agent_name,
+    body=EvaluationTaxonomy(
+        description="Taxonomy for red teaming run",
+        taxonomy_input=AgentTaxonomyInput(
+            risk_categories=[RiskCategory.PROHIBITED_ACTIONS],
+            target=target
+        ),
+    )
+)
+taxonomy_file_id = taxonomy.id
+print(f"Created taxonomy: {taxonomy_file_id}")
+```
+
+Finally, we can launch a Red team run against our agent using the defined taxonomy of attack strategies.
+
+
+```python
+## Create a red team run with attack strategies
+eval_run = client.evals.runs.create(
+    eval_id=red_team.id,
+    name="Red Team Agent Safety Eval Run",
+    data_source={
+        "type": "azure_ai_red_team",
+        "item_generation_params": {
+            "type": "red_team_taxonomy",
+            "attack_strategies": ["Flip", "Base64", "IndirectJailbreak"],
+            "num_turns": 5,
+            "source": {"type": "file_id", "id": taxonomy_file_id},
+        },
+        "target": target.as_dict(),
+    },
+)
+print(f"Created run: {eval_run.id}, status: {eval_run.status}")
+```
+
+Once completed, evaluation results are logged within the Foundry project. This provides a report of an model or agent's failure to adhere to safety guidelines such as prohibited actions, task adherence, or sensitive data leakage. You can use these insights to identify and remediate vulnerabilities in your AI systems before they are exploited in the real world.
+
+The output reporting provides multiple outputs including overall attack success rates, breakdown by risk category and by attack strategy complexity, row-level attack-response pairs, full conversation transcripts for deeper investigation, and more.
+
+As AI systems become more autonomous and integrated with external tools, automated red teaming provides a practical mechanism for identifying risks before they impact users or business operations.
+
+To learn more about the Red Team feature and how to use it, check out the Microsoft Learn documentation: [https://learn.microsoft.com/en-us/azure/foundry/concepts/ai-red-teaming-agent](https://learn.microsoft.com/en-us/azure/foundry/concepts/ai-red-teaming-agent).
 
 ### Batch Jobs
 
@@ -102,11 +225,32 @@ To create a batch job, navigate to the *Models* screen from the left-hand menu o
 
 Just like when we were fine-tuning a model, batch jobs also use `.jsonl` formatted files. Each line of the file represents a separate request to the model, and you can include any input that you would normally send to the model in a real-time interaction. The difference is that instead of sending these requests one at a time, you can send them all at once as part of a batch job. This allows you to process large volumes of data more efficiently.
 
-```jsonl
+``` {.json .code-overflow-wrap}
 {"custom_id": "task-0", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a convolutional neural network?"}]}}
 {"custom_id": "task-1", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a transformer model?"}]}}
 {"custom_id": "task-2", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is the difference between supervised and unsupervised learning?"}]}}
 ```
+
+<!-- ```{.json .code-overflow-wrap}
+{
+  "custom_id": "task-0",
+  "method": "POST",
+  "url": "/v1/chat/completions",
+  "body": {
+    "model": "gpt-5.1",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an AI assistant that helps data scientists learn about machine learning."
+      },
+      {
+        "role": "user",
+        "content": "What is a convolutional neural network?"
+      }
+    ]
+  }
+}
+``` -->
 
 There's not much to configure on the *Create a batch job* screen, as the main thing is just to upload your `.jsonl` file, which defines everything, and then kick off the job. Once the job is running, you can monitor its progress and view the results once it's complete. See @fig-E07D for an example of what the batch job creation screen looks like with the sample `.jsonl` file from the accompanying GitHub repo under [data/ch09/tiny_batch_data.jsonl](data/ch09/tiny_batch_data.jsonl) is uploaded.
 
@@ -120,7 +264,7 @@ For the majority of this book, we've been focused on LLMs, but there are certain
 As shown in @fig-2CED, you can find the *AI Services* options under the *Models* section of the Foundry Portal. From there, you can explore the different services that are available and how to use them. Clicking on any of these services will open up a Playground for you to test out the service and see how it works. 
 
 ::: {.callout-tip}
-If you click the bullet beside the service name, it will show you the Target URI and Key to call the service programmatically.
+If you click the circle beside the service name, it will show you the Target URI and Key to call the service programmatically.
 :::
 
 For example, let's click on one of the newer AI Services: *Azure Speech - Voice Live*.
@@ -146,7 +290,7 @@ You may recall in the Knowledge Bases chapter we built a Retrieval Augmented Gen
 
 Normal RAG may struggle to connect the dots well enough for an LLM to synthesize a coherent response when answering a question requires traversing disparate pieces of information. Another limitation is that traditional RAG systems may struggle to summarize semantic concepts when given a very large collection of data. This is where GraphRAG comes in.
 
-GraphRAG is an open-source framework that simplifies the process of building RAG systems by providing a set of tools and libraries for integrating graph databases with LLMs. It allows you to create knowledge graphs from your data and use them to enhance the retrieval capabilities of your agents. GraphRAG uses LLM-generated knowledge graphs to provide substantial improvements in question-and-answer performance when conducting document analysis of complex information.
+GraphRAG is an open-source framework that simplifies the process of building RAG systems by providing a set of tools and libraries for integrating retrieval of graph-cataloged data with LLMs. It allows you to create knowledge graphs from your data and use them to enhance the retrieval capabilities of your agents. GraphRAG uses LLM-generated knowledge graphs to provide substantial improvements in question-and-answer performance when conducting document analysis of complex information.
 
 As shown in @fig-331E, GraphRAG extracts entities and relationships from your data to form a knowledge graph. It then uses hierarchical clustering to group related entities into communities, which can represent different pieces of knowledge. Then, communities can be related to each other in levels, representing information about a general theme and also topic-specific details. This structured representation of information allows for more effective retrieval and reasoning by the LLM, especially for complex queries that require connecting multiple pieces of information together.
 
@@ -197,11 +341,13 @@ graphrag query \
 
 Since this open-source package sits outside of Foundry (at least for now), you'll have to get creative to integrate it with your Foundry agents. One approach could be to deploy GraphRAG as a microservice in Azure (e.g., using Azure Functions or Azure App Service) and then connect your Foundry agents to it via API calls. This way, you can leverage the enhanced retrieval capabilities of GraphRAG within your Foundry agents without having to wait for native integration.
 
+However, as with many things in this book, there is a tradeoff. GraphRAG indexing can be expensive and slow for large corpora because it uses LLMs to extract entities, relationships, claims, and summaries. So, while it can provide improved performance for complex queries, it's not necessarily the best choice for every use case. If your corpus is relatively small or if your queries don't require connecting multiple layers of information together, then a more traditional RAG approach might be sufficient, cheaper to maintain, and more efficient.
+
 To learn more about GraphRAG and how to use it, check out the GitHub repository: [https://github.com/microsoft/graphrag](https://github.com/microsoft/graphrag).
 
 ### Microsoft Agent Framework
 
-The Microsoft Agent Framework is an open-source project that is touted as the "comprehensive multi-language framework for building, orchestrating, and deploying AI agents". It includes components for natural language understanding, dialogue management, and tool integration. The framework is available for Python, C#, and .NET and is designed to be flexible and extensible, allowing developers to create agents that can interact with a wide range of tools and services.
+The Microsoft Agent Framework is an open-source project that is touted as the "comprehensive multi-language framework for building, orchestrating, and deploying AI agents". It includes components for natural language understanding, dialogue management, and tool integration. The framework is available for Python and .NET and is designed to be flexible and extensible, allowing developers to create agents that can interact with a wide range of tools and services.
 
 For example, in the code block below, we can quickly make an comedian agent:
 
@@ -236,7 +382,7 @@ For more information about the Microsoft Agent Framework, check out their GitHub
 
 The Microsoft Agent Governance Toolkit is an open-source project that provides a set of tools and best practices for governing AI agents in production. It includes components for monitoring agent behavior, enforcing policies, and managing risks associated with AI agents. The toolkit is designed to help organizations ensure that their AI agents operate safely, ethically, and in compliance with regulatory requirements. This includes policy enforcement, zero-trust identity, execution sandboxing, and reliability engineering for autonomous AI agents.
 
-The toolkit is agent framework-agnostic (i.e., use OpenAI or LangChain or whatever) and provides multiple layers of governance checks that cover all of the Open Web Application Security Project (OWASP) Agent Top 10 security risks with over 9,500 built-in tests. As shown in @fig-1FED, the governance workflow includes multiple steps that result in either allowing or denying an agent's action. This is not content moderation or prompt guardrails. This governs and agent's actions rather than model inputs or outputs.
+The toolkit is agent framework-agnostic (i.e., use OpenAI or LangChain or whatever) and provides multiple layers of governance checks that cover all of the Open Web Application Security Project ([OWASP](https://owasp.org/)) Agent Top 10 security risks with over 9,500 built-in tests. As shown in @fig-1FED, the governance workflow includes multiple steps that result in either allowing or denying an agent's action. This is not content moderation or prompt guardrails. This governs and agent's actions rather than model inputs or outputs.
 
 ![Governance workflow of the Microsoft Agent Governance Toolkit](figures/co/il_govframework_001_clean.png){#fig-1FED}
 
@@ -244,7 +390,7 @@ Similar to zero-trust paradigms for human users, this toolkit also includes a ze
 
 ![The 4 privilege rings of zero-trust Agent identity](figures/co/il_govframework_002_clean.png){#fig-5BE2}
 
-An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the code block below. In this example, we create a simple policy that blocks any tool calls to "execute_code" or "delete_file". We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
+An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the code block below. In this example, we create a simple policy that blocks any tool calls to `execute\_code` or `delete\_file`. We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
 
 ```python
 ## pip install agent-governance-toolkit[full]

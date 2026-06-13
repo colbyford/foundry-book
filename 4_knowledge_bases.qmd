@@ -223,13 +223,14 @@ On the *Choose a knowledge type* screen that pops up, select the *Azure AI Searc
 ![Selecting a Knowledge Base type](figures/kb/ss_knowledge_003_ann.png){#fig-6327}
 
 
-On the *Choose a knowledge source* screen, you'll now select the AI Search Index that you created in Part 2. Give your source a name and provide a description that will help the Agent know what the source contains (shown below). Click the *Create* button, as shown in @fig-6327, to create the source and connect it to the knowledge base.
+On the *Choose a knowledge source* screen, you'll now select the AI Search Index that you created in Part 2. Give your source a name and provide a description that will help the Agent know what the source contains (shown below). Click the *Create* button, as shown in @fig-5301, to create the source and connect it to the knowledge base.
 
 - **Name:** `robo-cfo-index`
 - **Description:** `Microsoft's financial earnings release from the first quarter of the 2026 fiscal year.`
 - **Select search index:** `robo-cfo-search` (or whatever you named the index in Part 2)
 
-![Connecting to the Search Index](figures/kb/ss_knowledge_004_ann.png){#fig-6327}
+![Connecting to the Search Index](figures/kb/ss_knowledge_004_ann.png){#fig-5301}
+
 
 
 Now you'll see a *Create a new knowledge base* page. Fill in the values as shown below:

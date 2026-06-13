@@ -59,7 +59,8 @@ The first step to begin fine-tuning a model in Microsoft Foundry is to build a t
 
 Your training data should be in JSONL (JSON Lines) format with clear examples of inputs and desired outputs:
 
-```{.json .code-overflow-wrap}
+<!-- ```{.json .code-overflow-wrap} -->
+```json
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "How do I reset my password?"}, {"role": "assistant", "content": "To reset your password, go to Settings > Security > Reset Password."}]}
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "Where can I find my order history?"}, {"role": "assistant", "content": "Your order history is available in Account > Orders."}]}
 ```
@@ -189,7 +190,6 @@ If you're not familiar with the hyperparameters listed under the `supervised` se
 - *batch_size* - The number of training examples processed together in each iteration of the training algorithm before updating the weights of the model. Larger batch sizes can speed up training but require more memory, while smaller batch sizes may lead to better training but take longer.
 - *learning_rate_multiplier* - A factor that scales the learning rate used during training. A smaller learning rate can lead to more stable training and better convergence, while a larger learning rate can speed up training but may cause the model to overshoot optimal weights or have unstable training.
 - *prompt_loss_weight* - A weight assigned to the loss from the prompt tokens during training (i.e., the penalty for errors between the prompt and the generated response). A low loss weight means the model will focus more on getting the response correct (i.e., focus on the output), while a higher loss weight means the model will also try to optimize for generating responses that are closely aligned with the prompt (i.e., focus on the prompt). This can be useful for certain tasks where the prompt structure is important.
-
 :::
 
 

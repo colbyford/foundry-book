@@ -1,6 +1,6 @@
-# Model Deployment {#chapter-model-deployment}
+# Model Deployment {#sec-chapter-2}
 
-In this Chapter, we'll learn how to deploy models in Microsoft Foundry. Models are brains of any AI agentic solution, so picking the right model for your use case and knowing how to deploy it are critical first steps in building agentic solutions.
+In this chapter, we'll learn how to deploy models in Microsoft Foundry. Models are brains of any AI agentic solution, so picking the right model for your use case and knowing how to deploy it are critical first steps in building agentic solutions.
 
 Microsoft Foundry provides a wide variety of models that you can deploy with just a few clicks or lines of code. You can choose from popular proprietary models from  OpenAI and Anthropic, Microsoft-built models like Phi-4, and even open-source models from Hugging Face. In addition to the variety, Foundry also provides tools to help you compare models across various benchmarks and metrics to help you pick the best model for your specific use case. Once you've picked a model, you can deploy it in just a few minutes without needing to manage any infrastructure. After deployment, you'll then be able to interact with your model through an API endpoint or through the built-in Playground in the Foundry portal.
 
@@ -106,7 +106,7 @@ You can read more about the Phi-4 model, its benchmark performance, etc. When yo
 
 There are two options: **Default settings** and **Custom settings**. Go with the **Default settings**, as shown in @fig-FFED.
 
-If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardrails to use. We'll learn more about Guardrails in Chapter 7.
+If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardrails to use. We'll learn more about Guardrails in @sec-chapter-7.
 
 ![Deploying Phi-4 with Default settings](figures/md/ss_deploy_002_ann.png){#fig-FFED}
 
@@ -213,9 +213,9 @@ On the **Details** tab, shown in @fig-AFD2, you'll find:
 ![Deployment endpoint and key on the Details tab](figures/md/ss_deploy_007_ann.png){#fig-AFD2}
 
 
-There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in Chatper 7.
+There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in @sec-chapter-7.
 
-Now that you know how to deploy a model, such as Phi-4, you're now ready to create your first Agent once we get to Chapter 3!
+Now that you know how to deploy a model, such as Phi-4, you're now ready to create your first Agent once we get to @sec-chapter-3!
 
 ## Deploying Models with the Azure CLI
 

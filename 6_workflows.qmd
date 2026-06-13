@@ -1,4 +1,4 @@
-# Orchestrating Agents with Workflows {#sec-workflows}
+# Orchestrating Agents with Workflows {#sec-chapter-6}
 
 In the previous chapters, you learned how to deploy models, configure agents with tools, and customize those agents for specialized tasks. A single, well-tuned agent can carry a conversation, call an API, and synthesize results, but it hits a ceiling quickly when a task requires distinct phases of work, conditional logic, or human sign-off. That is where Workflows come in.
 
@@ -98,11 +98,8 @@ Every expression that references a variable needs a scope prefix:
 - `System.` for runtime context provided by the platform (for example, `System.LastMessage.Text`, `System.User.Language`, or `System.Conversation.Id`).
 
 ::: {.callout-tip}
-
 Forgetting the prefix is the single most common Power Fx mistake. If you see a "Name isn't valid" error, the prefix is almost certainly missing. Also, Power Fx commands are case-sensitive and presented in PascalCase, so `local.` or `system.` will not work.
-
 :::
-
 
 
 ### Useful Formulas by Type
@@ -174,7 +171,7 @@ A node configuration panel will open on the right. Set the following values:
 * *Question*: `Please enter your math problem:`
 * *Expected input type*: String
 * *Save user response as*: Create a new variable called `Local.MathProblem`
-* *Node ID*: `question\_math\_input`
+* *Node ID*: `question_math_input`
 
 Click the *Done* button to save the node configuration. You should now see the new "Ask a question" node on the canvas, connected to the "Start" node, as shown in @fig-BC17. This node will ask the user to input a math problem when the workflow runs, and it will save their response in a variable called `Local.MathProblem` for downstream nodes to use.
 
@@ -186,7 +183,7 @@ Create a new *Set variable* node by clicking the *+* icon after the last "Ask a 
 
 * *Set variable*: Create a new variable called `Local.LatestMessage`
 * *To value*: `UserMessage(Local.MathProblem)`
-* *Node ID*: `set\_variable\_input\_task`
+* *Node ID*: `set_variable_input_task`
 
 Click the *Done* button to save the node configuration, as shown in @fig-8C31.
 
@@ -196,7 +193,7 @@ Repeat this process to create another *Set variable* node that initializes `Loca
 
 * *Set variable*: Create a new variable called `Local.TurnCount`
 * *To value*: `0`
-* *Node ID*: `set\_variable\_turn\_count`
+* *Node ID*: `set_variable_turn_count`
 
 Click the *Done* button to save the node configuration, as shown in @fig-1C3C.
 
@@ -214,27 +211,27 @@ You are an expert mathematician and problem analyst. Your sole responsibility is
 
 ![Configuring the Math Evaluator Agent node](figures/wf/ss_canvas_006_ann.png){#fig-EC28}
 
-A more complete and verbose version of this prompt is available in the `data/ch06/math\_evaluator\_agent\_prompt.md` file. The expanded prompt better defines how the agent should respond, such as recommending a strategy and Python libraries to use. You can copy and paste it into the system prompt of your new agent. Also, my new agent defaulted to use the `gpt-4o` model. Feel free to experiment with different models to see how it impacts the quality of the solution plan.
+A more complete and verbose version of this prompt is available in the `data/ch06/math_evaluator_agent_prompt.md` file. The expanded prompt better defines how the agent should respond, such as recommending a strategy and Python libraries to use. You can copy and paste it into the system prompt of your new agent. Also, my new agent defaulted to use the `gpt-4o` model. Feel free to experiment with different models to see how it impacts the quality of the solution plan.
 
 Next, on the *Node settings* tab of the configuration panel, set the following values:
 
 * *Save agent output message to variable*: `Local.LatestMessage`
-* *Node ID*: `math\_evaluator\_agent`
+* *Node ID*: `math_evaluator_agent`
 
 As shown in @fig-7C25, click the *Done* button once your instructions and settings are configured.
 
 ![Configuring the Math Evaluator Agent's behavior](figures/wf/ss_canvas_007_ann.png){#fig-7C25}
 
-Now we need to handle if the agent is unable to solve the problem. You may have noticed in the prompt that the agent should return `\[COMPLETE\]` as part of its response if it was able to produce a complete solution plan. We will add a conditional branch that checks if the agent's response contains the `\[COMPLETE\]` flag. If it does not, it will tell the user that it was unable to solve the problem.
+Now we need to handle if the agent is unable to solve the problem. You may have noticed in the prompt that the agent should return `[COMPLETE]` as part of its response if it was able to produce a complete solution plan. We will add a conditional branch that checks if the agent's response contains the `[COMPLETE]` flag. If it does not, it will tell the user that it was unable to solve the problem.
 
 Click on the *+* icon after the "math-evaluator-agent" node and select the *If/else condition* node type. In the configuration panel, set the following value:
 
-* *Node ID*: `check\_evaluator\_exit`
+* *Node ID*: `check_evaluator_exit`
 
 Under the *If* section, add the following condition:
 
-* *Condition 1*: `=!IsBlank(Find("\[COMPLETE\]", Upper(Last(Local.LatestMessage).Text)))`
-* *Node ID*: `evaluator\_flagged\_complete`
+* *Condition 1*: `=!IsBlank(Find("[COMPLETE]", Upper(Last(Local.LatestMessage).Text)))`
+* *Node ID*: `evaluator_flagged_complete`
 
 If you don't see an *If* condition block, click the *+ Add a path* button to add one. This is also where you would add additional *Else if* blocks if you wanted to check for other conditions.
 
@@ -247,8 +244,8 @@ Lastly, we will change the message given to the user depending on whether the ev
 Click on the *+* icon after the "If" node and select the *Deliver a message* node type. (This shows up as "Send message" on the node itself).
 This node will compile a message back to the user in the chat interface without expecting a response. Set the following values:
 
-* *Message*: `The Math Evaluator was unable to proceed: \{Last(Local.LatestMessage).Text\}`
-* *Node ID*: `send\_evaluator\_exit`
+* *Message*: `The Math Evaluator was unable to proceed: {Last(Local.LatestMessage).Text}`
+* *Node ID*: `send_evaluator_exit`
 
 As shown in @fig-1C69, click the *Done* button to save the configuration.
 
@@ -258,7 +255,7 @@ As shown in @fig-1C69, click the *Done* button to save the configuration.
 Similarly, click on the *+* icon after the "Else" node and add another *Deliver a message* node. This will be the message sent to the user when the evaluator does flag the response as complete. Set the following values:
 
 * *Message*: `Math Evaluator complete. Handing solution plan to the Python Coder agent...`
-* *Node ID*: `send\_evaluator\_done`
+* *Node ID*: `send_evaluator_done`
 
 As shown in @fig-8952, click the *Done* button to save the configuration.
 
@@ -281,7 +278,7 @@ Click on the *YAML* tab at the top right of the canvas, as shown in @fig-E94B. T
 
 ![Seeing the YAML version of what you've built](figures/wf/ss_canvas_012_ann.png){#fig-E94B}
 
-Grab the provided YAML file from `data/ch06/math\_coder\_workflow.yaml` and paste it into the editor, replacing all of the existing YAML. This file contains the full definition of the workflow we are building, including the second half that we didn't yet build in the visual editor.
+Grab the provided YAML file from `data/ch06/math_coder_workflow.yaml` and paste it into the editor, replacing all of the existing YAML. This file contains the full definition of the workflow we are building, including the second half that we didn't yet build in the visual editor.
 
 Switch back to the *Visualizer* tab to see the full workflow on the canvas. You should see that the YAML you pasted in has rendered as a visual workflow, as shown in @fig-7946. You'll now see a "python-coder-agent" node that will take the solution plan from the evaluator and generates Python code (to be configured next). This is connected to additional nodes that handle multiple turns of evaluation and coding, nodes to handle messages back to the user, and *End* nodes.
 
@@ -320,7 +317,7 @@ Once you're done reviewing the workflow, make sure to click the *Save* button to
 
 Click the *Preview* button to open the Preview chat panel on the right. This lets you run the workflow step-by-step and see the output of each node in real time, which is essential for debugging and verifying that your workflow behaves as expected before deploying it to production.
 
-In the chat panel, ask your math solver workflow some questions to see how it performs. Perhaps start with a simple question, like `What is 2\+2?`. Then, you can increase the difficulty of the problems you ask to see how well the agents can break down and solve more complex problems. For example, you could ask some of the provided problems below, or come up with your own.
+In the chat panel, ask your math solver workflow some questions to see how it performs. Perhaps start with a simple question, like `What is 2+2?`. Then, you can increase the difficulty of the problems you ask to see how well the agents can break down and solve more complex problems. For example, you could ask some of the provided problems below, or come up with your own.
 
 ::: {.callout-tip}
 ## Example Simple Inputs

@@ -1,4 +1,4 @@
-# Potpourri and Conclusion
+# Potpourri and Conclusion {#sec-chapter-9}
 
 In this conclusionary chapter, we'll wrap up the book by covering a few other features of Microsoft Foundry that didn't fit elsewhere (what I call "potpourri") and I'll show you some additional open-source tools from Microsoft that are related to agentic workloads. Lastly, I'll be providing some best practices and considerations for designing an Azure cloud architecture that integrates well with Foundry Agents. Plus, I'll leave you with some resources to continue your learning journey beyond this book.
 
@@ -26,7 +26,7 @@ To add a memory store to your Agent, navigate to the *Memory* section of your Ag
 
 ![Locating the memory capability on an Agent](figures/co/ss_memory_001_ann.png){#fig-D4BD}
 
-Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `\{\{\$userId\}\}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will default to the caller's Microsoft Entra token (`\{tenant-id\}\_\{object-id\}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
+Then, you can also edit the memory store, as shown in @fig-4132. By default, the scope of the memory is at the `{{$userId}}` level, which provides per-user memory isolation without hard-coding identifiers yourself. If a user identity is not found, it will default to the caller's Microsoft Entra token (`{tenant-id}_{object-id}`). You can also edit the update delay, which dictates how long to wait after inactivity to update memories.
 
 ![Editing the memory store](figures/co/ss_memory_002_clean.png){#fig-4132}
 
@@ -153,7 +153,7 @@ with DefaultAzureCredential() as credential:
 
 Then, we create a taxonomy to define the attack strategies we want to use in our red teaming run.
 
-```py
+```python
 from azure.ai.projects.models import (
     AzureAIAgentTarget,
     AgentTaxonomyInput,
@@ -225,7 +225,7 @@ To create a batch job, navigate to the *Models* screen from the left-hand menu o
 
 Just like when we were fine-tuning a model, batch jobs also use `.jsonl` formatted files. Each line of the file represents a separate request to the model, and you can include any input that you would normally send to the model in a real-time interaction. The difference is that instead of sending these requests one at a time, you can send them all at once as part of a batch job. This allows you to process large volumes of data more efficiently.
 
-``` {.json .code-overflow-wrap}
+```{.json .code-overflow-wrap}
 {"custom_id": "task-0", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a convolutional neural network?"}]}}
 {"custom_id": "task-1", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a transformer model?"}]}}
 {"custom_id": "task-2", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is the difference between supervised and unsupervised learning?"}]}}
@@ -286,7 +286,7 @@ In addition to the features available today in Microsoft Foundry, Microsoft has 
 
 ### GraphRAG
 
-You may recall in the Knowledge Bases chapter we built a Retrieval Augmented Generation (RAG) system using Azure AI Search and connected an agent to our data. There are many RAG-based architectures and approaches to building intelligent agents, each with their own strengths and weaknesses.
+You may recall in the @sec-chapter-4, we built a Retrieval Augmented Generation (RAG) system using a Foundry IQ knowledge base and Azure AI Search, then connected an agent to our data. There are many RAG-based architectures and approaches to building intelligent agents, each with their own strengths and weaknesses.
 
 Normal RAG may struggle to connect the dots well enough for an LLM to synthesize a coherent response when answering a question requires traversing disparate pieces of information. Another limitation is that traditional RAG systems may struggle to summarize semantic concepts when given a very large collection of data. This is where GraphRAG comes in.
 
@@ -374,9 +374,40 @@ print(f"Agent: {result}")
 ## Agent: Why did the computer go to the doctor? Because it had a virus!
 ```
 
-Parts of the Microsoft Agent Framework will feel familiar because they use the same services that power Microsoft Foundry. However, the Agent Framework is a separate project that can be used independently of Foundry. It provides a more code-centric approach to building agents, while Foundry provides a low-code/no-code interface for building and managing agents at scale. Depending on your needs and preferences, you may choose to use one or both of these tools in your AI agent development process.
+Parts of the Microsoft Agent Framework will feel familiar because they use the same services that power Microsoft Foundry, especially Workflows. We can create multi-agent workflows using the Agent Framework's `SequentialBuilder`, which chains together multiple agents. If we were to remake the Workflow from @sec-chapter-6, the code block below shows an example of how to do so using the Agent Framework.
+
+```python
+math_evaluator_agent = client.as_agent(...)
+python_coder_agent = client.as_agent(...)
+
+workflow = SequentialBuilder(
+    participants=[
+        math_evaluator_agent,
+        python_coder_agent
+    ]).build()
+
+events = await workflow.run(species_input)
+outputs = events.get_outputs()
+```
+
+
+However, the Agent Framework is a separate project that can be used independently of Foundry. It provides a more code-centric approach to building agents, while Foundry provides a low-code/no-code interface for building and managing agents at scale. Depending on your needs and preferences, you may choose to use one or both of these tools in your AI agent development process.
 
 For more information about the Microsoft Agent Framework, check out their GitHub repository: [https://github.com/microsoft/agent-framework](https://github.com/microsoft/agent-framework).
+
+### Foundry Toolkit Extension for VS Code
+
+Microsoft Foundry Toolkit is a Visual Studio Code extension that allow you to build AI agents quickly right inside VS Code. It provides a Model Playground UI for chatting with hosted models along with functionality for managing Microsoft Foundry resources.
+
+You can find the [Foundry Toolkit](https://marketplace.visualstudio.com/items?itemName=ms-windows-ai-studio.windows-ai-studio) extension in the VS Code marketplace by searching for "Foundry Toolkit" under the *Extensions* tab, as shown in @fig-2BE6.
+
+![Locating the Foundry Toolkit extension in VS Code](figures/co/ss_vscode_001_clean.png){#fig-2BE6}
+
+Once you install the extension, you'll be prompted to log into both your Azure and GitHub accounts, as the tool can connect to models from Foundry and GitHub Copilot. After logging in and connecting it to your accounts, you'll be able to manage your Foundry resources, explore the Tool and Model Catalogs, and build agents directly from VS Code. See @fig-6FE9 for an example of what the Foundry Toolkit interface looks like within VS Code.
+
+![Exploring models and creating agents in Foundry Toolkit](figures/co/ss_vscode_002_clean.png){#fig-6FE9}
+
+Alongside other Azure-based extensions for VS Code, such as [Azure Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-node-azure-pack) and [Azure Resources](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureresourcegroups), the Foundry Toolkit provides a seamless experience for managing your Foundry resources and building agents without having to leave your development environment. You can create and manage your agents, deploy models, and even run your agents directly from VS Code.
 
 ### Microsoft Agent Governance Toolkit
 
@@ -390,7 +421,7 @@ Similar to zero-trust paradigms for human users, this toolkit also includes a ze
 
 ![The 4 privilege rings of zero-trust Agent identity](figures/co/il_govframework_002_clean.png){#fig-5BE2}
 
-An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the code block below. In this example, we create a simple policy that blocks any tool calls to `execute\_code` or `delete\_file`. We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
+An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the code block below. In this example, we create a simple policy that blocks any tool calls to `execute_code` or `delete_file`. We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
 
 ```python
 ## pip install agent-governance-toolkit[full]

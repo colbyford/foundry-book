@@ -1,4 +1,4 @@
-# Introduction {#chapter-introduction}
+# Introduction {#sec-chapter-1}
 
 In this chapter, we will get introduced to the Microsoft Foundry service and learn how to create their first Project resource in Azure.
 
@@ -234,7 +234,7 @@ Now, go back to the Foundry Portal and copy your Project endpoint. As shown in @
 
 It will look something like this:
 
-`https://\<resource-name\>.services.ai.azure.com/api/projects/\<project-name\>`
+`https://<resource-name>.services.ai.azure.com/api/projects/<project-name>`
 
 Now we're ready to connect to the Project from Python.
 
@@ -253,7 +253,7 @@ from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 
 project = AIProjectClient(
-  endpoint="https://<resource-name>.services.ai.azure.com/\
+  endpoint="https://<resource-name>.services.ai.azure.com/ \
                api/projects/<project-name>",
   credential=DefaultAzureCredential()
   )
@@ -305,7 +305,7 @@ This section is optional and is simply showing how to deploy items via the Azure
 For many users, the Azure CLI can be installed with a single command on most operating systems. Find yours below:
 
 - Windows: `winget install --exact --id Microsoft.AzureCLI`
-- Linux: `curl -sL https://aka.ms/InstallAzureCLIDeb \| sudo bash`
+- Linux: `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
 - macOS: `brew update && brew install azure-cli`
 
 For more information about how to install the Azure CLI on various operating systems (and more installation options), visit the following Microsoft Learn page: [https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
@@ -396,4 +396,4 @@ You learned how Foundry is organized around two core Azure resources: the Foundr
 
 We demonstrated how to interact with a Foundry Project programmatically using the Foundry Python SDK, explained the distinction between the Project client and the OpenAI-compatible client, and showed how Foundry resources can be provisioned via the Azure CLI for repeatable, automated deployments.
 
-With a Foundry Project now up and running, you're ready to start deploying models, building agents, connecting data sources, and implementing guardrails. In the next Chapter, we'll be deploying our first Model into our Project. Are you excited yet!?
+With a Foundry Project now up and running, you're ready to start deploying models, building agents, connecting data sources, and implementing guardrails. In the next chapter, we'll be deploying our first Model into our Project. Are you excited yet!?

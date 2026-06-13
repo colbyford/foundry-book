@@ -1,4 +1,4 @@
-# Agent Deployment {#chapter-agent-deployment}
+# Agent Deployment {#sec-chapter-3}
 
 Up to this point, we've been interacting with models directly. While models are the "brains" of the operation, turning them into Agents allows for even more control and connectivity to data and tools. Agents sit above deployed Models and orchestrate their behavior. An agent uses one or more models along with instructions, memory, tools, and knowledge to accomplish goals autonomously. It can decide what steps to take, call tools or APIs, manage context, and iterate toward an outcome.
 
@@ -308,7 +308,7 @@ For our first Azure-based tool to be configured, we'll be connecting to the Cosm
 In this exercise, we'll need a few pieces of information to connect to your Cosmos DB instance. For that, we'll have to go back to the Azure Portal.
 
 ::: {.callout-warning}
-If you didn't deploy a Cosmos DB back in Chapter 1, go back and review those setup parameters and deploy your own database in the same Resource Group as your Foundry Project.
+If you didn't deploy a Cosmos DB back in @sec-chapter-1, go back and review those setup parameters and deploy your own database in the same Resource Group as your Foundry Project.
 
 You can follow the deployment instructions from Microsoft Learn here: [learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal](https://learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal).
 :::
@@ -351,7 +351,7 @@ Then, as shown in @fig-A103, click the **OK** button at the bottom of the panel.
 
 Once your database and container have been created, click on **Items** under the **Properties** drop down. See @fig-310E.
 
-At the top of the screen, click the **Upload Item** button. One the panel that opens, browse for the [`data/ch02/properties.json`](data/ch02/properties.json) file in the accompanying GitHub repository by selecting the folder icon. Lastly, click the **Upload** button.
+At the top of the screen, click the **Upload Item** button. One the panel that opens, browse for the [`data/ch03/properties.json`](https://github.com/colbyford/foundry-book/blob/main/data/ch03/properties.json) file in the accompanying GitHub repository by selecting the folder icon. Lastly, click the **Upload** button.
 
 ![Uploading property records to your database](figures/ad/ss_database_003_ann.png){#fig-310E}
 
@@ -459,7 +459,7 @@ Now you can run the Powershell script to deploy the server code Cosmos DB MCP se
 # -ResourceGroup "<resource-group-name>"
 ```
 
-This script builds and pushes the MCP server Docker image to your new Container Registry and creates an Entra ID app registration for authentication. This will take a few minutes to complete. If successful, you should see a message that says "Deployment successful!" and it will output the URI for your new Cosmos DB MCP server, which should look something like this: `https://\<container-app-name\>.\<region\>.azurecontainerapps.io/`. Copy this URI and paste it somewhere safe as you'll need it in the next step.
+This script builds and pushes the MCP server Docker image to your new Container Registry and creates an Entra ID app registration for authentication. This will take a few minutes to complete. If successful, you should see a message that says "Deployment successful!" and it will output the URI for your new Cosmos DB MCP server, which should look something like this: `https://<container-app-name>.<region>.azurecontainerapps.io/`. Copy this URI and paste it somewhere safe as you'll need it in the next step.
 
 ::: {.callout-warning}
 
@@ -531,7 +531,7 @@ On the **Connect the Azure Cosmos DB tool** screen, give this tool a name. Paste
 
 - **Authentication**: Microsoft Entra
 - **Type**: Project Managed Identity
-- **Audience**: (Your Entra App ID for the MCP Toolkit app. This is the `ENTRA\_APP\_CLIENT_ID` value from the `deployment-info.json` Powershell script output.)
+- **Audience**: (Your Entra App ID for the MCP Toolkit app. This is the `ENTRA_APP_CLIENT_ID` value from the `deployment-info.json` Powershell script output.)
 
 When you're done filling in the values, click the **Connect** button. See @fig-13D1.
 
@@ -567,7 +567,7 @@ A sample record looks like this:
 }
 ```
 
-Where "year\_built" is the year the property was built, "sq\_footage" is the square footage of the house, "n\_bedrooms" is the number of bedrooms, and "n\_bathrooms" is the number of bathrooms.
+Where `year_built` is the year the property was built, `sq_footage` is the square footage of the house, `n_bedrooms` is the number of bedrooms, and `n_bathrooms` is the number of bathrooms.
 :::
 
 

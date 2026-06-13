@@ -1,4 +1,4 @@
-# Model Customization through Fine-Tuning {#chapter-fine-tuning}
+# Model Customization through Fine-Tuning {#sec-chapter-5}
 
 In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. Customizing a model with your own data can improve performance on specific tasks or domains by teaching the model to better understand your unique requirements and to respond with more accurate answers or in a desired style. Fine-tuning is a powerful technique that allows you to adapt pre-trained models to your specific use case without needing to train an entire model from scratch, which can be resource-intensive (expensive because you'd have to have many GPUs) and require large amounts of data. Instead, you can achieve significant improvements with just a few hundred or thousand examples that are relevant to your specific domain or task.
 
@@ -25,7 +25,7 @@ Consider fine-tuning when you need to:
 
 After reading the last chapter on knowledge bases and retrieval-augmented generation (RAG), you might be wondering when to use RAG versus fine-tuning for customizing your model's behavior.
 
-Let's use a human example. If you were an attorney, you have learned unique knowledge about the law, legal precedents, and how to structure legal arguments that would be important for you to have "in your head". This is analagous to fine-tuning a model, where you want to teach the model specific knowledge and innate behaviors that are not easily retrieved from an external source. You want the model to have this information "in its head" so it can generate responses based on that knowledge without needing to look it up every time. On the other hand, as an attorney, you probably haven't memorized every single law or legal precedent, but you know how to quickly look up that information when you need it. This is analagous to RAG, where the model can retrieve specific pieces of information from an external source when needed to answer questions that require up-to-date or detailed information.
+Let's use a human example. If you were an attorney, you have learned unique knowledge about the law, legal precedents, and how to structure legal arguments that would be important for you to have "in your head". This is analogous to fine-tuning a model, where you want to teach the model specific knowledge and innate behaviors that are not easily retrieved from an external source. You want the model to have this information "in its head" so it can generate responses based on that knowledge without needing to look it up every time. On the other hand, as an attorney, you probably haven't memorized every single law or legal precedent, but you know how to quickly look up that information when you need it. This is analogous to RAG, where the model can retrieve specific pieces of information from an external source when needed to answer questions that require up-to-date or detailed information.
 
 We use RAG for when we want a model to retrieve data from an external knowledge base to answer questions. This is especially useful when the information is frequently changing, such as news articles or online orders. RAG allows the model to access up-to-date information without needing to retrain the model every time the data changes.
 
@@ -78,7 +78,7 @@ When generating training data, keep the following best practices in mind:
 
 ## Exercise: Fine-tune a Medical Assistant Model
 
-Let's start by fine-tuning a model to be a medical assistant that can answer questions about common medical conditions. We will use the `gpt-4.1-mini` model for this exercise, which is a smaller version of the GPT-4.1 model that is suitable for fine-tuning with limited data and compute resources. I have provided a training dataset with examples of medical questions and answers in the `data/ch05` folder.
+Let's start by fine-tuning a model to be a medical assistant that can answer questions about common medical conditions. We will use the `gpt-4.1-mini` model for this exercise, which is a smaller version of the GPT-4.1 model that is suitable for fine-tuning with limited data and compute resources. I have provided a training dataset with examples of medical questions and answers in the `data/ch05` folder of the accompanying GitHub repository.
 
 To start, navigate to the **Fine-tune** section of the **Build** page in the Foundry portal and click the **Fine-tune** button at the top, as shown in @fig-706E.
 
@@ -93,8 +93,8 @@ Fill in the following details to create a fine-tuning job for a medical assistan
 - **Select model:** `gpt-4.1-mini` (or another model of your choice)
 - **Customization method:** `Supervised`
 - **Training type:** `Global`
-- **Training dataset:** Select **Upload new dataset**, then upload the `medical\_training\_set\_mini.jsonl` file from the data/ch05 folder.
-- **Validation dataset:** Select **Upload new dataset**, then upload the `medica\_validation\_set\_mini.jsonl` file from the data/ch05 folder.
+- **Training dataset:** Select **Upload new dataset**, then upload the `medical_training_set_mini.jsonl` file from the data/ch05 folder.
+- **Validation dataset:** Select **Upload new dataset**, then upload the `medical_validation_set_mini.jsonl` file from the data/ch05 folder.
 - **Suffix:** `medical-training-mini`
 - **Deployment type:** `Developer`
 - **Additional configuration:** Leave these settings at their default values for now, but feel free to experiment with them later:
@@ -157,7 +157,7 @@ For me, my fine-tuned model performs well and correctly tells users to consult m
 
 ### Fine Tuning with the CLI
 
-You may have noticed that we uploaded the `\*_mini.jsonl` versions of the training and validation datasets. This is because the UI has a 30 second timeout window for uploading your dataset in the browser. Alternatively, you can use the Foundry CLI to run fine-tuning jobs with larger datasets. The CLI does not have the same timeout constraints as the UI, so you can upload and use larger datasets this way.
+You may have noticed that we uploaded the `*_mini.jsonl` versions of the training and validation datasets. This is because the UI has a 30 second timeout window for uploading your dataset in the browser. Alternatively, you can use the Foundry CLI to run fine-tuning jobs with larger datasets. The CLI does not have the same timeout constraints as the UI, so you can upload and use larger datasets this way.
 
 To run fine-tuning from the CLI, you must first define your fine-tuning job configuration in a YAML file. This can be more convenient for managing and versioning your training configurations, especially in, say, a git repository.
 
@@ -195,7 +195,7 @@ If you're not familiar with the hyperparameters listed under the `supervised` se
 
 Using the Foundry CLI (which is an extension of the Azure Developer CLI, `azd`), you can submit a fine-tuning job with this configuration file. Assuming you have the Azure Developer CLI installed and configured, run `azd ext install azure.ai.finetune` to add the fine-tuning extension.
 
-Then, by running the following commands in your terminal, you can submit the fine-tuning job to Foundry: (Make sure to replace `\<subscription-id\>` and `\<project-endpoint\>` with your actual subscription ID and project endpoint.)
+Then, by running the following commands in your terminal, you can submit the fine-tuning job to Foundry: (Make sure to replace `<subscription-id>` and `<project-endpoint>` with your actual subscription ID and project endpoint.)
 
 ```bash
 ## Submit fine-tuning job
@@ -254,13 +254,13 @@ On the **Create data** screen, you will fill in the details to create a syntheti
 - **Reference file:** Pick one of the files as described below (or locate your own cardio-related data such as from an academic journal or other source).
 - **Maximum number of samples:** `100`
 - **Generator model:** `gpt-4.1` (or another model of your choice)
-- **Output file name:** `CardiacLearning\_SimpleQnA-FineTuneSupervised`
+- **Output file name:** `CardiacLearning_SimpleQnA-FineTuneSupervised`
 
 In the `data/ch05/synthetic-data` folder, I have included some sample cardiology-related files that you can use for this exercise:
 
 1. "Cardiac Learning Guide Series" (`Cardiac-Learning-Guide.pdf`) - An 84-page PDF document that provides comprehensive guidelines on cardiac care from Abbott Laboratories.
-2. "Cardiovascular Pathophysiology for Pre-Clinical Students" (`Cardiovascular\_Pathophysiology\_for\_Pre-Clinical\_Students.pdf`) - A 79-page PDF textbook from Virginia Tech Carilion School of Medicine that contains foundational knowledge of common cardiovascular diseases, disorders, and pathologies.
-3. Health Topics from the American Heart Assocation - (`AHA\_Health\_Topics.md`) - A Markdown document that contains health information on heart attacks, atrial fibrillation, and cholesterol from the American Heart Association.
+2. "Cardiovascular Pathophysiology for Pre-Clinical Students" (`Cardiovascular_Pathophysiology_for_Pre-Clinical_Students.pdf`) - A 79-page PDF textbook from Virginia Tech Carilion School of Medicine that contains foundational knowledge of common cardiovascular diseases, disorders, and pathologies.
+3. Health Topics from the American Heart Assocation - (`AHA_Health_Topics.md`) - A Markdown document that contains health information on heart attacks, atrial fibrillation, and cholesterol from the American Heart Association.
 
 Pick one of the files to upload to the synthetic data generator and configure the settings to generate question–answer pairs. For example, you can set the number of examples to generate to 100 and adjust the temperature setting to control the creativity of the generated examples. Once you're done, click the **Submit** button to start the synthetic data generation process.
 
@@ -286,7 +286,7 @@ Your synthetic data generation job may fail if you hit your throughput limit wit
 ```{.json .code-overflow-wrap}
 {"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is the primary cause of a heart attack?"}, {"role": "assistant", "content": "The primary cause of a heart attack is the reduction or blockage of blood flow to the heart muscle, usually due to a blockage in the coronary arteries that supply the heart with oxygen-rich blood."}]}
 {"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "How does plaque buildup in the coronary arteries contribute to heart attacks?"}, {"role": "assistant", "content": "Plaque buildup in the coronary arteries narrows these vessels, restricting blood flow to the heart muscle. When plaque breaks, a blood clot can form around it, potentially blocking the artery completely and cutting off oxygen supply, which can trigger a heart attack."}]}
-{"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is atherosclerosis?"}, {"role": "assistant", "content": "Atherosclerosis is a slow process where plaque\u2014composed of fat, cholesterol, and other substances\u2014builds up in the inner walls of arteries. This buildup narrows the arteries and makes them less flexible, increasing the risk of blood clots that can cause heart attacks or strokes."}]}
+{"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is atherosclerosis?"}, {"role": "assistant", "content": "Atherosclerosis is a slow process where plaque composed of fat, cholesterol, and other substances builds up in the inner walls of arteries. This buildup narrows the arteries and makes them less flexible, increasing the risk of blood clots that can cause heart attacks or strokes."}]}
 
 ```
 

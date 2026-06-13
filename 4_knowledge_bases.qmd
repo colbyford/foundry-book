@@ -1,4 +1,4 @@
-# Building Knowledge Bases {#chapter-knowledge-bases}
+# Building Knowledge Bases {#sec-chapter-4}
 
 Enterprise AI systems may sometimes feel subpar, not because of model quality, but because of *context*. Without reliable access to organizational knowledge, consistent memory across interactions, and visibility into how decisions are made, even the most capable large language models may deliver lackluster responses or untrustworthy answers.
 
@@ -123,13 +123,14 @@ For this exercise, we will build a agent for delivering financial insights into 
 
 ### Part 1: Uploading Data to Azure Blob Storage
 
-Before we can make a knowledge base, we need to have some data to put in it! For this exercise, I've curated a set of files from Microsoft's public financial documents from their Q1 2026 report in the supplementary materials under [data/ch04/finance\_docs](data/ch04/finance_docs/). This data includes earnings reports, financial statements, and transcripts from earnings calls and are in a variety of Office formats (DOCX, PPTX, XLSX). We will upload these files to the Azure Storage Account that was created in Chapter 1. 
+Before we can make a knowledge base, we need to have some data to put in it! For this exercise, I've curated a set of files from Microsoft's public financial documents from their Q1 2026 report in the supplementary materials under [data/ch04/finance_docs](https://github.com/colbyford/foundry-book/blob/main/data/ch04/finance_docs/). This data includes earnings reports, financial statements, and transcripts from earnings calls and are in a variety of Office formats (DOCX, PPTX, XLSX). We will upload these files to the Azure Storage Account that was created in @sec-chapter-1. 
 
-Navigate to the Azure Portal and find your Storage Account (mine was called `stfoundrybookdev001`). Then, under *Data storage* on the left-hand panel, as shown in @fig-693E, click on *Containers*. Create a new container by clicking on the *+ Add container* button and name it `data`.
+Navigate to the Azure Portal and find your Storage Account (mine was called `stfoundrybookdev001`). Then, under *Data storage* on the left-hand panel, as shown in @fig-82FA, click on *Containers*. Create a new container by clicking on the *+ Add container* button and name it `data`.
 
-![Creating a new Container in Azure Storage](figures/kb/ss_portal_001_ann.png){#fig-693E}
+![Creating a new Container in Azure Storage](figures/kb/ss_storage_001_ann.png){#fig-82FA}
 
-Create a new directory by clicking the *+ Add directory* button and name it `ch04/_docs`. (This will actually create two directories, one under the other.) Click through the newly created `ch04` and `finance_docs` directories, and then click the *Upload* button to upload files into this directory. Select all of the files from the [data/ch04/finance_docs](data/ch04/finance_docs/) folder to upload them to the container. See @fig-72EE for an example of what this should look like once the files are uploaded.
+
+Create a new directory by clicking the *+ Add directory* button and name it `ch04/_docs`. (This will actually create two directories, one under the other.) Click through the newly created `ch04` and `finance_docs` directories, and then click the *Upload* button to upload files into this directory. Select all of the files from the [data/ch04/finance_docs](https://github.com/colbyford/foundry-book/blob/main/data/ch04/finance_docs/) folder to upload them to the container. See @fig-72EE for an example of what this should look like once the files are uploaded.
 
 ![Uploading the financial reports to Azure Storage](figures/kb/ss_storage_002_ann.png){#fig-72EE}
 
@@ -137,7 +138,7 @@ Now that we have some data uploaded to Azure Storage, we can move on to creating
 
 ### Part 2: Create an Azure AI Search Index
 
-To create an Azure AI Search index, navigate to the Azure Portal search for your Azure AI Search service that was created in Chapter 1. (Mine is called `srch-foundrybook-dev-001`.) At the top of the page, shown in @fig-F62E, there is a convenient import wizard that will help us make the index and other components easily. Click on *Import data (new)*.
+To create an Azure AI Search index, navigate to the Azure Portal search for your Azure AI Search service that was created in @sec-chapter-1. (Mine is called `srch-foundrybook-dev-001`.) At the top of the page, shown in @fig-F62E, there is a convenient import wizard that will help us make the index and other components easily. Click on *Import data (new)*.
 
 ![Importing data into Azure AI Search](figures/kb/ss_search_001_ann.png){#fig-F62E}
 
@@ -249,7 +250,7 @@ Now that we have a knowledge base, we can connect it to an agent and start askin
 
 ### Part 4: Test the Knowledge Base with an Agent
 
-Navigate back to the *Agents* section of the *Build* page and create a new agent. I called mine `robo-cfo-agent`. Feel free to use whatever model you want such as `gpt-4.1`. (If you need a refresher on how to create an agent, refer back to Chapter 3.)
+Navigate back to the *Agents* section of the *Build* page and create a new agent. I called mine `robo-cfo-agent`. Feel free to use whatever model you want such as `gpt-4.1`. (If you need a refresher on how to create an agent, refer back to @sec-chapter-3.)
 
 In the agent configuration, under the *Instructions* section, add the following instructions to set the context for the agent and let it know that it has access to a knowledge base with financial data about Microsoft that it can use to answer questions.
 
@@ -259,9 +260,9 @@ In the agent configuration, under the *Instructions* section, add the following 
 You are a financial analysis agent that helps answer questions relating to public financial documents about Microsoft. You have access to a knowledge base that contains financial data about Microsoft, including earnings reports, financial statements, and transcripts from earnings calls. Use this information to answer questions about Microsoft's financial performance, ensuring that your responses are grounded in the data from the knowledge base.
 :::
 
-Then, under the *Knowledge* section, add the `robo-cfo-kb` knowledge base that you just created, as shown in @fig-1BC. This will allow the agent to use the financial data in the knowledge base to answer questions.
+Then, under the *Knowledge* section, add the `robo-cfo-kb` knowledge base that you just created, as shown in @fig-8BA3. This will allow the agent to use the financial data in the knowledge base to answer questions.
 
-![Connecting an Agent to the knowledge base](figures/kb/ss_agent_001_ann.png){#fig-1BC}
+![Connecting the Agent to the knowledge base](figures/kb/ss_kbagent_001_ann.png){#fig-8BA3}
 
 
 Now we can test the agent by asking it questions about Microsoft's financial performance. Try asking questions such as:
@@ -272,13 +273,12 @@ Now we can test the agent by asking it questions about Microsoft's financial per
 What were Microsoft's total revenue and net income for the fiscal quarter ending in March 2025, and how do these figures compare to the same quarter in the previous year?
 :::
 
-If it's able to pull from the knowledge base correctly, it should return $77.7B in total revenue and $27.7 billion in net income for September 2025, and then compare those figures to September 2024, which were $65.6 billion in total revenue and $24.7 billion in net income. See @fig-4EF2 for an example of what the response should look like. 
+If it's able to pull from the knowledge base correctly, it should return $77.7B in total revenue and $27.7 billion in net income for September 2025, and then compare those figures to September 2024, which were $65.6 billion in total revenue and $24.7 billion in net income. See @fig-D97B for an example of what the response should look like. 
 
-![Asking the Robo CFO Agent about year over year revenue](figures/kb/ss_agent_002_clean.png){#fig-4EF2}
+![Asking the Robo CFO Agent about year over year revenue](figures/kb/ss_kbagent_002_clean.png){#fig-D97B}
 
 
 Note that the agent pulled this from the indexed information of the `FinancialStatementFY26Q1.xlsx` file that you uploaded. It is able to ground its response in the financial data from the knowledge base and reason enough to provide a comparison of the year-over-year performance based on that data.
-
 
 Now let's try to pull information from slides, which is a bit more complex since the relevant information may not be as structured or verbose textually as in an Excel spreadsheet or Word document. Try asking a question such as:
 
@@ -288,13 +288,15 @@ Now let's try to pull information from slides, which is a bit more complex since
 What is the forward-looking FY26 Q2 outlook?
 :::
 
-The agent should be able to pull relevant information any of the files that you uploaded and indexed. I know that there was a slide with forward-looking statements about Microsoft's outlook for the next quarter. See @fig-B2F6 for an example of what my Robo CFO Agent's response was.
+The agent should be able to pull relevant information any of the files that you uploaded and indexed. I know that there was a slide with forward-looking statements about Microsoft's outlook for the next quarter. See @fig-257F for an example of what my Robo CFO Agent's response was.
 
-![Asking about Microsoft's 2026 outlook](figures/kb/ss_agent_003_clean.png){#fig-B2F6}
+![Asking about Microsoft's 2026 outlook](figures/kb/ss_kbagent_003_clean.png){#fig-257F}
 
-As you can see in @fig-C6EC, the agent is able to pull relevant information from the slide 3 of the `OutlookFY26Q2.pptx` PowerPoint deck, which contains a table of revenue and expense forecasts for the next quarter. Oddly enough, this table in the slide is actually just an image and not editable text. This demonstrates how the agent can use the knowledge base to find and extract relevant information even from less structured data sources like PowerPoint slides, which may contain a mix of text, pictures, visuals, and summarized key insights.
 
-![The "Microsoft FY26 Q2 Outlook" PowerPoint slide](figures/kb/ss_agent_004_clean.png){#fig-C6EC}
+As you can see in @fig-5165, the agent is able to pull relevant information from the slide 3 of the `OutlookFY26Q2.pptx` PowerPoint deck, which contains a table of revenue and expense forecasts for the next quarter. Oddly enough, this table in the slide is actually just an image and not editable text. This demonstrates how the agent can use the knowledge base to find and extract relevant information even from less structured data sources like PowerPoint slides, which may contain a mix of text, pictures, visuals, and summarized key insights.
+
+![The "Microsoft FY26 Q2 Outlook" PowerPoint slide](figures/kb/ss_kbagent_004_clean.png){#fig-5165}
+
 
 Since we didn't give this Agent access to the web, its limit will be to information that is contained in the knowledge base. This style may be useful for scenarios where you want to ensure that the agent is only using approved, internal data sources rather than pulling in information from the web that may not be accurate or trustworthy.
 

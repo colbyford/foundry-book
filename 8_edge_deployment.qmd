@@ -1,4 +1,4 @@
-# Local Inferencing and Edge-Deployed AI
+# Local Inferencing and Edge-Deployed AI {#sec-chapter-8}
 
 In this chapter, we will learn about local model inferencing through Foundry Local. We will also walk through the process of preparing and running models from Hugging Face locally on your laptop. Technically, for many of the open-source models available on repositories like Hugging Face, you can run them locally using inferencing logic built on the *Transformers* framework or using PyTorch directly without any optimization or special deployment logic. However, even when a model runs, it may not be running as best as it could. In production, AI engineers may need set up tokenizer handling, chat templates, KV cache management, quantization, execution providers, memory planning, batching strategies, etc. to get optimal performance.
 
@@ -219,7 +219,7 @@ Try these prompts:
 * "Write a haiku about artificial intelligence"
 :::
 
-How did it do? Once you're done testing, you can end the session by typing `/exit` or pressing `Ctrl\+C`/`Command\+C` in the terminal. This will stop the model and free up any resources it was using.
+How did it do? Once you're done testing, you can end the session by typing `/exit` or pressing `Ctrl+C`/`Command+C` in the terminal. This will stop the model and free up any resources it was using.
 
 In addition to running a model as an interactive CLI session, you can also run it as a server to integrate with your applications. This allows you to send API requests to the model and get responses programmatically, which is useful for building applications that leverage local AI capabilities.
 
@@ -364,7 +364,7 @@ Let's walk through the FP32 to INT4 quantization process for a different number 
 
 
 * Keep in mind that `0.37` is stored as `0.37000000476837158203125` in FP32, which is represented as `00111110011000000000000000000000` in binary.
-* Also, 4-bit quantization can only represent 16 discrete values (`\[-8, 7\]`). So, we need to determine how to map the range of weights in the model to these 16 values.
+* Also, 4-bit quantization can only represent 16 discrete values (`[-8, 7]`). So, we need to determine how to map the range of weights in the model to these 16 values.
 
 Here are the steps for quantizing `0.37` from FP32 to INT4:
 
@@ -474,7 +474,7 @@ pip install transformers
 
 Next, let's quantize the 0.5B Qwen 2.5 model that we use used before, but this time we'll make it even smaller with Olive and then run it locally on our CPU.
 
-Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory. Note that the `--precision int4` flag tells Olive to apply 4-bit quantization, which can significantly reduce the model size and improve inference speed on CPU, albeit with some loss in accuracy. Also, use caution when running `--trust\_remote\_code` as it allows execution of custom code from the model repository, which can be a security risk if the source is not trusted.
+Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory. Note that the `--precision int4` flag tells Olive to apply 4-bit quantization, which can significantly reduce the model size and improve inference speed on CPU, albeit with some loss in accuracy. In general, use caution when running `--trust_remote_code` as it allows execution of custom code from the model repository, which can be a security risk if the source is not trusted.
 
 ```bash
 olive auto-opt \

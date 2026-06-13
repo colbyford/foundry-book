@@ -1,4 +1,4 @@
-# Agent Management and Governance {#sec-management}
+# Agent Management and Governance {#sec-chapter-7}
 
 Deploying an agent is the beginning, not the end, of your responsibility as an AI engineer. Once an agent is running in production, you need to answer a growing set of operational questions: 
 
@@ -209,9 +209,10 @@ From the inventory table you can:
 - Pause or disable an agent in response to an alert.
 - Surface inline recommendations for configuration improvements.
 
-You can click into any of these assets to see detailed information about its configuration, performance, evaluation results, and guardrail annotations. For example, click on your `python-coder-agent` that you configured as part of the Workflows chapter (or any other Agents), which will take you to the *Monitor* tab of the Agent, as shown in @fig-4282. This shows the estimated cost and total token usage for the filtered time range at the top. Plus, if you scroll down, you'll see several operational metrics such as agent runs, tool calls, error rates, and token usage over time. You can also see evaluation results for this agent, such as the Task Adherence score, which is a measure of how well the agent is sticking to its defined task. 
+You can click into any of these assets to see detailed information about its configuration, performance, evaluation results, and guardrail annotations. For example, click on your `python-coder-agent` that you configured as part of the Workflow exercise in @sec-chapter-6 (or any other Agents), which will take you to the *Monitor* tab of the Agent, as shown in @fig-BE86. This shows the estimated cost and total token usage for the filtered time range at the top. Plus, if you scroll down, you'll see several operational metrics such as agent runs, tool calls, error rates, and token usage over time. You can also see evaluation results for this agent, such as the Task Adherence score, which is a measure of how well the agent is sticking to its defined task. 
 
-![Viewing the Monitor tab of an Agent](figures/am/ss_controlplane_002_clean.png){#fig-4282}
+![Viewing the Monitor tab of an Agent](figures/am/ss_controlplane_003_clean.png){#fig-BE86}
+
 
 Let's see what else we can manage at the Model-level.
 

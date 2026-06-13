@@ -36,10 +36,6 @@ This element indicates a warning or caution.
 
 ## Using Code Examples
 
-<!--
-PROD: Please reach out to author to find out if they will be uploading code examples to oreilly.com or their own site (e.g., GitHub). If there is no code download, delete this whole section. If there is, when you email digidist with the link, let them know what you filled in for title_title (should be as close to book title as possible, i.e., learning_python_2e). This info will determine where digidist loads the files.
--->
-
 Supplemental material (code examples, exercises, etc.) is available for download at <https://github.com/colbyford/foundry-book>.
 
 If you have a technical question or a problem using the code examples, please send email to <support@oreilly.com>.
@@ -51,6 +47,7 @@ We appreciate, but generally do not require, attribution. An attribution usually
 > *Building Agentic Solutions with Microsoft Foundry* by Colby T. Ford (O’Reilly). Copyright 2026 Tuple LLC, 979-8-341-67332-8.
 
 If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at <permissions@oreilly.com>.
+
 
 ## O'Reilly Online Learning
 
@@ -73,11 +70,6 @@ Please address comments and questions concerning this book to the publisher:
 - <support@oreilly.com>  
 - <https://oreilly.com/about/contact.html>
 
-We have a web page for this book, where we list errata and any additional information. You can access this page at:
-
-<https://www.oreilly.com/catalog/errata.csp?isbn=9798341673328>
-
-<!-- Don't forget to update the link above. -->
 
 For news and information about our books and courses, visit <https://oreilly.com>.
 
@@ -85,8 +77,23 @@ Find us on LinkedIn: <https://linkedin.com/company/oreilly-media>
 
 Watch us on YouTube: <https://youtube.com/oreillymedia>
 
+
+::: {.callout-warning}
+## Warning
+
+This book was finished in June 2026 and is based on the state of Microsoft Foundry and related tools at that time. Given the rapid pace of new features that are being developed for Microsoft Foundry, some of the content related to exercises, SDK code, etc. may change a bit by the time you read it. Always refer to the official Microsoft Foundry documentation for the most up-to-date information on features, functionality, and best practices.
+:::
+
+We have a web page for this book, where we list errata and any additional information. You can access this page at:
+
+<https://www.oreilly.com/catalog/errata.csp?isbn=9798341673328>
+
+<!-- Don't forget to update the link above. -->
+
 ## Acknowledgments
 
-Thank you to my peer reviewers who had an uncanny attention to detail and provided valuable (and brutally honest) feedback: Jonah Andersson, Kushaagra Goyal, Jack Lee, Leif Håkan Silfvernagel, Malar K., Samaresh Kumar Singh.
+Writing a book is a team effort, even if there's only one author on the front cover. I am grateful to everyone who contributed to the creation of this book. First and foremost, I want to thank the Microsoft Foundry product team for building such an incredible platform and for their support throughout the writing process. I also want to thank my editors at O'Reilly, including Michelle Smith and Michele Cronin, for their guidance and feedback that helped make this book possible.
 
-<!-- Fill in... -->
+Peer review is an arduous but essential process as it helps to get perspectives (and sanity checks) from outside experts. So, thank you to my peer reviewers who had an uncanny attention to detail and provided valuable (and brutally honest) feedback: Jonah Andersson, Kushaagra Goyal, Jack Lee, Leif Håkan Silfvernagel, Malar K., Samaresh Kumar Singh.
+
+Thank you to my friends, Larry Baker, Bret Myers, and Jonas Elmerraji, for being a sounding board and providing support throughout the writing process. And finally, thank you to Brandon Harper for your unwavering love and support (albeit with slight judgment) as I embarked on the journey of writing this book.

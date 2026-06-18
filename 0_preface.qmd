@@ -46,6 +46,18 @@ We appreciate, but generally do not require, attribution. An attribution usually
 
 > *Building Agentic Solutions with Microsoft Foundry* by Colby T. Ford (O’Reilly). Copyright 2026 Tuple LLC, 979-8-341-67332-8.
 
+
+```bibtex
+@book{ford2026_foundry,
+  author    = {Ford, Colby T.},
+  title     = {Building Agentic Solutions with Microsoft Foundry},
+  publisher = {O'Reilly Media},
+  address   = {Sebastopol, CA},
+  year      = {2026},
+  isbn      = {979-8-341-67332-8}
+}
+```
+
 If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at <permissions@oreilly.com>.
 
 

@@ -147,7 +147,7 @@ Azure will then show a Deployment Overview page, as seen in @fig-CC82, that list
 ![Azure portal - Deployment Overview](figures/in/ss_portal_007_clean.png){#fig-CC82}
 
 
-Once the deployment completes, locate your newly deployed Resource Group in the Azure portal. You'll now see lots of difference resources inside.
+Once the deployment completes, locate your newly deployed Resource Group in the Azure portal. You'll now see lots of different resources inside.
 
 Locate the Foundry Resource and click on it. See @fig-3954.
 
@@ -259,7 +259,7 @@ project = AIProjectClient(
   )
 ```
 
-Once you have this main `project` object, you may with to use the OpenAI-compatible client to call models or run agents programmatically.
+Once you have this main `project` object, you may wish to use the OpenAI-compatible client to call models or run agents programmatically.
 
 ```python
 openai_client = project.inference \

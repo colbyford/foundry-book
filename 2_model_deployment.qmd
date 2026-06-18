@@ -90,7 +90,7 @@ Now that we've explored all that the **Models** page has to offer and learned ho
 
 ##	Deploying your First Model
 
-If you were to try and deploy a Large Language Models (LLM) using infrastructure services in Azure, you would have to first deploy a Virtual Machine (VM) with multiple GPUs, deploy the model using a deployment tool, write the logic for handling the incoming API requests to and from the model, manage the authentication, manage the networking and scaling logic, etc. While this is certainly possible, it's a lot to manage on your own. Microsoft Foundry offers a more managed solution for model deployment that gets you up and running in just a few clicks or a few lines of code. The best part: there's no need to manage the infrastructure at all, which provides enterprise security while eliminating the need for manually maintaining compute resources on your Azure Subscription. Models are consumed through a simple API endpoint.
+If you were to try and deploy a Large Language Model (LLM) using infrastructure services in Azure, you would have to first deploy a Virtual Machine (VM) with multiple GPUs, deploy the model using a deployment tool, write the logic for handling the incoming API requests to and from the model, manage the authentication, manage the networking and scaling logic, etc. While this is certainly possible, it's a lot to manage on your own. Microsoft Foundry offers a more managed solution for model deployment that gets you up and running in just a few clicks or a few lines of code. The best part: there's no need to manage the infrastructure at all, which provides enterprise security while eliminating the need for manually maintaining compute resources on your Azure Subscription. Models are consumed through a simple API endpoint.
 
 ### Exercise: Deploy a Microsoft Phi-4 model
 
@@ -156,7 +156,7 @@ Here are some notes about these parameters:
 * **Presence penalty:** Reduces the chance of repeating a token that has appeared in the text at all so far. Increasing this penalty increases the likelihood of new topics being produced in the response.
 * **Frequency penalty:** Reduces the chance of repeating a token proportionally based on how often it has appeared in the text so far. Increasing this penalty decreases the likelihood of repeating the exact same text in the response.
 
-In the following example, I was able to have Zorki respond with new terms and completely ficticious ingredients, all while keeping the responses short yet pleasant and conversational.
+In the following example, I was able to have Zorki respond with new terms and completely fictitious ingredients, all while keeping the responses short yet pleasant and conversational.
 
 ::: {.callout-tip}
 ## Example
@@ -196,7 +196,7 @@ Ah, the delightful gazorbazorp fruit! A staple in many intergalactic cuisines. H
 Enjoy crafting this celestial delight! 🍕✨
 :::
 
-Spend some time changing these parameters around to see how they affect the responses. Depending on what you what your AI agent to do, tweaking these parameters can help your agent feel more natural or well-suited to the task at hand. Perhaps you want short responses because the AI a shopping helper chatbot on a online retail site or maybe the agent is supposed to help you write marketing materials and thus needs to be more verbose and creative.
+Spend some time changing these parameters around to see how they affect the responses. Depending on what you want your AI agent to do, tweaking these parameters can help your agent feel more natural or well-suited to the task at hand. Perhaps you want short responses because the AI a shopping helper chatbot on a online retail site or maybe the agent is supposed to help you write marketing materials and thus needs to be more verbose and creative.
 
 ::: {.callout-note}
 Any instruction prompts or parameters that you change in the Playground are not saved. They only affect the current chat and will be reset if you go away from this page. When we make an actual Agent out of a Model Deployment, we'll be able to set these items more permanently.

@@ -30,7 +30,7 @@ In the pop up window, give your agent a name and click the **Create** button. I 
 
 ![Giving your new agent a name](figures/ad/ss_agent_002_ann.png){#fig-F1A8}
 
-Similar to the previous section where we exploring a deployed model in its Playground, you'll now be taken to your Agent's Playground. See @fig-C6EC. This Playground has a lot more features and you can save your work.
+Similar to the previous section where we explored a deployed model in its Playground, you'll now be taken to your Agent's Playground. See @fig-C6EC. This Playground has a lot more features and you can save your work.
 
 ![Your real estate Agent's Playground](figures/ad/ss_agent_004_clean.png){#fig-C6EC}
 
@@ -59,7 +59,7 @@ You provide educational guidance only and do not offer legal, tax, or financial 
 Your goal is to help users feel informed and confident while understanding your limitations.
 :::
 
-While this may seem a bit long, in practice, system prompts can much longer and provide detailed instructions as to how the agent should behave. This often includes lines that describes the things it *can* and *can't* say (for example, avoiding giving financial or legal advise). Note that longer prompts to eat into your token usage. So, there's a tradeoff between having a long prompt that helps control the agent very well versus cost efficiency.
+While this may seem a bit long, in practice, system prompts can be much longer and provide detailed instructions as to how the agent should behave. This often includes lines that describes the things it *can* and *can't* say (for example, avoiding giving financial or legal advice). Note that longer prompts eat into your token usage. So, there's a tradeoff between having a long prompt that helps control the agent very well versus cost efficiency.
 
 After you finish pasting in your instructions, click the **Save** button at the top of the screen, as shown in @fig-C18E. Now you can ask it about home prices near where you live. I live in Charlotte, NC, and so it's easy for me to assess if the Agent's response is realistic or not. In my opinion, it did a great job, getting the price range correct and even gave correct nearby neighborhood names. Also, we call our downtown area "Uptown", which it got correct!
 
@@ -145,7 +145,7 @@ While Agent-capable base models like GPT-4.1 and others are very useful out-of-t
 
 ##	Connecting to Data and the Web
 
-To make your AI agents more powerful and useful, you can connect them to various data sources and tools. This enables agents to retrieve real-time information and interact with external systems. In Microsoft Foundry, you'll find dozen of services with prebuilt connectors under under the Tools section of the platform.
+To make your AI agents more powerful and useful, you can connect them to various data sources and tools. This enables agents to retrieve real-time information and interact with external systems. In Microsoft Foundry, you'll find dozens of services with prebuilt connectors under the Tools section of the platform.
 
 In this section, we'll be exploring some popular Tools and connect a few to our real estate Agent we made earlier.
 
@@ -171,7 +171,7 @@ Here are some popular Tools you may want to search for and read about:
 **Third-Party Databases:**
 
 * **MongoDB** - Connect to MongoDB Atlas for admin tasks and to databases for data operations
-* **Elastisearch** - Search, retrieve, and analyze Elasticsearch data
+* **Elasticsearch** - Search, retrieve, and analyze Elasticsearch data
 * **Supabase** - Design Supabase tables, migrations, database branches, and custom APIs
 * **Neon** - Manage and query Neon Postgres databases with natural language
 
@@ -351,7 +351,7 @@ Then, as shown in @fig-A103, click the **OK** button at the bottom of the panel.
 
 Once your database and container have been created, click on **Items** under the **Properties** drop down. See @fig-310E.
 
-At the top of the screen, click the **Upload Item** button. One the panel that opens, browse for the [`data/ch03/properties.json`](https://github.com/colbyford/foundry-book/blob/main/data/ch03/properties.json) file in the accompanying GitHub repository by selecting the folder icon. Lastly, click the **Upload** button.
+At the top of the screen, click the **Upload Item** button. On the panel that opens, browse for the [`data/ch03/properties.json`](https://github.com/colbyford/foundry-book/blob/main/data/ch03/properties.json) file in the accompanying GitHub repository by selecting the folder icon. Lastly, click the **Upload** button.
 
 ![Uploading property records to your database](figures/ad/ss_database_003_ann.png){#fig-310E}
 

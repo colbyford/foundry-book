@@ -8,7 +8,7 @@ When LLMs are trained, they learn from a broad range of data sources to develop 
 
 However, the general knowledge that a model has may not be exactly what you're looking for if you need to use a model for a specific domain, task, or style. For example, if you're building a customer support agent for a software product, you want the model to be familiar with your product's features, common issues, and support policies. If you rely solely on the base model's general training, it may not perform well because it lacks the specific knowledge and context needed to answer questions accurately. This is where fine-tuning comes in.
 
-Fine-tuning allows you to customize pre-trained models with your own data to improve performance on specific tasks or domains. This process adapts the model's behavior to better align with your use case while maintaining the model's general capabilities. Also, fine tuning requires far less data and compute than training an entire model from scratch. You likely don't have trillions of tokens to train on, but you can often achieve significant improvements with just a few hundred or thousand examples that are relevant to your specific use case.
+Fine-tuning allows you to customize pre-trained models with your own data to improve performance on specific tasks or domains. This process adapts the model's behavior to better align with your use case while maintaining the model's general capabilities. Also, fine-tuning requires far less data and compute than training an entire model from scratch. You likely don't have trillions of tokens to train on, but you can often achieve significant improvements with just a few hundred or thousand examples that are relevant to your specific use case.
 
 In Microsoft Foundry, you can fine-tune models using custom training datasets that you upload to the platform. The fine-tuning process involves providing examples of inputs and desired outputs, which the model uses to learn how to respond in a way that is more relevant to your specific needs.
 
@@ -156,7 +156,7 @@ Play around with asking the model different medical questions to see how it resp
 For me, my fine-tuned model performs well and correctly tells users to consult medical professionals for personalized advice. It seems to provide succinct, but helpful and accurate information about common medical conditions when asked relevant questions. However, if I ask a question that is outside of the knowledge in the training dataset, such as "Can you tell me the genetic mutations that cause Gomorgazan's disease of the heart?" (which isn't real), the model correctly responds with "I'm sorry, I don't have information on that topic." This shows that the model has learned to provide accurate information within its domain of expertise while also recognizing when a question is outside of its knowledge and responding according to its instructions.
 
 
-### Fine Tuning with the CLI
+### Fine-Tuning with the CLI
 
 You may have noticed that we uploaded the `*_mini.jsonl` versions of the training and validation datasets. This is because the UI has a 30 second timeout window for uploading your dataset in the browser. Alternatively, you can use the Foundry CLI to run fine-tuning jobs with larger datasets. The CLI does not have the same timeout constraints as the UI, so you can upload and use larger datasets this way.
 

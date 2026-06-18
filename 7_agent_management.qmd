@@ -184,7 +184,7 @@ The *Foundry Control Plane* is the layer above the individual models and Agents 
 
 Up until this point in the book, we've mainly been operating under the *Build* section of the Foundry Portal. Now, navigate to the *Operate* section in the top-right toolbar of the Foundry Portal, as shown in @fig-5103. This is where the Control Plane functionality lives, and where you can access all of its fleet management capabilities.
 
-![The Conrol Plane's Operate page of the Foundry UI](figures/am/ss_controlplane_001_ann.png){#fig-5103}
+![The Control Plane's Operate page of the Foundry UI](figures/am/ss_controlplane_001_ann.png){#fig-5103}
 
 This dashboard surfaces cost and performance data across your fleet. Key metrics may include:
 
@@ -243,7 +243,7 @@ Click on the *Quotas* tab in the left-hand menu of the *Operate* tab, as shown i
 
 ![Viewing the Quotas table in the Control Plane](figures/am/ss_quotas_001_ann.png){#fig-34A7}
 
-Click on one of the models that you have deployed. This will open a panel that show the current deployment details, including the current quote and some statistics around token usage and rate limit hits over the last week. If you click the *Edit* button, you can modify the tokens per minute (TPM) value and grant more/less quota allocation to the model. Click the *Save* button to save your changes.
+Click on one of the models that you have deployed. This will open a panel that show the current deployment details, including the current quota and some statistics around token usage and rate limit hits over the last week. If you click the *Edit* button, you can modify the tokens per minute (TPM) value and grant more/less quota allocation to the model. Click the *Save* button to save your changes.
 
 ![Editing the quota for a model](figures/am/ss_quotas_002_ann.png){#fig-C4B3}
 

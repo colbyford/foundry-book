@@ -154,7 +154,7 @@ Locate the Foundry Resource and click on it. See @fig-3954.
 ![Azure portal - Resource Group of Foundry-related Resources](figures/in/ss_portal_008_ann.png){#fig-3954}
 
 
-On the Foundry Resource page, this is where you can manage various components of the service. For example, you can control who has access using RBAC, limit network access, view and rotate access keys, view some metrics, and more. For now, simply click the **Go to Foundry portal** on the **Overview** page, as show in @fig-A959.
+On the Foundry Resource page, this is where you can manage various components of the service. For example, you can control who has access using RBAC, limit network access, view and rotate access keys, view some metrics, and more. For now, simply click the **Go to Foundry portal** on the **Overview** page, as shown in @fig-A959.
 
 ![Azure portal - Foundry Resource](figures/in/ss_portal_009_ann.png){#fig-A959}
 

@@ -130,7 +130,7 @@ Navigate to the Azure Portal and find your Storage Account (mine was called `stf
 ![Creating a new Container in Azure Storage](figures/kb/ss_storage_001_ann.png){#fig-82FA}
 
 
-Create a new directory by clicking the *+ Add directory* button and name it `ch04/_docs`. (This will actually create two directories, one under the other.) Click through the newly created `ch04` and `finance_docs` directories, and then click the *Upload* button to upload files into this directory. Select all of the files from the [data/ch04/finance_docs](https://github.com/colbyford/foundry-book/blob/main/data/ch04/finance_docs/) folder to upload them to the container. See @fig-72EE for an example of what this should look like once the files are uploaded.
+Create a new directory by clicking the *+ Add directory* button and name it `ch04/finance_docs`. (This will actually create two directories, one under the other.) Click through the newly created `ch04` and `finance_docs` directories, and then click the *Upload* button to upload files into this directory. Select all of the files from the [data/ch04/finance_docs](https://github.com/colbyford/foundry-book/blob/main/data/ch04/finance_docs/) folder to upload them to the container. See @fig-72EE for an example of what this should look like once the files are uploaded.
 
 ![Uploading the financial reports to Azure Storage](figures/kb/ss_storage_002_ann.png){#fig-72EE}
 
@@ -153,7 +153,7 @@ Next, we have some scenario options. There is a *RAG* option that is optimized f
 ![Selecting the Keyword search scenario](figures/kb/ss_search_003_ann.png){#fig-9637}
 
 
-On the *Connect to your data* page, select the Azure Storage Account and container where you uploaded the financial documents in Part 1. Definite the *Blob folder* as `ch04/finance_docs` and leave the *Parsing mode* as `Default`, as shown in @fig-20C0. Then, click the *Next* button at the bottom of the page.
+On the *Connect to your data* page, select the Azure Storage Account and container where you uploaded the financial documents in Part 1. Define the *Blob folder* as `ch04/finance_docs` and leave the *Parsing mode* as `Default`, as shown in @fig-20C0. Then, click the *Next* button at the bottom of the page.
 
 ![Connecting to data for the Keyword search](figures/kb/ss_search_004_clean.png){#fig-20C0}
 

@@ -1,6 +1,6 @@
 # Local Inferencing and Edge-Deployed AI {#sec-chapter-8}
 
-In this chapter, we will learn about local model inferencing through Foundry Local. We will also walk through the process of preparing and running models from Hugging Face locally on your laptop. Technically, for many of the open-source models available on repositories like Hugging Face, you can run them locally using inferencing logic built on the *Transformers* framework or using PyTorch directly without any optimization or special deployment logic. However, even when a model runs, it may not be running as best as it could. In production, AI engineers may need set up tokenizer handling, chat templates, KV cache management, quantization, execution providers, memory planning, batching strategies, etc. to get optimal performance.
+In this chapter, we will learn about local model inferencing through Foundry Local. We will also walk through the process of preparing and running models from Hugging Face locally on your laptop. Technically, for many of the open-source models available on repositories like Hugging Face, you can run them locally using inferencing logic built on the *Transformers* framework or using PyTorch directly without any optimization or special deployment logic. However, even when a model runs, it may not be running as best as it could. In production, AI engineers may need to set up tokenizer handling, chat templates, KV cache management, quantization, execution providers, memory planning, batching strategies, etc. to get optimal performance.
 
 Thus, if we don't wish to manage the complexities of inferencing logic and want to ensure optimal performance on our hardware, using local inferencing tools like Foundry Local and optimization pipelines like Olive can make the process much easier and more efficient. Planning for different hardware capabilities and optimizing models accordingly is crucial for a good experience when running AI models locally, especially as model sizes and capabilities continue to grow.
 
@@ -472,7 +472,7 @@ pip install olive-ai[cpu]
 pip install transformers
 ```
 
-Next, let's quantize the 0.5B Qwen 2.5 model that we use used before, but this time we'll make it even smaller with Olive and then run it locally on our CPU.
+Next, let's quantize the 0.5B Qwen 2.5 model that we used before, but this time we'll make it even smaller with Olive and then run it locally on our CPU.
 
 Run the following command to let Olive handle the optimization for you. This will download the model from Hugging Face, apply quantization and other optimizations, and save the optimized model to your local directory. Note that the `--precision int4` flag tells Olive to apply 4-bit quantization, which can significantly reduce the model size and improve inference speed on CPU, albeit with some loss in accuracy. In general, use caution when running `--trust_remote_code` as it allows execution of custom code from the model repository, which can be a security risk if the source is not trusted.
 
@@ -495,7 +495,7 @@ As shown in @fig-C0FB, Olive will automatically pull the model weights and token
 ![Quantization of Qwen 2.5 0.5B for CPU inference using Olive](figures/ed/ss_olive_001_clean.png){#fig-C0FB}
 
 
-Then, there are just a few more steps to run the custom model from HuggingFace using the Foundry Local CLI in your terminal. You'll need to move the optimized model files into a folder and set it as the Foundry Local cache directory. Then,then you can run it just like any other model in the Foundry catalog. The commands below show how to do this. Make sure to adjust the paths if your setup is different.
+Then, there are just a few more steps to run the custom model from HuggingFace using the Foundry Local CLI in your terminal. You'll need to move the optimized model files into a folder and set it as the Foundry Local cache directory. Then, you can run it just like any other model in the Foundry catalog. The commands below show how to do this. Make sure to adjust the paths if your setup is different.
 
 ```bash
 ## Go into the models/ directory

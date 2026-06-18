@@ -402,4 +402,4 @@ Workflows are the orchestration tier that sits above individual agents. They let
 
 The most important design discipline with workflows is to resist the temptation to push control-flow logic into agent prompts. Prompts are for language and result in probabilistic outcomes, whereas the workflow is for codifying more deterministic logic. In other words, prompts can express task instructions, tool use, and guidelines, but deterministic routing, approval flows, and retry logic can more reliably live in the workflow. Keep them separate and your workflows will be easier to test, debug, and audit.
 
-In the next chapter, we will will dive deeper into how to manage and monitor your deployed agents and workflows, including best practices for versioning, governing, and rolling out updates with confidence.
+In the next chapter, we will dive deeper into how to manage and monitor your deployed agents and workflows, including best practices for versioning, governing, and rolling out updates with confidence.

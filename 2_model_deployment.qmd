@@ -2,7 +2,7 @@
 
 In this chapter, we'll learn how to deploy models in Microsoft Foundry. Models are brains of any AI agentic solution, so picking the right model for your use case and knowing how to deploy it are critical first steps in building agentic solutions.
 
-Microsoft Foundry provides a wide variety of models that you can deploy with just a few clicks or lines of code. You can choose from popular proprietary models from  OpenAI and Anthropic, Microsoft-built models like Phi-4, and even open-source models from Hugging Face. In addition to the variety, Foundry also provides tools to help you compare models across various benchmarks and metrics to help you pick the best model for your specific use case. Once you've picked a model, you can deploy it in just a few minutes without needing to manage any infrastructure. After deployment, you'll then be able to interact with your model through an API endpoint or through the built-in Playground in the Foundry portal.
+Microsoft Foundry provides a wide variety of models that you can deploy with just a few clicks or lines of code. You can choose from popular proprietary models from  OpenAI and Anthropic, Microsoft-built models like Phi-4 and MAI-Thinking-1, and even open-source models from Hugging Face. In addition to the variety, Foundry also provides tools to help you compare models across various benchmarks and metrics to help you pick the best model for your specific use case. Once you've picked a model, you can deploy it in just a few minutes without needing to manage any infrastructure. After deployment, you'll then be able to interact with your model through an API endpoint or through the built-in Playground in the Foundry portal.
 
 ## Explore Models in the Foundry Portal
 
@@ -24,7 +24,7 @@ Once you're done browsing the Discover page, click on **Models** on the left-han
 
 This will take you to the full list of models currently available in Foundry. There are currently over 10,000 models that you can deploy and the list is continuously growing. You'll quickly notice that Foundry isn't just for LLMs. There are models for image generation, audio generation, document analysis, text classification, 3D object generation, translations, and even protein modeling!
 
-On this page, you can filter by source (the company or group that produced the model), capabilities (like reasoning or if the model can accept images as an input), inferencing task (such as text or image generation), and other features. Spend some time playing with these filters and exploring the vast variety models that you can deploy with Foundry. See @fig-3E3C for an example of what the model catalog looks like.
+On this page, you can filter by source (the company or group that produced the model), capabilities (like reasoning or if the model can accept images as an input), inferencing task (such as text or image generation), and other features. Spend some time playing with these filters and exploring the vast variety of models that you can deploy with Foundry. See @fig-3E3C for an example of what the model catalog looks like.
 
 ![Listing all available models in Foundry](figures/md/ss_discover_002_clean.png){#fig-3E3C}
 
@@ -35,7 +35,7 @@ As you're exploring, you may be overwhelmed with the number of choices that you 
 
 At the top right of the screen, shown in @fig-767C, you'll notice two buttons: **View leaderboard** and **Compare models**. Click on the **Compare models** button.
 
-![Locating the Compare models button](figures/md/ss_compare_001_ann.png){#fig-767C}
+![Locating the "Compare models" button](figures/md/ss_compare_001_ann.png){#fig-767C}
 
 
 On the **Compare models** screen, shown in @fig-68E2, you can compare up to three different models across various benchmarks (e.g., quality, safety, costs, and throughput). Click any of the dropdown boxes and select three different models. You can also look at the differences in what the models accept as inputs and produce as outputs along with metrics about their context size. This is helpful if you're trying to figure out which model you should deploy for a given use case. I find this especially helpful when choosing between versions of the same base model with confusing names/suffixes (for example, `gpt-5.2` vs. `gpt-5.2-chat` vs. `gpt-5.2-codex`). 
@@ -45,9 +45,9 @@ On the **Compare models** screen, shown in @fig-68E2, you can compare up to thre
 
 Once you've gotten familiar with the model comparison tool, go back to the **Models** page and click on the **View leaderboard** button. See @fig-4BC0.
 
-![Locating the View leaderboard button](figures/md/ss_leaderboard_001_ann.png){#fig-4BC0}
+![Locating the "View leaderboard" button](figures/md/ss_leaderboard_001_ann.png){#fig-4BC0}
 
-On this page, you can see how different models rank across the same benchmarks you saw in the model comparison screen: quality, safety, cost, and throughput.
+On this page, you can see how different models rank across the same benchmarks you saw in the model comparison screen (quality, safety, cost, and throughput).
 
 - **Quality:** An index across various benchmark tests that evaluate how well a model performs on core tasks such as reasoning, knowledge, question answering, math, and coding. (Higher is better/more capable.)
 - **Safety:** A score that indicates the success rate of attack prompts causing the model to produce harmful or disallowed responses. For example, producing hate speech or leaking copyrighted material. (Lower is better/safer.)
@@ -59,14 +59,14 @@ You can see the leaderboard in @fig-7953 that shows `gpt-5.2-codex` at the top f
 ![Exploring the model leaderboard](figures/md/ss_leaderboard_002_clean.png){#fig-7953}
 
 
-This is a good page to visit often to see at how the latest models stack up to their predecessor version or competitor models.
+This is a good page to visit often to see how the latest models stack up to their predecessor version or competitor models.
 
-Clicking on any of the models will take you to the model's page where you can learn more. On the **Benchmarks** tab, as shown in @fig-2BD9, you can see the benchmarking data for a model. Often, this benchmarking is performed by Microsoft, but they also post publish other public benchmarks of the model if available.
+Clicking on any of the models will take you to the model's page where you can learn more. On the **Benchmarks** tab, as shown in @fig-2BD9, you can see the benchmarking data for a model. Often, this benchmarking is performed by Microsoft, but they also publish other public benchmarks of the model here if available.
 
 ![More details about a model's benchmark performance](figures/md/ss_leaderboard_003_ann.png){#fig-2BD9}
 
 
-Scrolling down on this page, you'll find the more detailed view of the summary metrics from before, including more drilled-down results for the overall composite scores. See @fig-F14D below.
+Scrolling down on this page, you'll find the more detailed view of the summary metrics from before, including more drilled-down results for the overall composite scores. See @fig-F14D.
 
 ![Metric details across various model benchmarks](figures/md/ss_leaderboard_004_clean.png){#fig-F14D}
 
@@ -75,7 +75,7 @@ This is a good place to look at the specific aspects that are important to your 
 
 When choosing a model, consider:
 
-* **Task requirements** - Different models excel at different tasks (chat, completion, reasoning, coding, embedding, etc.)
+* **Task requirements** - Different models excel at different tasks (chat, completion, reasoning, coding, embedding, etc.).
 * **Context window size** - The maximum amount of information a model can take in at once. 
 * **Performance vs. cost** - Larger models typically offer better capabilities but at higher cost.
 * **Latency/throughput requirements** - Latency refers to the delay in response time, while throughput refers to the number of requests processed per unit time. Some deployment options offer lower latency and higher throughput than others.
@@ -88,13 +88,13 @@ From a model's page, you can also see any deployments of the model that have bee
 
 Now that we've explored all that the **Models** page has to offer and learned how to compare and select between models, it's time to finally deploy our first model!
 
-##	Deploying your First Model
+##	Deploying Your First Model
 
 If you were to try and deploy a Large Language Model (LLM) using infrastructure services in Azure, you would have to first deploy a Virtual Machine (VM) with multiple GPUs, deploy the model using a deployment tool, write the logic for handling the incoming API requests to and from the model, manage the authentication, manage the networking and scaling logic, etc. While this is certainly possible, it's a lot to manage on your own. Microsoft Foundry offers a more managed solution for model deployment that gets you up and running in just a few clicks or a few lines of code. The best part: there's no need to manage the infrastructure at all, which provides enterprise security while eliminating the need for manually maintaining compute resources on your Azure Subscription. Models are consumed through a simple API endpoint.
 
-### Exercise: Deploy a Microsoft Phi-4 model
+### Exercise: Deploy a Microsoft Phi-4 Model
 
-We'll deploy a Microsoft Phi-4 model and then turn it into an agent. Phi-4 is an open-source, decoder-only transformer model from Microsoft Research. It is a 14-billion parameter model that was trained on a blend of synthetic datasets, data from websites in the public domain, academic books, and Q&A datasets. Phi-4 is a good foundation model to start with as it is quite fast and capable for its size and costs less than other models that are larger and/or proprietary.
+We'll deploy a Microsoft Phi-4 model and then turn it into an agent. Phi-4 is an open-source, decoder-only transformer model from Microsoft Research. It's a 14-billion parameter model that was trained on a blend of synthetic datasets, data from websites in the public domain, academic books, and Q&A datasets. Phi-4 is a good foundation model to start with as it's quite fast and capable for its size and costs less than other models that are larger and/or proprietary.
 
 To start, navigate back to the **Models** page in the Foundry portal.
 
@@ -102,9 +102,9 @@ Search for "Phi-4" in the model catalog. Click on the `Phi-4` option (not `Phi-4
 
 ![Searching for the Phi-4 model](figures/md/ss_deploy_001_ann.png){#fig-FF9}
 
-You can read more about the Phi-4 model, its benchmark performance, etc. When you're ready to deploy, click the **Deploy** button in the top right.
+You can read more about the Phi-4 model, its benchmark performance, etc. When you're ready to deploy, click the **Deploy** button in the top right, as shown in @fig-FFED.
 
-There are two options: **Default settings** and **Custom settings**. Go with the **Default settings**, as shown in @fig-FFED.
+There are two options: **Default settings** and **Custom settings**. Go with the **Default settings**.
 
 If you had chosen **Custom settings**, it allows you to specify the version of Phi-4 to deploy and which Guardrails to use. We'll learn more about Guardrails in @sec-chapter-7.
 
@@ -116,7 +116,7 @@ A box will pop up that allows you to read the terms of the consumption-based dep
 ![Agreeing to the terms for deploying Phi-4](figures/md/ss_deploy_003_ann.png){#fig-6FE0}
 
 
-The deployment process should only take a couple minutes, and you'll be brought to the **Playground** page for the Phi-4 deployment. The Playground for my deployed model is shown in @fig-925F below. 
+The deployment process should only take a couple minutes, and you'll be brought to the **Playground** page for the Phi-4 deployment. The Playground for my deployed model is shown in @fig-925F. 
 
 ![Playground UI for experimenting with a Phi-4 deployment](figures/md/ss_deploy_004_clean.png){#fig-925F}
 
@@ -130,27 +130,27 @@ As shown in @fig-6E5B, follow these steps:
 
 1. Enter a system message in the **Instructions** box: `You are an alien named Zorki from outer space who wants to share some out of this world recipes.`
 2. Try a sample prompt in the **Chat with the model...** input: `Do you have any good recipes for an intergalactic pizza?`
-3. Review the model's response
+3. Review the model's response.
 
 ![Learning to make intergalactic pizza](figures/md/ss_deploy_005_clean.png){#fig-6E5B}
 
-As you can see, we can modify the model's behavior by simply giving a few of instructions. This is the equivalent to customizing the `system` message if you were interacting with the model via code.
+As you can see, we can modify the model's behavior by simply giving a few instructions. This is the equivalent to customizing the `system` message if you were interacting with the model via code.
 
 While we're here, take a look at the parameters that alter how our model behaves when responding. 
 
-Click on the **Parameters** icon button to the right of the model name. Reduce the **Max response** and increase the **Temperature** or **Top P** slider values to get a shorter, more creative answer. See @fig-3FDF to see what values I chose.
+Click on the **Parameters** icon to the right of the model name. Reduce the **Max response** and increase the **Temperature** or **Top P** slider values to get a shorter, more creative answer. See @fig-3FDF to see what values I chose.
 
 ![Modifying model parameters](figures/md/ss_deploy_006_ann.png){#fig-3FDF}
 
 
 This time, our alien friend Zorki gave me a more interstellar recipe with slightly less realistic items. See @fig-C260. Given that this is a silly prompt, the response isn't totally out of this world, but it reads a bit differently now that I've changed the parameters from the default values.
 
-![A slightly more martian pizza recipe](figures/md/ss_deploy_008_clean.png){#fig-C260}
+![A slightly more Martian pizza recipe](figures/md/ss_deploy_008_clean.png){#fig-C260}
 
 
 Here are some notes about these parameters:
 
-* **Max response:** Sets a limit on the number of tokens that can be generated in the model response. This goes hand-in-hand with the model's context window limits as the number of tokens is shared between the prompt (system message, examples, message history, and user query) and the model's latest response.
+* **Max response:** Sets a limit on the number of tokens that can be generated in the model response. This goes hand in hand with the model's context window limits as the number of tokens is shared between the prompt (system message, examples, message history, and user query) and the model's latest response.
 * **Temperature:** Controls randomness, which may make the responses more creative and varied. Lowering the temperature means that the model will produce more repetitive and deterministic responses.
 * **Top P:** Also controls randomness, but uses a different method. Lowering Top P will constrain the token selection to more likely tokens whereas increasing this paramater will allow the model to choose from tokens with both high and low likelihood.
 * **Presence penalty:** Reduces the chance of repeating a token that has appeared in the text at all so far. Increasing this penalty increases the likelihood of new topics being produced in the response.
@@ -183,7 +183,7 @@ Ah, the delightful gazorbazorp fruit! A staple in many intergalactic cuisines. H
 2. **Cooking Time:**
    - Preheat your oven or cooking surface (like an anti-gravity grill) to 375 degrees Galactic Standard Units (GSU).
    
-3. **Roasting Gazobrazorps:**
+3. **Roasting Gazorbazorps:**
    - Place slices on a baking sheet lined with parchment paper from Xylophar-7 leaves.
    - Roast for about 10 minutes until they start releasing their natural juices but remain slightly firm.
 
@@ -196,7 +196,7 @@ Ah, the delightful gazorbazorp fruit! A staple in many intergalactic cuisines. H
 Enjoy crafting this celestial delight! 🍕✨
 :::
 
-Spend some time changing these parameters around to see how they affect the responses. Depending on what you want your AI agent to do, tweaking these parameters can help your agent feel more natural or well-suited to the task at hand. Perhaps you want short responses because the AI a shopping helper chatbot on a online retail site or maybe the agent is supposed to help you write marketing materials and thus needs to be more verbose and creative.
+Spend some time changing these parameters around to see how they affect the responses. Depending on what you want your AI agent to do, tweaking these parameters can help your agent feel more natural or well-suited to the task at hand. Perhaps you want short responses because the AI is a shopping helper chatbot on an online retail site or maybe the agent is supposed to help you write marketing materials and thus needs to be more verbose and creative.
 
 ::: {.callout-note}
 Any instruction prompts or parameters that you change in the Playground are not saved. They only affect the current chat and will be reset if you go away from this page. When we make an actual Agent out of a Model Deployment, we'll be able to set these items more permanently.
@@ -215,11 +215,11 @@ On the **Details** tab, shown in @fig-AFD2, you'll find:
 
 There's also the **Monitor** tab, where you can see the number of requests and tokens used, and the **Evaluation** tab, where we can see how well the model performs against specific tests (e.g., custom chat completions). We'll talk more about monitoring and evaluation in @sec-chapter-7.
 
-Now that you know how to deploy a model, such as Phi-4, you're now ready to create your first Agent once we get to @sec-chapter-3!
+Now that you know how to deploy a model, such as Phi-4, you're ready to create your first Agent once we get to @sec-chapter-3!
 
 ## Deploying Models with the Azure CLI
 
-While the Foundry portal makes it easy to visually browse through and deploy various model, you can also explore and deploy models using the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli). This is helpful in scenarios where you might want to automating deployments or integrating into CI/CD pipelines.
+While the Foundry portal makes it easy to visually browse through and deploy various models, you can also explore and deploy models using the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli). This is helpful in scenarios where you might want to automate deployments or integrate into CI/CD pipelines.
 
 First, we can list all the models that are available in our Foundry Resource with the following command. (Make sure to replace the placeholders with your actual resource names.)
 
@@ -295,5 +295,5 @@ Inferencing through the API endpoint is the same experience regardless of whethe
 
 In this chapter, we showcased the breadth of models available in Foundry, including models from Azure OpenAI, Microsoft-built models, other third-party offerings, and open-source models from Hugging Face, highlighting Foundry's role as a central hub for model exploration and deployment. You were introduced to the Foundry portal UI, its navigation structure, and how it supports the full AI lifecycle from discovery and building to operation and governance. Plus, we showed how easy it is to deploy your first model and interact with it in the Model Playground.
 
-Now that you know how to deploy models in your Foundry Project, we'll put those skill to use in deploying another model to build an Agent. 
+Now that you know how to deploy models in your Foundry Project, we'll put those skills to use in deploying another model to build an Agent. 
 The next chapter will be covering how to deploy Agents and connect them to tools to make them specialized and more capable. Let's go!

@@ -15,7 +15,7 @@ In Foundry, agents are designed to go beyond single responses and actively carry
 
 In this next section, we will be creating an agent that will help us with real estate tasks. I guess we can call it a "real estate agent"!
 
-To start, navigate to the **Agents** page on the left side of the screen (under the **Build** section of the Foundry Portal). If no one has deployed an Agent in your current Foundry Project, then you won't see anything listed. Click the **Create agent** button in the center of the screen, as shown in @fig-1BC.
+To start, navigate to the **Agents** page on the left side of the screen (under the **Build** section of the Foundry portal). If no one has deployed an Agent in your current Foundry Project, then you won't see anything listed. Click the **Create agent** button in the center of the screen, as shown in @fig-1BC.
 
 ![Creating an agent from the Agents tab](figures/ad/ss_agent_001_ann.png){#fig-1BC}
 
@@ -26,7 +26,7 @@ If you are using a Project where someone has already deployed an Agent, your **C
 ![Listing all Agents in your Project](figures/ad/ss_agent_003_ann.png){#fig-61A5}
 :::
 
-In the pop up window, give your agent a name and click the **Create** button. I called mine `my-real-estate-agent`, as shown in @fig-F1A8.
+In the pop-up window, give your agent a name and click the **Create** button. I called mine `my-real-estate-agent`, as shown in @fig-F1A8.
 
 ![Giving your new agent a name](figures/ad/ss_agent_002_ann.png){#fig-F1A8}
 
@@ -61,7 +61,7 @@ Your goal is to help users feel informed and confident while understanding your 
 
 While this may seem a bit long, in practice, system prompts can be much longer and provide detailed instructions as to how the agent should behave. This often includes lines that describes the things it *can* and *can't* say (for example, avoiding giving financial or legal advice). Note that longer prompts eat into your token usage. So, there's a tradeoff between having a long prompt that helps control the agent very well versus cost efficiency.
 
-After you finish pasting in your instructions, click the **Save** button at the top of the screen, as shown in @fig-C18E. Now you can ask it about home prices near where you live. I live in Charlotte, NC, and so it's easy for me to assess if the Agent's response is realistic or not. In my opinion, it did a great job, getting the price range correct and even gave correct nearby neighborhood names. Also, we call our downtown area "Uptown", which it got correct!
+After you finish pasting in your instructions, click the **Save** button at the top of the screen, as shown in @fig-C18E. Now you can ask it about home prices near where you live. I live in Charlotte, NC, and so it's easy for me to assess whether the Agent's response is realistic or not. In my opinion, it did a great job, getting the price range correct and even gave correct nearby neighborhood names. Also, we call our downtown area "Uptown," which it got correct!
 
 ![Giving the real estate Agent instructions](figures/ad/ss_agent_005_ann.png){#fig-C18E}
 
@@ -98,14 +98,14 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 - Description: Experience the pinnacle of refined luxury in the "Maple Expanded" by the acclaimed VISTA HOMES Charlotte, featuring bespoke interiors curated by Stephanie's Interior Design. This 5BR/3BA masterpiece is defined by soaring 10ft ceilings and expansive windows that bathe the open-concept layout in natural light. Flawless craftsmanship shines through elegant coffered ceilings and designer lighting, while the gourmet kitchen serves as a culinary sanctuary with LG Signature Kitchen Suite (SKS) appliances, ceiling-height cabinetry, and seamless Quartz surfaces. Functional elegance abounds in the custom-milled "Family Entry" and spa-inspired Primary Suite. Set on a rare 0.40-acre cul-de-sac homesite in Merry Oaks, you are minutes from the vibrant Plaza Midwood and Uptown Charlotte. Transition seamlessly to the oversized covered porch for year-round entertaining. Don’t let this rare opportunity pass you by. Contact us today to schedule your private appointment of XXXX Ferguson Court.
 :::
 
-For me, the generated post is pretty good! See @fig-1600. In line with other catchy Instagram posts I've seen for houses that are for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
+For me, the generated post is pretty good! See @fig-1600. In line with other catchy Instagram posts I've seen for houses that are for sale, the output is a shorter, emoji-heavy blurb complete with a call to action and hashtags. Not bad for a first try! Feel free to ask the Agent much harder tasks such as comparing home prices, preparing an offer to buy, or construction issues to look out for.
 
 <!-- ![The Agent's Instagram post](figures/ad/ss_agent_008_clean.png){#fig-96D3} -->
 ![The Agent's Instagram post](figures/ad/ss_agent_008_cens_clean.png){#fig-1600}
 
 
 
-Next, I would like to show you a limitation with our current Agent. In the preview app, if we paste in a URL to the Zillow.com page where the house is listed, it will act like it read the page and used it to form the response. For example, find a house online and use the prompt below with your Agent.
+Next, I would like to show you a limitation with our current Agent. In the preview app, if we paste in a URL to the Zillow.com page where the house is listed, it will act like it read the page and used it to form the response. For example, find a house online and use the follwing prompt with your Agent.
 
 ::: {.callout-tip}
 ## Prompt
@@ -114,7 +114,7 @@ Can you help me draft an Instagram post to advertise this house that I'm selling
 (PASTE URL HERE)
 :::
 
-It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac", none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct. See @fig-5F6F.
+It responds confidently that this is an "updated 3-bed, 2-bath bungalow that sits on a quiet cul-de-sac," none of which is true. It did, however, get the "Plaza Midwood" neighborhood correct. See @fig-5F6F.
 
 <!-- ![The Agent failing to read from the web](figures/ad/ss_agent_008b_clean.png){#fig-CF22} -->
 ![The Agent failing to read from the web](figures/ad/ss_agent_008b_cens_clean.png){#fig-5F6F}
@@ -124,21 +124,21 @@ This is because our Agent doesn't yet have access to perform web searches. We wi
 
 Once you're done playing with the preview app, return to the Agent tab.
 
-Next, we can publish the Agent, which will give it its own URL and make it shareable on Microsoft 365 apps like Teams. As shown in @fig-C1DB, click the **Publish** dropdown top of the screen and select **Publish Agent**.
+Next, we can publish the Agent, which will give it its own URL and make it shareable on Microsoft 365 apps like Teams. As shown in @fig-C1DB, click the **Publish** dropdown at the top of the screen and select **Publish Agent**.
 
 ![Publishing your Agent](figures/ad/ss_agent_009_ann.png){#fig-C1DB}
 
-You'll see a pop up window that describes what publishing means, shown in @fig-54E0. Once you're done reading, click the **Publish** button.
+You'll see a pop-up window that describes what publishing means, shown in @fig-54E0. Once you're done reading, click the **Publish** button.
 
 ![Making your Agent production-ready](figures/ad/ss_agent_010_ann.png){#fig-54E0}
 
-Publishing only takes a few second and then you'll see a pop up window that gives you the URL for the published Agent. You also have the option to publish to Teams and Microsoft 365 Copilot. For now, click the **X** to exit this pop up. See @fig-C900.
+Publishing only takes a few seconds and then you'll see a pop-up window that gives you the URL for the published Agent. You also have the option to publish to Teams and Microsoft 365 Copilot. For now, click the **X** to exit this pop-up. See @fig-C900.
 
 ![Your Agent was published successfully](figures/ad/ss_agent_011_clean.png){#fig-C900}
 
 You have now published your first (real estate) Agent!
 
-While Agent-capable base models like GPT-4.1 and others are very useful out-of-the-box and have lots of built-in knowledge, we can make these Agents even smarter by connecting them to tools and data. As you saw earlier with the web search limitation, there are plenty of things we can enhance to make this Agent more complete and useful.
+While agent-capable base models like GPT-4.1 and others are very useful out of the box and have lots of built-in knowledge, we can make these Agents even smarter by connecting them to tools and data. As you saw earlier with the web search limitation, there are plenty of things we can enhance to make this Agent more complete and useful.
 
 
 {{< pagebreak >}}
@@ -200,12 +200,12 @@ Here are some popular Tools you may want to search for and read about:
 * **Computer Use** - Performing tasks by interacting with computer systems and applications
 * **Browser Automation** - Automate browser-based workflow such as navigating pages, filling forms, and booking items
 
-There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are limited in purpose and operate as triggers to perform a specific task. For example, there is a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
+There are also many "Custom" Tools that are actually just wrappers for existing Logic App connectors that have been made available in Foundry. Many of these are limited in purpose and operate as triggers to perform a specific task. For example, there's a custom Tool for Adobe Acrobat Sign that allows an Agent to send out an agreement for someone to sign and then the Agent can also monitor its status.
 
 
 After you've spent some time exploring all the Tools that are now available at your fingertips, let's go back to our real estate Agent and give it some more capabilities.
 
-### Exercise: Let your Agent Search the Web
+### Exercise: Let Your Agent Search the Web
 
 As you noticed earlier, though we had pasted in a URL for the Agent to read and base the Instagram post on, it could not actually browse the web. Thus, it hallucinated a response based on only the embedded information available in the model. Let's connect it to the Web Search Tool so that it can actually visit the URLs we give it.
 
@@ -217,14 +217,14 @@ Under the **Tools** dropdown (located under the Instructions box, not on the lef
 
 ![Adding a Tool to your Agent](figures/ad/ss_tools_003_ann.png){#fig-B13E}
 
-In the **Select a tool** pop up window, shown in @fig-8118, click on the **Web search** item and then click the **Add tool** button at the bottom.
+In the **Select a tool** pop-up window, shown in @fig-8118, click on the **Web search** item and then click the **Add tool** button at the bottom.
 
-![Selecting the Web search Tool](figures/ad/ss_tools_004_ann.png){#fig-8118}
+![Selecting the "Web search" Tool](figures/ad/ss_tools_004_ann.png){#fig-8118}
 
 
 If this is the first time someone in your Project has used this Tool, you may see another screen (shown in @fig-1115) to accept its terms. This is mainly a notification that this tool incurs costs and that user data may flow to the outside web (and thus has compliance implications). Click the **Add** button if you agree.
 
-![Accepting the terms for Web Search](figures/ad/ss_tools_005_ann.png){#fig-1115}
+![Accepting the terms for the "Web search" Tool](figures/ad/ss_tools_005_ann.png){#fig-1115}
 
 
 Now you'll see the **Web search** tool listed under the **Tools** section for this Agent. Click the **Save** button at the top. Then, click the **Preview agent** option under the **Preview** button. See @fig-E101.
@@ -251,7 +251,7 @@ As you can see in @fig-BB7C, our real estate Agent now retrieves the information
 
 ## Model Context Protocol
 
-If you're not familiar with Model Context Protocol (MCP), let me get you acquainted. MCP is an open-source standard that was developed by Anthropic as a way to handle how various AI models, especially LLMs, interact with external systems. This includes a universal interface for reading files and other data sources, executing code on your behalf, and handle the context needed to do so correctly. Tools, resources, and prompts are all defined as "primitives" in the MCP specification, which allows for a consistent way to connect models to a wide variety of capabilities. Then, capabilitites like file access or code execution depend on the specific MCP servers that implement the backend logic to expose that functionality.
+If you're not familiar with Model Context Protocol (MCP), let me get you acquainted. MCP is an open-source standard that was developed by Anthropic as a way to handle how various AI models, especially LLMs, interact with external systems. This includes a universal interface for reading files and other data sources, executing code on your behalf, and handling the context needed to do so correctly. Tools, resources, and prompts are all defined as "primitives" in the MCP specification, which allows for a consistent way to connect models to a wide variety of capabilities. Then, capabilitites like file access or code execution depend on the specific MCP servers that implement the backend logic to expose that functionality.
 
 MCP is designed to be flexible and extensible, so it can support a wide range of use cases and evolve over time as new needs arise. A diagram of MCP's architecture is shown in @fig-4852.
 
@@ -269,7 +269,7 @@ Within the Data layer, there are "core primitives" that define the functionality
 - **Resources:** Data sources that provide contextual information, such as file contents, database schemas, or API responses.
 - **Prompts:** Reusable interaction templates, including system prompts or few-shot examples, that help structure how a model should behave.
 
-As an example, you may have a *tool* to execute parameterized SQL queries, a *resource* containing the database schema, and a *prompt* with examples that show the model how to safely and effectively use the query tool. See @fig-3CBD for a diagram of how the Data and Transport layers work together when an Agent calls a Tool that is backed by an MCP server.
+As an example, you may have a *tool* to execute parameterized SQL queries, a *resource* containing the database schema, and a *prompt* with examples that show the model how to safely and effectively use the query tool. See @fig-3CBD for a diagram of how the Data and Transport layers work together when an Agent calls a Tool that's backed by an MCP server.
 
 ![Foundry MCP client-server flow](figures/ad/il_mcp_001.png){#fig-3CBD}
 
@@ -277,7 +277,7 @@ As an example, you may have a *tool* to execute parameterized SQL queries, a *re
 In the Transport layer, you may experience one of two transport mechanisms:
 
 - **Stdio transport:** Uses standard input and output streams for communication between processes on the same machine (e.g., your active CLI-based chat session). This is the simplest and most performant option, with no network overhead, and is commonly used for local tooling.
-- **Streamable HTTP transport:** Uses HTTP POST for client-to-server messages, with optional Server-Sent Events (SSE) for streaming responses, using standard HTTP authentication mechanisms such as bearer tokens, API keys, or custom headers. (OAuth is recommended option for token acquisition.)
+- **Streamable HTTP transport:** Uses HTTP POST for client-to-server messages, with optional Server-Sent Events (SSE) for streaming responses, using standard HTTP authentication mechanisms such as bearer tokens, API keys, or custom headers. (OAuth is the recommended option for token acquisition.)
 
 
 ::: {.callout-note}
@@ -305,7 +305,7 @@ For our first Azure-based tool to be configured, we'll be connecting to the Cosm
 
 ### Exercise: Connect to Cosmos DB using a MCP tool
 
-In this exercise, we'll need a few pieces of information to connect to your Cosmos DB instance. For that, we'll have to go back to the Azure Portal.
+In this exercise, we'll need a few pieces of information to connect to your Cosmos DB instance. For that, we'll have to go back to the Azure portal.
 
 ::: {.callout-warning}
 If you didn't deploy a Cosmos DB back in @sec-chapter-1, go back and review those setup parameters and deploy your own database in the same Resource Group as your Foundry Project.
@@ -316,9 +316,9 @@ You can follow the deployment instructions from Microsoft Learn here: [learn.mic
 
 #### Part 1: Grabbing Keys and Endpoints
 
-Navigate to the Azure Portal ([portal.azure.com](https://portal.azure.com)) and locate your Cosmos DB account. On the side panel, click on **Settings** dropdown and then **Keys**, as shown in @fig-23F7.
+Navigate to the Azure portal ([portal.azure.com](https://portal.azure.com)) and locate your Cosmos DB account. On the side panel, click on the **Settings** dropdown and then **Keys**, as shown in @fig-23F7.
 
-![The Cosmos DB screen in the Azure Portal](figures/ad/ss_cosmos_001_ann.png){#fig-23F7}
+![The Cosmos DB screen in the Azure portal](figures/ad/ss_cosmos_001_ann.png){#fig-23F7}
 
 
 This screen will show the connection information for your Cosmos DB account. Copy and paste your **URI** and **Primary Key** (after clicking the **eye** button to unhide it) to a notepad. See @fig-D3E3. We'll need these items in just a moment.
@@ -349,7 +349,7 @@ Then, as shown in @fig-A103, click the **OK** button at the bottom of the panel.
 
 <!-- {{< pagebreak >}} -->
 
-Once your database and container have been created, click on **Items** under the **Properties** drop down. See @fig-310E.
+Once your database and container have been created, click on **Items** under the **Properties** dropdown. See @fig-310E.
 
 At the top of the screen, click the **Upload Item** button. On the panel that opens, browse for the [`data/ch03/properties.json`](https://github.com/colbyford/foundry-book/blob/main/data/ch03/properties.json) file in the accompanying GitHub repository by selecting the folder icon. Lastly, click the **Upload** button.
 
@@ -386,13 +386,13 @@ We'll use the official Microsoft Azure Cosmos DB MCP server, which is open-sourc
 
 Before you get started, you're going to need a few things installed locally.
 
-You'll need to have the Azure Developer CLI (`azd`) installed on your machine. This library accompanies the standard Azure CLI for deploying infrastructure and application code with simple commands. You can install it using one of the commands below:
+You'll need to have the Azure Developer CLI (`azd`) installed on your machine. This library accompanies the standard Azure CLI for deploying infrastructure and application code with simple commands. You can install it using one of the following commands:
 
 - Windows: `winget install microsoft.azd`
 - macOS: `brew tap azure/azd && brew install azd`
 - Linux: `curl -fsSL https://aka.ms/install-azd.sh | bash`
 
-Next, you will need Powershell. If you're on a Windows machine, you should already have it installed.
+Next, you'll need PowerShell. If you're on a Windows machine, you should already have it installed.
 
 - macOS: `brew install --cask powershell`
 - Linux: Read the Microsoft Learn documentation for your specific distro here: [https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell-on-linux](https://learn.microsoft.com/en-us/powershell/scripting/install/install-powershell-on-linux)
@@ -446,7 +446,7 @@ After a successful deployment, you should see a `SUCCESS` message in your termin
 ![`azd` has successfully deployed the resources](figures/ad/ss_mcp_002_clean.png){#fig-8421}
 
 
-Now you can run the Powershell script to deploy the server code Cosmos DB MCP server. This script will read the environment variables you set in the previous step and use them to configure the connection between the MCP server and your Cosmos DB account, as well as set up the necessary permissions for your Foundry Project to access it.
+Now you can run the PowerShell script to deploy the server code Cosmos DB MCP server. This script will read the environment variables you set in the previous step and use them to configure the connection between the MCP server and your Cosmos DB account, as well as set up the necessary permissions for your Foundry Project to access it.
 
 
 ```powershell
@@ -475,33 +475,33 @@ az containerapp update \
 
 A successful deployment will look something like @fig-B89C.
 
-![Successful deployment of the MCP Toolkit](figures/ad/ss_mcp_003_ann.png){#fig-B89C}
+![Successful deployment of the MCP ToolKit](figures/ad/ss_mcp_003_ann.png){#fig-B89C}
 
-As the message says, it might be best to log out and log back in to your Azure Portal. This will refresh your permissions and allow you to see the new app registration and the Container App that were just deployed.
+As the message says, it might be best to log out and log back in to your Azure portal. This will refresh your permissions and allow you to see the new app registration and the Container App that were just deployed.
 
 We're almost done with this part, I promise! Next, we just have to authenticate the MCP server with our user credentials.
-Navigate to the URL for the MCP Toolkit that was outputted at the end of the Powershell script.
+Navigate to the URL for the MCP ToolKit that was outputted at the end of the PowerShell script.
 
-Locate your Entra App ID and your Tenant ID using the `az` commands show on the webpage. (You can also find these values in the Azure Portal in Entra ID). Copy and paste these values into the respective boxes on the webpage and click the **Sign in with Microsoft Entra** button, as shown in @fig-88BA.
+Locate your Entra App ID and your Tenant ID using the `az` commands shown on the web page. (You can also find these values in the Azure portal in Entra ID). Copy and paste these values into the respective boxes on the web page and click the **Sign in with Microsoft Entra** button, as shown in @fig-88BA.
 
-![Authenticating the MCP Toolkit with your Tenant and Entra App IDs](figures/ad/ss_mcp_004_ann.png){#fig-88BA}
-
-
-A pop up window will open that prompts you to log in with your Azure credentials. Make sure to log in with the same account that you've been using to access the Foundry Project and the Cosmos DB account. Click the **Consent on behalf of your organization** checkbox and then click the **Accept** button to grant the necessary permissions to the MCP Toolkit app. See @fig-18B7.
-
-![Granting permissions to the MCP Toolkit app](figures/ad/ss_mcp_005_ann.png){#fig-18B7}
+![Authenticating the MCP ToolKit with your Tenant and Entra App IDs](figures/ad/ss_mcp_004_ann.png){#fig-88BA}
 
 
-After you successfully log in, you should see an **Authenticated** message at the top of the MCP Toolkit webpage, shown in @fig-E8A3. This means that the MCP server is now authenticated and can be accessed using your credentials by your Foundry Agent.
+A pop-up window will open that prompts you to log in with your Azure credentials. Make sure to log in with the same account that you've been using to access the Foundry Project and the Cosmos DB account. Click the **Consent on behalf of your organization** checkbox and then click the **Accept** button to grant the necessary permissions to the MCP ToolKit app. See @fig-18B7.
 
-![Successful authentication to the MCP Toolkit app](figures/ad/ss_mcp_006_ann.png){#fig-E8A3}
+![Granting permissions to the MCP ToolKit app](figures/ad/ss_mcp_005_ann.png){#fig-18B7}
+
+
+After you successfully log in, you should see an **Authenticated** message at the top of the MCP ToolKit web page, shown in @fig-E8A3. This means that the MCP server is now authenticated and can be accessed using your credentials by your Foundry Agent.
+
+![Successful authentication to the MCP ToolKit app](figures/ad/ss_mcp_006_ann.png){#fig-E8A3}
 
 Copy the MCP Server URL somewhere safe as you'll need it in the next step.
 
 
 #### Part 4: Adding the Tool
 
-Now we have the MCP server deployed and working, we just need to connect it to our Agent by creating a new connection in Foundry. You can run the Powershell script from the MCPToolkit repository that will automate the process of creating a new connection in Foundry with the correct parameters for your MCP server. Just make sure to fill in the correct names for your Foundry workspace and Project.
+Now we have the MCP server deployed and working, we just need to connect it to our Agent by creating a new connection in Foundry. You can run the PowerShell script from the MCP ToolKit repository that will automate the process of creating a new connection in Foundry with the correct parameters for your MCP server. Just make sure to fill in the correct names for your Foundry workspace and Project.
 
 ```powershell
 .\Setup-AIFoundry-Connection.ps1 `
@@ -512,7 +512,7 @@ Now we have the MCP server deployed and working, we just need to connect it to o
 
 Behind the scenes, this script is also granting the Foundry Project the `MCP Tool Executor` role, which allows your Agents to communicate with the MCP server. If you want to do this manually, you can follow the instructions in the `README.md` file in the MCP ToolKit repository.
 
-I also want to show you how to create this connection manually. Navigate back to the Foundry Portal and to your real estate Agent's Playground. See @fig-43EE.
+I also want to show you how to create this connection manually. Navigate back to the Foundry portal and to your real estate Agent's Playground. See @fig-43EE.
 
 ![Adding another Tool to your Agent](figures/ad/ss_cosmos_003_ann.png){#fig-43EE}
 
@@ -522,16 +522,16 @@ In the **Select a tool** screen, shown in @fig-73C8, go to the **Catalog** tab a
 ![Locating the Cosmos DB Tool in the Catalog](figures/ad/ss_cosmos_004_ann.png){#fig-73C8}
 
 
-You may see a **Hosting your MCP server** screen pop up, shown in @fig-E3C5. This is letting you know that you must first have the server/service running before you can connect to it. In other words, you have to have a Cosmos DB account before you can use the Cosmos DB MCP server (duh). Click the **Connect tool with endpoint** button.
+You may see a **Hosting your MCP server** screen pop-up, shown in @fig-E3C5. This is letting you know that you must first have the server/service running before you can connect to it. In other words, you have to have a Cosmos DB account before you can use the Cosmos DB MCP server (duh). Click the **Connect tool with endpoint** button.
 
 ![Information about hosting MCP servers](figures/ad/ss_cosmos_005_ann.png){#fig-E3C5}
 
 
-On the **Connect the Azure Cosmos DB tool** screen, give this tool a name. Paste the URL to your MCP server in the **Remote MCP Server endpoint** box (remember to add `/mcp` at the end). Then, for the other values fill in with the following:
+On the **Connect the Azure Cosmos DB tool** screen, shown in @fig-13D1, give this tool a name. Paste the URL to your MCP server in the **Remote MCP Server endpoint** box (remember to add `/mcp` at the end). Then, for the other values fill in with the following:
 
 - **Authentication**: Microsoft Entra
 - **Type**: Project Managed Identity
-- **Audience**: (Your Entra App ID for the MCP Toolkit app. This is the `ENTRA_APP_CLIENT_ID` value from the `deployment-info.json` Powershell script output.)
+- **Audience**: (Your Entra App ID for the MCP ToolKit app. This is the `ENTRA_APP_CLIENT_ID` value from the `deployment-info.json` PowerShell script output.)
 
 When you're done filling in the values, click the **Connect** button. See @fig-13D1.
 
@@ -589,11 +589,11 @@ As you can see in @fig-8361, the Agent is able to query the Cosmos DB database t
 ![A successful Cosmos DB Tool call and augmented Agent response](figures/ad/ss_cosmos_009_clean.png){#fig-8361}
 
 
- You can ask it more complex questions that require it to compare properties, find properties with specific features, or even generate marketing content based on the properties in the database. Spend some time playing with your newly enhanced real estate Agent and see what kind of responses you get!
+You can ask it more complex questions that require it to compare properties, find properties with specific features, or even generate marketing content based on the properties in the database. Spend some time playing with your newly enhanced real estate Agent and see what kind of responses you get!
 
 
 ## Summary
 
 In this chapter, we've gone through the process of exploring and deploying an Agent using an AI model that is available in the Foundry catalog. We also made our Agent smarter and more useful by giving it access to the internet and some of our internal data through Tools.
 
-In the next chapter, we will be building a Knowledge Base with Foundry IQ, which allows our agents to retrieve data and combine multiple sources of information to form responses.
+In the next chapter, we will be building a knowledge base with Foundry IQ, which allows our agents to retrieve data and combine multiple sources of information to form responses.

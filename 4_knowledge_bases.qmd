@@ -19,7 +19,7 @@ This chapter explores Foundry IQ's role within Microsoft Foundry, its architectu
 Rather than requiring developers to assemble vector databases, retrieval pipelines, and citation logic themselves, Foundry IQ provides these capabilities by directly integrating agents with Azure AI Search. With Foundry IQ, we can connect structured and unstructured data across Azure, SharePoint, OneLake, and the web so agents can access various knowledge sources all while obeying granular permissions.
 
 
-### What is a Knowledge Base?
+### What Is a Knowledge Base?
 
 Knowledge bases are a top-level resource that orchestrate agentic retrieval in an Azure AI Search service that connect through Microsoft Foundry. They define which knowledge sources to query and parameters that control retrieval behavior, including the retrieval reasoning effort (minimal, low, or medium) for LLM processing.
 
@@ -38,7 +38,7 @@ Before we dive into how to build a knowledge base, let's first understand the RA
 
 ### Introduction to RAG
 
-Retrieval-augmented Generation (RAG) is a pattern that extends LLM capabilities by "augmenting" a model's response (a.k.a. "grounding") with relevant information from your internal content. While conceptually simple, as shown in the @fig-D293, implementing RAG solutions has garnered lots of attention in the AI community as a powerful way to build knowledge-intensive applications without needing to fine-tune custom models.
+Retrieval-Augmented Generation (RAG) is a pattern that extends LLM capabilities by "augmenting" a model's response (a.k.a. "grounding") with relevant information from your internal content. While conceptually simple, as shown in @fig-D293, implementing RAG solutions has garnered lots of attention in the AI community as a powerful way to build knowledge-intensive applications without needing to fine-tune custom models.
 
 Retrieval-Augmented Generation combines:
 
@@ -57,9 +57,9 @@ To build a RAG-based system, there are a few steps to follow:
 
 There are lots of frameworks that allow you to implement RAG-based solutions, such as [LangChain](https://docs.langchain.com/oss/python/langchain/rag) and [LlamaIndex](https://developers.llamaindex.ai/python/framework/understanding/rag/), or others. However, these frameworks require you to stitch together various components such as vector databases, retrieval pipelines, and citation logic. Some additional challenges with RAG implementations include:
 
-- **Query understanding:** When a user asks complex, conversational, or vague questions with or without a specific context, traditional keyword search fails. Then,when queries don't match document terminology. So, RAG must understand intent, not just match keywords.
+- **Query understanding:** When a user asks complex, conversational, or vague questions with or without a specific context, traditional keyword search fails. The model needs to handle when queries don't match document terminology. So, RAG must understand intent, not just match keywords.
 - **Multi-source data access:** In an enterprise setting, data and documents may come from SharePoint, databases, blob storage, OneDrive, or other platforms, all at once. Thus, we must create a search corpus without disrupting normal data operations.
-- **Token constraints:** LLMs have limited context windows (meaning they can only accept a limited number of tokens as input). Your retrieval system must not being too wordy in its responses. So, it must only return highly relevant, concise results instead of full document dumps.
+- **Token constraints:** LLMs have limited context windows (meaning they can only accept a limited number of tokens as input). Your retrieval system must avoid being too wordy in its responses. So, it must only return highly relevant, concise results instead of full document dumps.
 - **Response time expectations:** No one likes when a chatbot takes forever to respond. The retrieval system must balance accuracy, thoroughness, and speed.
 - **Security and governance:** If your LLM needs to access private content, it requires granular access control. Users and agents must only retrieve authorized content.
 
@@ -107,7 +107,7 @@ Once enrichment takes place, the resulting content is stored in an index and can
 
 Knowledge bases can be configured to pull from multiple sources, which is useful for scenarios where relevant information may be scattered across different repositories. For example, an agent designed to provide financial insights about a company may need to pull from financial reports in Azure Blob Storage, news articles from the web, and internal communications in SharePoint. By connecting multiple sources to a single knowledge base, the agent can access a richer set of information and provide more comprehensive answers.
 
-Also, some scenarios works well when multiple agents work on different aspects of a question and then combine their insights to produce a final answer. For example, one agent could be responsible for retrieving financial data from the knowledge base, while another agent could be responsible for analyzing that data and generating insights. By orchestrating multiple agents with access to the same knowledge base, you can create more sophisticated and nuanced AI systems that can tackle complex questions and provide more valuable insights.
+Also, some scenarios work well when multiple agents work on different aspects of a question and then combine their insights to produce a final answer. For example, one agent could be responsible for retrieving financial data from the knowledge base, while another agent could be responsible for analyzing that data and generating insights. By orchestrating multiple agents with access to the same knowledge base, you can create more sophisticated and nuanced AI systems that can tackle complex questions and provide more valuable insights.
 
 As shown in @fig-E787, a system can leverage a Foundry IQ knowledge base that contains financial reports and company data along with connectivity to the web and tools for real-time stock updates.
 
@@ -115,17 +115,17 @@ As shown in @fig-E787, a system can leverage a Foundry IQ knowledge base that co
 
 Now that we understand the basics of Foundry IQ and how it enables knowledge bases for Agents, let's walk through an exercise to build a knowledge base that connects to an Azure AI Search index and then connect that knowledge base to an agent to see how it can ground responses in the indexed information.
 
-## Exercise: Build your first Knowledge Base
+## Exercise: Build Your First Knowledge Base
 
-Now that you understand the capabilities of Foundry IQ, the next step is to build your first knowledge base and connect it to an agent. This exercise will walk through how to an Azure AI Search service to ingest and index data from miscellaneous files in a Storage Account. Then, we will create a Foundry IQ knowledge base and configure an agent to use it for grounding responses.
+Now that you understand the capabilities of Foundry IQ, the next step is to build your first knowledge base and connect it to an agent. This exercise will walk through how to use an Azure AI Search service to ingest and index data from miscellaneous files in a Storage Account. Then, we will create a Foundry IQ knowledge base and configure an agent to use it for grounding responses.
 
-For this exercise, we will build a agent for delivering financial insights into Microsoft that can answer questions about the company's financial performance based on some public earnings-related files.
+For this exercise, we will build an agent for delivering financial insights into Microsoft that can answer questions about the company's financial performance based on some public earnings-related files.
 
 ### Part 1: Uploading Data to Azure Blob Storage
 
 Before we can make a knowledge base, we need to have some data to put in it! For this exercise, I've curated a set of files from Microsoft's public financial documents from their Q1 2026 report in the supplementary materials under [data/ch04/finance_docs](https://github.com/colbyford/foundry-book/blob/main/data/ch04/finance_docs/). This data includes earnings reports, financial statements, and transcripts from earnings calls and are in a variety of Office formats (DOCX, PPTX, XLSX). We will upload these files to the Azure Storage Account that was created in @sec-chapter-1. 
 
-Navigate to the Azure Portal and find your Storage Account (mine was called `stfoundrybookdev001`). Then, under *Data storage* on the left-hand panel, as shown in @fig-82FA, click on *Containers*. Create a new container by clicking on the *+ Add container* button and name it `data`.
+Navigate to the Azure portal and find your Storage Account (mine was called `stfoundrybookdev001`). Then, under *Data storage* on the left-hand panel, as shown in @fig-82FA, click on *Containers*. Create a new container by clicking on the *+ Add container* button and name it `data`.
 
 ![Creating a new Container in Azure Storage](figures/kb/ss_storage_001_ann.png){#fig-82FA}
 
@@ -138,7 +138,7 @@ Now that we have some data uploaded to Azure Storage, we can move on to creating
 
 ### Part 2: Create an Azure AI Search Index
 
-To create an Azure AI Search index, navigate to the Azure Portal search for your Azure AI Search service that was created in @sec-chapter-1. (Mine is called `srch-foundrybook-dev-001`.) At the top of the page, shown in @fig-F62E, there is a convenient import wizard that will help us make the index and other components easily. Click on *Import data (new)*.
+To create an Azure AI Search index, navigate to the Azure portal search for your Azure AI Search service that was created in @sec-chapter-1. (Mine is called `srch-foundrybook-dev-001`.) At the top of the page, shown in @fig-F62E, there's a convenient import wizard that will help us make the index and other components easily. Click on *Import data (new)*.
 
 ![Importing data into Azure AI Search](figures/kb/ss_search_001_ann.png){#fig-F62E}
 
@@ -150,21 +150,21 @@ On the first page of the wizard, select *Azure Blob Storage* for the built-in in
 
 Next, we have some scenario options. There is a *RAG* option that is optimized for retrieval-augmented generation scenarios that handles text or basic images containing text (via OCR). There's also a *Multimodal RAG* option that has capabilities for handling more complex images (such as workflow diagrams and charts). Since we are building a knowledge base for an agent that will answer questions about financial performance based on the clean, more structured documents we uploaded, select the *Keyword search* scenario, as shown in @fig-9637.
 
-![Selecting the Keyword search scenario](figures/kb/ss_search_003_ann.png){#fig-9637}
+![Selecting the "Keyword search" scenario](figures/kb/ss_search_003_ann.png){#fig-9637}
 
 
 On the *Connect to your data* page, select the Azure Storage Account and container where you uploaded the financial documents in Part 1. Define the *Blob folder* as `ch04/finance_docs` and leave the *Parsing mode* as `Default`, as shown in @fig-20C0. Then, click the *Next* button at the bottom of the page.
 
-![Connecting to data for the Keyword search](figures/kb/ss_search_004_clean.png){#fig-20C0}
+![Connecting to data for the "Keyword search"](figures/kb/ss_search_004_clean.png){#fig-20C0}
 
 
-On the *Apply AI enrichments* page, we can select some AI enrichments to apply to the data as it's ingested. These enrichment selections dictate what sorts of things we want to extract from our data and make searchable. For this exercise, we will be selecting the *Extract entities* and *Extract text from images* enrichments, which will allow us to pull out key financial figures and insights from the documents (both Word and Excel files) as well as any text that may be contained in images such as charts and graphs (such as in a Powerpoint slide). There are also some other enrichments that can be useful for different scenarios, such as *Extract phrases* and *Split text*, which can be helpful for organizing and filtering larger textual data in the knowledge base. Click the checkboxes as shown in @fig-6AFC.
+On the *Apply AI enrichments* page, we can select some AI enrichments to apply to the data as it's ingested. These enrichment selections dictate what sorts of things we want to extract from our data and make searchable. For this exercise, we will be selecting the *Extract entities* and *Extract text from images* enrichments, which will allow us to pull out key financial figures and insights from the documents (both Word and Excel files) as well as any text that may be contained in images such as charts and graphs (such as in a PowerPoint slide). There are also some other enrichments that can be useful for different scenarios, such as *Extract phrases* and *Split text*, which can be helpful for organizing and filtering larger textual data in the knowledge base. Click the checkboxes as shown in @fig-6AFC.
 
-![Enrichments options for Keyword search](figures/kb/ss_enrichments_001_ann.png){#fig-6AFC}
+![Enrichments options for "Keyword search"](figures/kb/ss_enrichments_001_ann.png){#fig-6AFC}
 
 Select the *Gear* icon in the *Extract entities* box, then select the entity types that may be useful for the financial questions our eventual Agent will need to answer. You can see my selections in @fig-9AE8. Click the *Save* button after making your selections.
 
-![Extract entities selection](figures/kb/ss_enrichments_002_ann.png){#fig-9AE8}
+!["Extract entities" selection](figures/kb/ss_enrichments_002_ann.png){#fig-9AE8}
 
 
 For the *Extract text from images* enrichment, click on the *Gear* icon and select the *Generate tags* and *Categorize content* visual features to be extracted, as shown in @fig-AE5. This will ensure that any relevant information contained in charts, graphs, or other visuals in the documents will be pulled into the index and available for retrieval by our Agent.
@@ -175,7 +175,7 @@ For other use cases, such as finding information from photos, the other visual f
 
 Click the *Save* button after making these selections.
 
-![Extract text from images selection](figures/kb/ss_enrichments_003_ann.png){#fig-AE5}
+!["Extract text from images" selection](figures/kb/ss_enrichments_003_ann.png){#fig-AE5}
 
 
 Click *Next* to move on to the *Preview mappings* page. Here, as shown in @fig-9D86, you can preview the index fields that were auto-generated from the selections in the last step. These are the fields that will be extract from the documents and indexed. You can review the configuration and make adjustments if needed, but we will be leaving everything as default. Click the *Next* button at the bottom of the page.
@@ -208,19 +208,19 @@ Now that we have an AI Search Index with our financial documents ingested and re
 
 ### Part 3: Create a Foundry IQ Knowledge Base
 
-To begin creating a knowledge base, navigate to the Knowledge section of the Build page of the Foundry Portal. As shown in @fig-33E, we must first connect our Foundry Project to an Azure AI Search resource, which will serve as the underlying index for our knowledge base. Use the existing Azure AI Search resource that you just used in Part 2. For demo purposes, use the API key option for authentication. However, in production scenarios, using the Foundry Project's Entra ID for authentication allows for more granular access control and better security hygiene. Click the *Connect* button after selecting the Azure AI Search resource and the Auth Type.
+To begin creating a knowledge base, navigate to the *Knowledge* section of the *Build* page of the Foundry portal. As shown in @fig-33E, we must first connect our Foundry Project to an Azure AI Search resource, which will serve as the underlying index for our knowledge base. Use the existing Azure AI Search resource that you just used in Part 2. For demo purposes, use the API key option for authentication. However, in production scenarios, using the Foundry Project's Entra ID for authentication allows for more granular access control and better security hygiene. Click the *Connect* button after selecting the Azure AI Search resource and the Auth Type.
 
 ![Connecting to an Azure AI Search resource](figures/kb/ss_knowledge_001_ann.png){#fig-33E}
 
 
 You'll then be taken to the Foundry IQ page where you will eventually see all of your knowledge bases listed. Since this is your first time here, the list will be empty. Click the *Create a knowledge base* button, shown in @fig-F32A, to get started.
 
-![Creating a new Knowledge Base](figures/kb/ss_knowledge_002_ann.png){#fig-F32A}
+![Creating a new knowledge base](figures/kb/ss_knowledge_002_ann.png){#fig-F32A}
 
 
 On the *Choose a knowledge type* screen that pops up, select the *Azure AI Search Index* option and click the *Connect* button, as shown in @fig-6327.
 
-![Selecting a Knowledge Base type](figures/kb/ss_knowledge_003_ann.png){#fig-6327}
+![Selecting a knowledge base type](figures/kb/ss_knowledge_003_ann.png){#fig-6327}
 
 
 On the *Choose a knowledge source* screen, you'll now select the AI Search Index that you created in Part 2. Give your source a name and provide a description that will help the Agent know what the source contains (shown below). Click the *Create* button, as shown in @fig-5301, to create the source and connect it to the knowledge base.
@@ -241,7 +241,7 @@ Now you'll see a *Create a new knowledge base* page. Fill in the values as shown
 - **Retrieval reasoning effort:** *Medium* (helps the model think more about the retrieved information and how to use it to answer the question)
 - **Output mode**: *Answer synthesis* (generates natural language answers rather than just returning retrieved data)
 - **Answer instructions:** `Succinct, professional tone for financial insights`
-- **Retrieval instructions:** `Prioritize "FinancialStatementFY26Q1" for finance questions and "FY26Q1Transcript" for product and innovation questions.` (guides how your agent searches across multiple knowledge sources)
+- **Retrieval instructions:** `Prioritize "FinancialStatementFY26Q1" for finance questions and "FY26Q1Transcript" for product and innovation questions.` (Guides how your agent searches across multiple knowledge sources)
 
 Click the *Save knowledge base* button at the top of the page to create the knowledge base, as shown in @fig-C30C.
 
@@ -289,12 +289,12 @@ Now let's try to pull information from slides, which is a bit more complex since
 What is the forward-looking FY26 Q2 outlook?
 :::
 
-The agent should be able to pull relevant information any of the files that you uploaded and indexed. I know that there was a slide with forward-looking statements about Microsoft's outlook for the next quarter. See @fig-257F for an example of what my Robo CFO Agent's response was.
+The agent should be able to pull relevant information from any of the files that you uploaded and indexed. I know that there was a slide with forward-looking statements about Microsoft's outlook for the next quarter. See @fig-257F for an example of what my Robo CFO Agent's response was.
 
 ![Asking about Microsoft's 2026 outlook](figures/kb/ss_kbagent_003_clean.png){#fig-257F}
 
 
-As you can see in @fig-5165, the agent is able to pull relevant information from the slide 3 of the `OutlookFY26Q2.pptx` PowerPoint deck, which contains a table of revenue and expense forecasts for the next quarter. Oddly enough, this table in the slide is actually just an image and not editable text. This demonstrates how the agent can use the knowledge base to find and extract relevant information even from less structured data sources like PowerPoint slides, which may contain a mix of text, pictures, visuals, and summarized key insights.
+As you can see in @fig-5165, the agent is able to pull relevant information from slide 3 of the `OutlookFY26Q2.pptx` PowerPoint deck, which contains a table of revenue and expense forecasts for the next quarter. Oddly enough, this table in the slide is actually just an image and not editable text. This demonstrates how the agent can use the knowledge base to find and extract relevant information even from less structured data sources like PowerPoint slides, which may contain a mix of text, pictures, visuals, and summarized key insights.
 
 ![The "Microsoft FY26 Q2 Outlook" PowerPoint slide](figures/kb/ss_kbagent_004_clean.png){#fig-5165}
 

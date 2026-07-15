@@ -164,7 +164,7 @@ On the *Apply AI enrichments* page, we can select some AI enrichments to apply t
 
 Select the *Gear* icon in the *Extract entities* box, then select the entity types that may be useful for the financial questions our eventual Agent will need to answer. You can see my selections in @fig-9AE8. Click the *Save* button after making your selections.
 
-!["Extract entities" selection](figures/kb/ss_enrichments_002_ann.png){#fig-9AE8}
+![Extract entities selection](figures/kb/ss_enrichments_002_ann.png){#fig-9AE8}
 
 
 For the *Extract text from images* enrichment, click on the *Gear* icon and select the *Generate tags* and *Categorize content* visual features to be extracted, as shown in @fig-AE5. This will ensure that any relevant information contained in charts, graphs, or other visuals in the documents will be pulled into the index and available for retrieval by our Agent.
@@ -175,7 +175,7 @@ For other use cases, such as finding information from photos, the other visual f
 
 Click the *Save* button after making these selections.
 
-!["Extract text from images" selection](figures/kb/ss_enrichments_003_ann.png){#fig-AE5}
+![Extract text from images selection](figures/kb/ss_enrichments_003_ann.png){#fig-AE5}
 
 
 Click *Next* to move on to the *Preview mappings* page. Here, as shown in @fig-9D86, you can preview the index fields that were auto-generated from the selections in the last step. These are the fields that will be extract from the documents and indexed. You can review the configuration and make adjustments if needed, but we will be leaving everything as default. Click the *Next* button at the bottom of the page.

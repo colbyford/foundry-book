@@ -71,7 +71,7 @@ At the top of the Azure portal, you may see some of the previous services that y
 
 In the search box, simply type "Microsoft Foundry". In the search results, locate the **Microsoft Foundry** option under the **Services** section and click on it as shown in @fig-992A.
 
-![Azure portal - Searching for "Microsoft Foundry"](figures/in/ss_portal_002_ann.png){#fig-992A}
+![Azure portal - Searching for Microsoft Foundry](figures/in/ss_portal_002_ann.png){#fig-992A}
 
 
 A new panel will open for Microsoft Foundry. Feel free to explore. If you're using your work or school account, you may see other Foundry Projects that others in your organization have deployed. Under the **Dashboard** tab, you may also see some metrics around AI usage across all Foundry Resources in your Azure Tenant.

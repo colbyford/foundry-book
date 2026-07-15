@@ -262,7 +262,7 @@ For example, let's say our previous medical training dataset lacks in a particul
 
 To start, navigate to the **Data** section of the **Build** page in the Foundry portal. At the top of the screen, click the **Synthetic data generation** tab. You can then click the **Generate data** button to create a new synthetic data generation job, as shown in @fig-2C04.
 
-![Navigating to the "Synthetic data generation" tab](figures/ft/ss_syntheticdata_001_ann.png){#fig-2C04}
+![Navigating to the Synthetic data generation tab](figures/ft/ss_syntheticdata_001_ann.png){#fig-2C04}
 
 On the **Create data** screen, fill in the details to create a synthetic data job for cardiology questions. This includes selecting the base generator model, choosing the synthetic data task at hand, and uploading your source document, as shown in @fig-DC10.
 

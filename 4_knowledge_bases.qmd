@@ -150,17 +150,17 @@ On the first page of the wizard, select *Azure Blob Storage* for the built-in in
 
 Next, we have some scenario options. There is a *RAG* option that is optimized for retrieval-augmented generation scenarios that handles text or basic images containing text (via OCR). There's also a *Multimodal RAG* option that has capabilities for handling more complex images (such as workflow diagrams and charts). Since we are building a knowledge base for an agent that will answer questions about financial performance based on the clean, more structured documents we uploaded, select the *Keyword search* scenario, as shown in @fig-9637.
 
-![Selecting the "Keyword search" scenario](figures/kb/ss_search_003_ann.png){#fig-9637}
+![Selecting the Keyword search scenario](figures/kb/ss_search_003_ann.png){#fig-9637}
 
 
 On the *Connect to your data* page, select the Azure Storage Account and container where you uploaded the financial documents in Part 1. Define the *Blob folder* as `ch04/finance_docs` and leave the *Parsing mode* as `Default`, as shown in @fig-20C0. Then, click the *Next* button at the bottom of the page.
 
-![Connecting to data for the "Keyword search"](figures/kb/ss_search_004_clean.png){#fig-20C0}
+![Connecting to data for the Keyword search](figures/kb/ss_search_004_clean.png){#fig-20C0}
 
 
 On the *Apply AI enrichments* page, we can select some AI enrichments to apply to the data as it's ingested. These enrichment selections dictate what sorts of things we want to extract from our data and make searchable. For this exercise, we will be selecting the *Extract entities* and *Extract text from images* enrichments, which will allow us to pull out key financial figures and insights from the documents (both Word and Excel files) as well as any text that may be contained in images such as charts and graphs (such as in a PowerPoint slide). There are also some other enrichments that can be useful for different scenarios, such as *Extract phrases* and *Split text*, which can be helpful for organizing and filtering larger textual data in the knowledge base. Click the checkboxes as shown in @fig-6AFC.
 
-![Enrichments options for "Keyword search"](figures/kb/ss_enrichments_001_ann.png){#fig-6AFC}
+![Enrichments options for Keyword search](figures/kb/ss_enrichments_001_ann.png){#fig-6AFC}
 
 Select the *Gear* icon in the *Extract entities* box, then select the entity types that may be useful for the financial questions our eventual Agent will need to answer. You can see my selections in @fig-9AE8. Click the *Save* button after making your selections.
 

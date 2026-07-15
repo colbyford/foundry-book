@@ -219,12 +219,12 @@ Under the **Tools** dropdown (located under the Instructions box, not on the lef
 
 In the **Select a tool** pop-up window, shown in @fig-8118, click on the **Web search** item and then click the **Add tool** button at the bottom.
 
-![Selecting the "Web search" Tool](figures/ad/ss_tools_004_ann.png){#fig-8118}
+![Selecting the Web search Tool](figures/ad/ss_tools_004_ann.png){#fig-8118}
 
 
 If this is the first time someone in your Project has used this Tool, you may see another screen (shown in @fig-1115) to accept its terms. This is mainly a notification that this tool incurs costs and that user data may flow to the outside web (and thus has compliance implications). Click the **Add** button if you agree.
 
-![Accepting the terms for the "Web search" Tool](figures/ad/ss_tools_005_ann.png){#fig-1115}
+![Accepting the terms for the Web search Tool](figures/ad/ss_tools_005_ann.png){#fig-1115}
 
 
 Now you'll see the **Web search** tool listed under the **Tools** section for this Agent. Click the **Save** button at the top. Then, click the **Preview agent** option under the **Preview** button. See @fig-E101.

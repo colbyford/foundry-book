@@ -35,7 +35,7 @@ As you're exploring, you may be overwhelmed with the number of choices that you 
 
 At the top right of the screen, shown in @fig-767C, you'll notice two buttons: **View leaderboard** and **Compare models**. Click on the **Compare models** button.
 
-![Locating the "Compare models" button](figures/md/ss_compare_001_ann.png){#fig-767C}
+![Locating the Compare models button](figures/md/ss_compare_001_ann.png){#fig-767C}
 
 
 On the **Compare models** screen, shown in @fig-68E2, you can compare up to three different models across various benchmarks (e.g., quality, safety, costs, and throughput). Click any of the dropdown boxes and select three different models. You can also look at the differences in what the models accept as inputs and produce as outputs along with metrics about their context size. This is helpful if you're trying to figure out which model you should deploy for a given use case. I find this especially helpful when choosing between versions of the same base model with confusing names/suffixes (for example, `gpt-5.2` vs. `gpt-5.2-chat` vs. `gpt-5.2-codex`). 
@@ -45,7 +45,7 @@ On the **Compare models** screen, shown in @fig-68E2, you can compare up to thre
 
 Once you've gotten familiar with the model comparison tool, go back to the **Models** page and click on the **View leaderboard** button. See @fig-4BC0.
 
-![Locating the "View leaderboard" button](figures/md/ss_leaderboard_001_ann.png){#fig-4BC0}
+![Locating the View leaderboard button](figures/md/ss_leaderboard_001_ann.png){#fig-4BC0}
 
 On this page, you can see how different models rank across the same benchmarks you saw in the model comparison screen (quality, safety, cost, and throughput).
 

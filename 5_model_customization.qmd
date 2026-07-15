@@ -1,4 +1,4 @@
-# Model Customization through Fine-Tuning {#sec-chapter-5}
+# Model Customization Through Fine-Tuning {#sec-chapter-5}
 
 In this chapter, we will learn how to fine-tune models in Foundry using custom training datasets. Customizing a model with your own data can improve performance on specific tasks or domains by teaching the model to better understand your unique requirements and to respond with more accurate answers or in a desired style. Fine-tuning is a powerful technique that allows you to adapt pre-trained models to your specific use case without needing to train an entire model from scratch, which can be resource-intensive (expensive because you'd have to have many GPUs) and require large amounts of data. Instead, you can achieve significant improvements with just a few hundred or thousand examples that are relevant to your specific domain or task.
 
@@ -25,11 +25,11 @@ Consider fine-tuning when you need to:
 
 After reading the last chapter on knowledge bases and retrieval-augmented generation (RAG), you might be wondering when to use RAG versus fine-tuning for customizing your model's behavior.
 
-Let's use a human example. If you were an attorney, you have learned unique knowledge about the law, legal precedents, and how to structure legal arguments that would be important for you to have "in your head". This is analogous to fine-tuning a model, where you want to teach the model specific knowledge and innate behaviors that are not easily retrieved from an external source. You want the model to have this information "in its head" so it can generate responses based on that knowledge without needing to look it up every time. On the other hand, as an attorney, you probably haven't memorized every single law or legal precedent, but you know how to quickly look up that information when you need it. This is analogous to RAG, where the model can retrieve specific pieces of information from an external source when needed to answer questions that require up-to-date or detailed information.
+Let's use a human example. If you were an attorney, you would have learned unique knowledge about the law, legal precedents, and how to structure legal arguments that would be important for you to have "in your head." This is analogous to fine-tuning a model, where you want to teach the model specific knowledge and innate behaviors that are not easily retrieved from an external source. You want the model to have this information "in its head" so it can generate responses based on that knowledge without needing to look it up every time. On the other hand, as an attorney, you probably haven't memorized every single law or legal precedent, but you know how to quickly look up that information when you need it. This is analogous to RAG, where the model can retrieve specific pieces of information from an external source when needed to answer questions that require up-to-date or detailed information.
 
-We use RAG for when we want a model to retrieve data from an external knowledge base to answer questions. This is especially useful when the information is frequently changing, such as news articles or online orders. RAG allows the model to access up-to-date information without needing to retrain the model every time the data changes.
+We use RAG when we want a model to retrieve data from an external knowledge base to answer questions. This is especially useful when the information is frequently changing, such as news articles or online orders. RAG allows the model to access up-to-date information without needing to retrain the model every time the data changes.
 
-We use fine-tuning when we need to teach the model specific behaviors, styles, or knowledge that is not easily retrieved from an external source. This is especially useful when you want the model to have a certain tone, follow specific formatting, or have expertise in a particular domain that may not be well-represented in a knowledge base.
+We use fine-tuning when we need to teach the model specific behaviors, styles, or knowledge that is not easily retrieved from an external source. This is especially useful when you want the model to have a certain tone, follow specific formatting, or have expertise in a particular domain that may not be well represented in a knowledge base.
 
 Both techniques can help improve the relevance and accuracy of model responses, but they serve different purposes and are suited for different scenarios. In fact, many production scenarios use a combination of both RAG and fine-tuning to achieve the best results. For example, you might fine-tune a model to have a specific tone and style for customer support, while also using RAG to allow the model to retrieve up-to-date information about product inventory or order status from an external database.
 :::
@@ -44,7 +44,7 @@ Once you identify a good use case for fine-tuning a model, you will then need to
 - **Direct Preference Optimization (DPO):** Fine-tuning using preference data to align model outputs to the preferences of human evaluators. This is useful for improving the quality of responses to align with safety or other human preferences.
 - **Reinforcement Fine-tuning:** Reinforcement learning-based fine-tuning that incorporates automated feedback from built-in evaluation logic such as a scoring function. This method is useful for specific objectives where there are clear right and wrong answers, such as in code generation or math problem solving.
 
-Supervised fine-tuning is the most common and straightforward method, and it's a good place to start for most use cases. It just requires a training dataset with examples of the desired behavior. In contrast, DPO is a newer technique that can be very effective for aligning models with human preferences (e.g., "Do you like Response 1 or Response 2 better?", as you've probably seen when using ChatGPT or Claude online). Lastly, reinforcement fine-tuning is more specialized as is requires a well-defined scoring function to provide feedback to the model during training, which can be more complex to set up and may not be suitable for all use cases. The choice of technique will depend on your specific use case, the type of data you have available, and the behavior you want to teach the model.
+Supervised fine-tuning is the most common and straightforward method, and it's a good place to start for most use cases. It just requires a training dataset with examples of the desired behavior. In contrast, DPO is a newer technique that can be very effective for aligning models with human preferences (e.g., "Do you like Response 1 or Response 2 better?", as you've probably seen when using ChatGPT or Claude online). Lastly, reinforcement fine-tuning is more specialized as it requires a well-defined scoring function to provide feedback to the model during training, which can be more complex to set up and may not be suitable for all use cases. The choice of technique will depend on your specific use case, the type of data you have available, and the behavior you want to teach the model.
 
 ::: {.callout-note}
 Note that fine-tuning is only supported in a subset of models available in Microsoft Foundry. Specifically, many of the OpenAI models are fine-tunable, but some open-source or third-party models are not.
@@ -60,9 +60,26 @@ The first step to begin fine-tuning a model in Microsoft Foundry is to build a t
 Your training data should be in JSONL (JSON Lines) format with clear examples of inputs and desired outputs:
 
 <!-- ```{.json .code-overflow-wrap} -->
-```json
+<!-- ```jsonl
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "How do I reset my password?"}, {"role": "assistant", "content": "To reset your password, go to Settings > Security > Reset Password."}]}
 {"messages": [{"role": "system", "content": "You are a customer support agent."}, {"role": "user", "content": "Where can I find my order history?"}, {"role": "assistant", "content": "Your order history is available in Account > Orders."}]}
+``` -->
+
+```json
+{
+    "messages": [
+        {"role": "system", "content": "You are a customer support agent."}, 
+        {"role": "user", "content": "How do I reset my password?"}, 
+        {"role": "assistant", "content": "To reset your password, go to Settings > Security > Reset Password."}
+    ]
+}
+{
+    "messages": [
+        {"role": "system", "content": "You are a customer support agent."}, 
+        {"role": "user", "content": "Where can I find my order history?"}, 
+        {"role": "assistant", "content": "Your order history is available in Account > Orders."}
+    ]
+}
 ```
 
 For simple supervised fine-tuning, you can create a dataset with just a few dozen to a few hundred examples. The key is to ensure that the examples are high-quality, relevant, and representative of the behavior you want the model to learn. You can also include system messages in your examples to provide additional context or instructions to guide the model's behavior.
@@ -77,7 +94,7 @@ When generating training data, keep the following best practices in mind:
 * **Clear instructions** - Include system messages to define behavior
 * **Representative data** - Examples should reflect real-world usage
 
-## Exercise: Fine-tune a Medical Assistant Model
+## Exercise: Fine-Tune a Medical Assistant Model
 
 Let's start by fine-tuning a model to be a medical assistant that can answer questions about common medical conditions. We will use the `gpt-4.1-mini` model for this exercise, which is a smaller version of the GPT-4.1 model that is suitable for fine-tuning with limited data and compute resources. I have provided a training dataset with examples of medical questions and answers in the `data/ch05` folder of the accompanying GitHub repository.
 
@@ -158,9 +175,9 @@ For me, my fine-tuned model performs well and correctly tells users to consult m
 
 ### Fine-Tuning with the CLI
 
-You may have noticed that we uploaded the `*_mini.jsonl` versions of the training and validation datasets. This is because the UI has a 30 second timeout window for uploading your dataset in the browser. Alternatively, you can use the Foundry CLI to run fine-tuning jobs with larger datasets. The CLI does not have the same timeout constraints as the UI, so you can upload and use larger datasets this way.
+You may have noticed that we uploaded the `*_mini.jsonl` versions of the training and validation datasets. This is because the UI has a 30-second timeout window for uploading your dataset in the browser. Alternatively, you can use the Foundry CLI to run fine-tuning jobs with larger datasets. The CLI does not have the same timeout constraints as the UI, so you can upload and use larger datasets this way.
 
-To run fine-tuning from the CLI, you must first define your fine-tuning job configuration in a YAML file. This can be more convenient for managing and versioning your training configurations, especially in, say, a git repository.
+To run fine-tuning from the CLI, you must first define your fine-tuning job configuration in a YAML file. This can be more convenient for managing and versioning your training configurations, especially in, say, a Git repository.
 
 If you're interested in tuning the medical assistant model with the larger dataset, you can use the following YAML configuration file, which is located in the `data/ch05` folder as `medical_finetuning_supervised.yaml`:
 
@@ -195,7 +212,7 @@ If you're not familiar with the hyperparameters listed under the `supervised` se
 
 Using the Foundry CLI (which is an extension of the Azure Developer CLI, `azd`), you can submit a fine-tuning job with this configuration file. Assuming you have the Azure Developer CLI installed and configured, run `azd ext install azure.ai.finetune` to add the fine-tuning extension.
 
-Then, by running the following commands in your terminal, you can submit the fine-tuning job to Foundry: (Make sure to replace `<subscription-id>` and `<project-endpoint>` with your actual subscription ID and project endpoint.)
+Then, by running the following commands in your terminal, you can submit the fine-tuning job to Foundry. (Make sure to replace `<subscription-id>` and `<project-endpoint>` with your actual Subscription ID and project endpoint.)
 
 ```bash
 ## Submit fine-tuning job
@@ -236,7 +253,7 @@ Sometimes you may not have enough real training data to effectively fine-tune a 
 There are two synthetic data generators available in Foundry that can help you create training data:
 
 - **Simple Q&A:** This generator turns domain documents into fine-tuning question–answer pairs. It accepts PDFs, Markdown files, or plain text documents (<20MB) containing the subject knowledge from which you want the model to learn.
-- **Tool use:** Simulate multi-turn conversations with tool calls over and API. This requires a valid 3.0.x or 3.1.x OpenAPI Specification (Swagger) file in JSON (<20MB) that describes the APIs you want the model to learn to call as tools.
+- **Tool use:** Simulate multi-turn conversations with tool calls over an API. This requires a valid 3.0.x or 3.1.x OpenAPI Specification (Swagger) file in JSON (<20MB) that describes the APIs you want the model to learn to call as tools.
 
 
 ### Exercise: Generate Synthetic Data for Cardiology Questions
@@ -245,9 +262,9 @@ For example, let's say our previous medical training dataset lacks in a particul
 
 To start, navigate to the **Data** section of the **Build** page in the Foundry portal. At the top of the screen, click the **Synthetic data generation** tab. You can then click the **Generate data** button to create a new synthetic data generation job, as shown in @fig-2C04.
 
-![Navigating to the Synthetic generation tab](figures/ft/ss_syntheticdata_001_ann.png){#fig-2C04}
+![Navigating to the "Synthetic data generation" tab](figures/ft/ss_syntheticdata_001_ann.png){#fig-2C04}
 
-On the **Create data** screen, you will fill in the details to create a synthetic data job for cardiology questions. This includes selecting the base generator model, choosing the synthetic data task at hand, and uploading your source document, as shown in @fig-DC10.
+On the **Create data** screen, fill in the details to create a synthetic data job for cardiology questions. This includes selecting the base generator model, choosing the synthetic data task at hand, and uploading your source document, as shown in @fig-DC10.
 
 - **Task type:** `Simple Q&A`
 - **Question type:** `Short answer`
@@ -278,16 +295,68 @@ Once the job is complete, you can view the generated synthetic dataset in the **
 
 
 ::: {.callout-warning}
-Your synthetic data generation job may fail if you hit your throughput limit with whatever deployed model you picked. This is because generating synthetic data consumes tokens (and thus incurs costs). If this happens, you can either wait for your throughput to reset, deploy a new instance of different base model, or simply use a smaller reference file.
+Your synthetic data generation job may fail if you hit your throughput limit with whatever deployed model you picked. This is because generating synthetic data consumes tokens (and thus incurs costs). If this happens, you can either wait for your throughput to reset, deploy a new instance of a different base model, or simply use a smaller reference file.
 :::
 
 
 
-```{.json .code-overflow-wrap}
+<!-- ```{.json .code-overflow-wrap}
 {"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is the primary cause of a heart attack?"}, {"role": "assistant", "content": "The primary cause of a heart attack is the reduction or blockage of blood flow to the heart muscle, usually due to a blockage in the coronary arteries that supply the heart with oxygen-rich blood."}]}
 {"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "How does plaque buildup in the coronary arteries contribute to heart attacks?"}, {"role": "assistant", "content": "Plaque buildup in the coronary arteries narrows these vessels, restricting blood flow to the heart muscle. When plaque breaks, a blood clot can form around it, potentially blocking the artery completely and cutting off oxygen supply, which can trigger a heart attack."}]}
 {"messages": [{"role": "system", "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."}, {"role": "user", "content": "What is atherosclerosis?"}, {"role": "assistant", "content": "Atherosclerosis is a slow process where plaque composed of fat, cholesterol, and other substances builds up in the inner walls of arteries. This buildup narrows the arteries and makes them less flexible, increasing the risk of blood clots that can cause heart attacks or strokes."}]}
 
+``` -->
+
+
+```json
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."
+    },
+    {
+      "role": "user",
+      "content": "What is the primary cause of a heart attack?"
+    },
+    {
+      "role": "assistant",
+      "content": "The primary cause of a heart attack is the reduction or blockage of blood flow to the heart muscle, usually due to a blockage in the coronary arteries that supply the heart with oxygen-rich blood."
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."
+    },
+    {
+      "role": "user",
+      "content": "How does plaque buildup in the coronary arteries contribute to heart attacks?"
+    },
+    {
+      "role": "assistant",
+      "content": "Plaque buildup in the coronary arteries narrows these vessels, restricting blood flow to the heart muscle. When plaque breaks, a blood clot can form around it, potentially blocking the artery completely and cutting off oxygen supply, which can trigger a heart attack."
+    }
+  ]
+}
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant. You will be presented with a question, please provide a clear and accurate answer."
+    },
+    {
+      "role": "user",
+      "content": "What is atherosclerosis?"
+    },
+    {
+      "role": "assistant",
+      "content": "Atherosclerosis is a slow process where plaque composed of fat, cholesterol, and other substances builds up in the inner walls of arteries. This buildup narrows the arteries and makes them less flexible, increasing the risk of blood clots that can cause heart attacks or strokes."
+    }
+  ]
+}
 ```
 
 ::: {.callout-tip}

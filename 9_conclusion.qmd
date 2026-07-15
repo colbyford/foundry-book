@@ -64,7 +64,7 @@ If you need to evaluate the quality and safety of your generative AI application
 |  | Prohibited Actions (preview) | Measures an AI agent's ability to engage in behaviors that violate explicitly disallowed actions. |
 |  | Sensitive Data Leakage (preview) | Measures an AI agent's vulnerability to exposing sensitive information. |
 | Agent | Task Adherence (preview) | Measures whether the agent follows through on identified tasks according to system instructions. |
-|  | Task Completion (preview) | Measures whether the agent successfully completed the requested task end-to-end. |
+|  | Task Completion (preview) | Measures whether the agent successfully completed the requested task end to end. |
 |  | Intent Resolution (preview) | Measures how accurately the agent identifies and addresses user intentions. |
 |  | Task Navigation Efficiency | Determines whether the agent's sequence of steps matches an optimal or expected path to measure efficiency. |
 |  | Tool Call Accuracy | Measures the overall quality of tool calls including selection, parameter correctness, and efficiency. |
@@ -73,38 +73,38 @@ If you need to evaluate the quality and safety of your generative AI application
 |  | Tool Output Utilization | Measures whether the agent correctly interprets and uses tool outputs contextually in responses and subsequent calls. |
 |  | Tool Call Success | Evaluates whether all tool calls executed successfully without technical failures. |
 
-: Built-in evaluators, categorized by type. {#tbl-evaluators}
+: Built-in evaluators, categorized by type {#tbl-evaluators}
 
-To test out the Evaluations feature, navigate to the *Evaluations* screen from the left-hand menu of the Foundry Portal under *Build*. Click the *Create* button, as shown in @fig-AB12, to set up a new evaluation.
+To test out the Evaluations feature, navigate to the *Evaluations* screen from the left-hand menu of the Foundry portal under *Build*. Click the *Create* button, as shown in @fig-AB12, to set up a new evaluation.
 
 ![Locating the Evaluations screen](figures/co/ss_evaluations_001_ann.png){#fig-AB12}
 
-The next screen will allow you to pick whether to evaluate a model, an agent, or a dataset. Then, you can either upload a set of input test prompt or have synthetic data generated for you. Lastly, you'll pick the criteria on which to form the evaluation. This includes a wide variety of standard evaluation metrics such as task adherence, tool call accuracy, fluency, etc. This is shown in @fig-510E. If you were to run the evaluation, you would get a detailed report that breaks down the performance of your agent across the different metrics and test cases. This can be really helpful for identifying areas of strength and weakness in your agent's performance, and for tracking improvements over time as you make changes to your agent's design, the underlying model it uses, or its instructions.
+The next screen will allow you to pick whether to evaluate a model, an agent, or a dataset. Then, you can either upload a set of input test prompts or have synthetic data generated for you. Lastly, you'll pick the criteria on which to form the evaluation. This includes a wide variety of standard evaluation metrics such as task adherence, tool call accuracy, fluency, etc. This is shown in @fig-510E. If you were to run the evaluation, you would get a detailed report that breaks down the performance of your agent across the different metrics and test cases. This can be really helpful for identifying areas of strength and weakness in your agent's performance, and for tracking improvements over time as you make changes to your agent's design, the underlying model it uses, or its instructions.
 
 ![Configuring the evaluation process for an agent using synthetic data](figures/co/ss_evaluations_002_clean.png){#fig-510E}
 
-Back on the *Evaluations* page, under *Evaluator catalog*, you will see a list of built-in evaluators that you can use to evaluate your agents. These include a wide variety of purpose, from operational evaluations (e.g., "Did the agent follow the instructions and pick the right tool?") and safety evaluations (e.g., "Is the agent's generating vulnerable code?") to functional evaluations (e.g., "How well does this agent handle customer service situations?"). You can also create your own custom evaluators if you have specific criteria that you want to assess that are not covered by the built-in options. When you click on one, as shown in @fig-CB0B, you can read more about what the evaluator does.
+Back on the *Evaluations* page, under *Evaluator catalog*, you will see a list of built-in evaluators that you can use to evaluate your agents. These include a wide variety of purposes, from operational evaluations (e.g., "Did the agent follow the instructions and pick the right tool?") and safety evaluations (e.g., "Is the agent generating vulnerable code?") to functional evaluations (e.g., "How well does this agent handle customer service situations?"). You can also create your own custom evaluators if you have specific criteria that you want to assess that are not covered by the built-in options. When you click on one, as shown in @fig-CB0B, you can read more about what the evaluator does.
 
-![The Evaluator catalog show the details of a built-in evaluator](figures/co/ss_evaluations_003_ann.png){#fig-CB0B}
+![The Evaluator catalog shows the details of a built-in evaluator](figures/co/ss_evaluations_003_ann.png){#fig-CB0B}
 
 ### Red Teaming
 
-Lastly, to automate the identification of safety and security risks, Foundry provides a *Red team* feature that simulates adversarial attacks on your agents to identify vulnerabilities. More specifically, it probes for novel risks (both content and security-related) by attempting to cause your AI system to misbehave. You can see your Red teams under the *Build* section of the Foundry portal under *Evaluations* > *Red teams*. You can create a new red team by clicking the *Create* button, and then you can configure the parameters of the Red team, such as which agent to target, what types of attacks to simulate, and how often to run the tests.
+Lastly, to automate the identification of safety and security risks, Foundry provides a *Red team* feature that simulates adversarial attacks on your agents to identify vulnerabilities. More specifically, it probes for novel risks (both content and security-related) by attempting to cause your AI system to misbehave. You can see your Red teams under the *Build* section of the Foundry portal under *Evaluations* > *Red teams*. You can create a new Red team by clicking the *Create* button, and then you can configure the parameters of the Red team, such as which agent to target, what types of attacks to simulate, and how often to run the tests.
 
 This is an automated capability designed to stress-test AI systems for safety risks before and after deployment. It systematically generates adversarial prompts and evaluates whether a model or agent behaves unsafely, violates policies, leaks information, or performs prohibited actions.
 This feature supports three major scenarios:
 
-- Pre-deployment testing to identify vulnerabilities before releasing an AI application.
-- Continuous post-deployment monitoring, where red teaming evaluations can be scheduled periodically.
-- Agentic AI evaluations, specifically targeting AI agents that use tools and execute tasks in semi-autonomous environments.
+- Pre-deployment testing to identify vulnerabilities before releasing an AI application
+- Continuous post-deployment monitoring, where red teaming evaluations can be scheduled periodically
+- Agentic AI evaluations, specifically targeting AI agents that use tools and execute tasks in semi-autonomous environments
 
 This supports multiple automated attack techniques designed to probe different failure modes. Some examples include:
 
-* *Base64*: Encodes harmful instructions to bypass filters,
-* *Flip*: Alters prompts to manipulate model behavior. (e.g., "How do I rob a bank?" → "knab a bor I od woH?")
-* *Indirect Jailbreak*: Attempts to circumvent safeguards through indirect instructions.
+* *Base64*: Encodes harmful instructions to bypass filters
+* *Flip*: Alters prompts to manipulate model behavior (e.g., "How do I rob a bank?" → "knab a bor I od woH?")
+* *Indirect Jailbreak*: Attempts to circumvent safeguards through indirect instructions
 
-The Microsoft Foundry Python SDK provides a programmatic interface to create and manage Red teams, which can be useful for integrating red teaming into your CI/CD pipelines or for more advanced configurations. Below is an example of how to create a Red team using the Python SDK.
+The Microsoft Foundry Python SDK provides a programmatic interface to create and manage Red teams, which can be useful for integrating red teaming into your CI/CD pipelines or for more advanced configurations. The following is an example of how to create a Red team using the Python SDK.
 
 In this example, we create a Red team with a set of built-in safety evaluators and criteria that will automatically assess the model's responses for prohibited actions, task adherence, and sensitive data leakage. 
 
@@ -115,8 +115,11 @@ import os
 from azure.identity import DefaultAzureCredential
 from azure.ai.projects import AIProjectClient
 
-endpoint = os.environ["AZURE_AI_PROJECT_ENDPOINT"] ## Example: https://<account_name>.openai.azure.com
-model_deployment = os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"] ## Example: gpt-5.4-mini
+## Example: https://<account_name>.openai.azure.com
+endpoint = os.environ["AZURE_AI_PROJECT_ENDPOINT"]
+
+## Example: gpt-5.4-mini
+model_name = os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"]
 
 with DefaultAzureCredential() as credential:
     with AIProjectClient(endpoint=endpoint, credential=credential) as project_client:
@@ -138,7 +141,7 @@ with DefaultAzureCredential() as credential:
                     "name": "Task Adherence",
                     "evaluator_name": "builtin.task_adherence",
                     "evaluator_version": "1",
-                    "initialization_parameters": {"deployment_name": model_deployment},
+                    "initialization_parameters": {"deployment_name": model_name},
                 },
                 {
                     "type": "azure_ai_evaluator",
@@ -210,7 +213,7 @@ The output reporting provides multiple outputs including overall attack success 
 
 As AI systems become more autonomous and integrated with external tools, automated red teaming provides a practical mechanism for identifying risks before they impact users or business operations.
 
-To learn more about the Red Team feature and how to use it, check out the Microsoft Learn documentation: [https://learn.microsoft.com/en-us/azure/foundry/concepts/ai-red-teaming-agent](https://learn.microsoft.com/en-us/azure/foundry/concepts/ai-red-teaming-agent).
+To learn more about the Red team feature and how to use it, check out the Microsoft Learn documentation: [https://learn.microsoft.com/en-us/azure/foundry/concepts/ai-red-teaming-agent](https://learn.microsoft.com/en-us/azure/foundry/concepts/ai-red-teaming-agent).
 
 ### Batch Jobs
 
@@ -218,21 +221,21 @@ Usually, when we're talking about using LLMs, we think about real-time interacti
 
 The *Batch Jobs* feature in Microsoft Foundry allows you to run LLM workloads in a batch processing mode, which can be more efficient and cost-effective for certain types of tasks that don't require real-time responses.
 
-To create a batch job, navigate to the *Models* screen from the left-hand menu of the Foundry Portal under *Build* and click the *Batch jobs* tab, as shown in @fig-17AA. Then, you can click the *Create batch job* button to set up a new batch job.
+To create a batch job, navigate to the *Models* screen from the left-hand menu of the Foundry portal under *Build* and click the *Batch jobs* tab, as shown in @fig-17AA. Then, you can click the *Create batch job* button to set up a new batch job.
 
-![Locating the Batch jobs feature under Models](figures/co/ss_batchjobs_001_ann.png){#fig-17AA}
+![Locating the Batch Jobs feature under Models](figures/co/ss_batchjobs_001_ann.png){#fig-17AA}
 
 
 Just like when we were fine-tuning a model, batch jobs also use `.jsonl` formatted files. Each line of the file represents a separate request to the model, and you can include any input that you would normally send to the model in a real-time interaction. The difference is that instead of sending these requests one at a time, you can send them all at once as part of a batch job. This allows you to process large volumes of data more efficiently.
 
 <!-- ```{.json .code-overflow-wrap} -->
-```json
+<!-- ```json
 {"custom_id": "task-0", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a convolutional neural network?"}]}}
 {"custom_id": "task-1", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is a transformer model?"}]}}
 {"custom_id": "task-2", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "gpt-5.1", "messages": [{"role": "system", "content": "You are an AI assistant that helps data scientists learn about machine learning."}, {"role": "user", "content": "What is the difference between supervised and unsupervised learning?"}]}}
-```
+``` -->
 
-<!-- ```{.json .code-overflow-wrap}
+```json
 {
   "custom_id": "task-0",
   "method": "POST",
@@ -251,9 +254,45 @@ Just like when we were fine-tuning a model, batch jobs also use `.jsonl` formatt
     ]
   }
 }
-``` -->
+{
+  "custom_id": "task-1",
+  "method": "POST",
+  "url": "/v1/chat/completions",
+  "body": {
+    "model": "gpt-5.1",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an AI assistant that helps data scientists learn about machine learning."
+      },
+      {
+        "role": "user",
+        "content": "What is a transformer model?"
+      }
+    ]
+  }
+}
+{
+  "custom_id": "task-2",
+  "method": "POST",
+  "url": "/v1/chat/completions",
+  "body": {
+    "model": "gpt-5.1",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are an AI assistant that helps data scientists learn about machine learning."
+      },
+      {
+        "role": "user",
+        "content": "What is the difference between supervised and unsupervised learning?"
+      }
+    ]
+  }
+}
+```
 
-There's not much to configure on the *Create a batch job* screen, as the main thing is just to upload your `.jsonl` file, which defines everything, and then kick off the job. Once the job is running, you can monitor its progress and view the results once it's complete. See @fig-E07D for an example of what the batch job creation screen looks like with the sample `.jsonl` file from the accompanying GitHub repo under [data/ch09/tiny_batch_data.jsonl](data/ch09/tiny_batch_data.jsonl) is uploaded.
+There's not much to configure on the *Create a batch job* screen, as the main thing is just to upload your `.jsonl` file, which defines everything, and then kick off the job. Once the job is running, you can monitor its progress and view the results once it's complete. See @fig-E07D for an example of what the batch job creation screen looks like when the sample `.jsonl` file from the accompanying GitHub repo under [data/ch09/tiny_batch_data.jsonl](data/ch09/tiny_batch_data.jsonl) is uploaded.
 
 ![Uploading .jsonl data to create a batch job](figures/co/ss_batchjobs_002_clean.png){#fig-E07D}
 
@@ -262,7 +301,7 @@ There's not much to configure on the *Create a batch job* screen, as the main th
 
 For the majority of this book, we've been focused on LLMs, but there are certainly many other AI models that can be deployed and used within Microsoft Foundry. In addition to LLMs, Foundry also supports a variety of other AI services, such as text-to-speech, translation, language detection, personally identifiable information (PII) detection, content understanding, and more. These services can be used in conjunction with your agents to provide additional capabilities and enhance the overall user experience.
 
-As shown in @fig-2CED, you can find the *AI Services* options under the *Models* section of the Foundry Portal. From there, you can explore the different services that are available and how to use them. Clicking on any of these services will open up a Playground for you to test out the service and see how it works. 
+As shown in @fig-2CED, you can find the *AI Services* options under the *Models* section of the Foundry portal. From there, you can explore the different services that are available and how to use them. Clicking on any of these services will open up a Playground for you to test out the service and see how it works. 
 
 ::: {.callout-tip}
 If you click the circle beside the service name, it will show you the Target URI and Key to call the service programmatically.
@@ -272,7 +311,7 @@ For example, let's click on one of the newer AI Services: *Azure Speech - Voice 
 
 ![Locating the AI Services options under Models](figures/co/ss_aiservices_001_ann.png){#fig-2CED}
 
-In the Playground for the *Azure Speech - Voice Live* service, you can scroll through a few sample configurations such as customer service, language learning, or casual chat. Then, after clicking the *Start* button, you can have a live conversation with the model using your microphone, and it will respond back to you in real-time using text-to-speech. Try tweaking the response instructions, temperature, or even the voice that's being used. You can get some pretty comical (or weird) voice agents this way.
+In the Playground for the *Azure Speech - Voice Live* service, shown in @fig-C30F, you can scroll through a few sample configurations such as customer service, language learning, or casual chat. Then, after clicking the *Start* button, you can have a live conversation with the model using your microphone, and it will respond to you in real-time using text-to-speech. Try tweaking the response instructions, temperature, or even the voice that's being used. You can get some pretty comical (or weird) voice agents this way.
 
 This is a really fun way to experience the capabilities of these AI services and to see how they can be used in different scenarios. You could even integrate this service into your agents (by clicking the *Add to agent* button) to enable voice interactions for users, which could be especially useful for accessibility or for use cases where typing is not ideal, like in a mobile app.
 
@@ -287,7 +326,7 @@ In addition to the features available today in Microsoft Foundry, Microsoft has 
 
 ### GraphRAG
 
-You may recall in the @sec-chapter-4, we built a Retrieval Augmented Generation (RAG) system using a Foundry IQ knowledge base and Azure AI Search, then connected an agent to our data. There are many RAG-based architectures and approaches to building intelligent agents, each with their own strengths and weaknesses.
+You may recall that in @sec-chapter-4, we built a Retrieval Augmented Generation (RAG) system using a Foundry IQ knowledge base and Azure AI Search, then connected an agent to our data. There are many RAG-based architectures and approaches to building intelligent agents, each with their own strengths and weaknesses.
 
 Normal RAG may struggle to connect the dots well enough for an LLM to synthesize a coherent response when answering a question requires traversing disparate pieces of information. Another limitation is that traditional RAG systems may struggle to summarize semantic concepts when given a very large collection of data. This is where GraphRAG comes in.
 
@@ -302,22 +341,22 @@ Here are some terms to know when working with GraphRAG:
 
 - Entities & Relations: Extract key concepts and how they connect
 - Communities: Cluster strongly-related entities together into groups that represent a piece of knowledge
-- Hierarchy: Organize information into multiple levels of granularity, from topic-specific details to high-level overviews.
+- Hierarchy: Organize information into multiple levels of granularity, from topic-specific details to high-level overviews
 
 When running GraphRAG, it has two main steps: 
 
-1. *Index:* Slices up the input corpus into a series of TextUnits, then extracts all entities, relationships, and key claims. It then performs hierarchical clustering of the graph and generates summaries of each community and its constituents from the bottom-up.
+1. *Index:* Slices up the input corpus into a series of TextUnits, then extracts all entities, relationships, and key claims. It then performs hierarchical clustering of the graph and generates summaries of each community and its constituents from the bottom up.
 2. *Query:* Retrieves the most relevant graph nodes based on the query and flattens the graph into a prompt for the LLM. The LLM can then use the structured information in the graph to generate more accurate and coherent responses.
 
 There are multiple query modules in GraphRAG, including:
-  - *Global Search:* Enables reasoning about holistic questions about the corpus by leveraging the community summaries.
-  - *Local Search:* Enables reasoning about specific entities by fanning-out to their neighbors and associated concepts.
-  - *DRIFT Search:* Enables reasoning about specific entities by fanning-out to their neighbors and associated concepts, but with the added context of community information.
-  - *Basic Search:* Better for situations where your query is best answered by baseline RAG (standard top `k` vector search).
+  - *Global Search:* Enables reasoning about holistic questions about the corpus by leveraging the community summaries
+  - *Local Search:* Enables reasoning about specific entities by fanning out to their neighbors and associated concepts
+  - *DRIFT Search:* Enables reasoning about specific entities by fanning out to their neighbors and associated concepts, but with the added context of community information
+  - *Basic Search:* Better for situations where your query is best answered by baseline RAG (standard top `k` vector search)
 
 GraphRAG can also generate domain-adapted prompts for improved interactions with the LLM using the `graphrag prompt-tune` command. This tunes the prompt to find a better template for your specific dataset and use case, which can improve how the LLM organizes your data in the graph.
 
-You can install GraphRAG and try it out yourself using the commands below. The initialization process will create two files, `.env` and `settings.yaml`, and an `input/` directory, in the current directory. The `.env` file is where you can set your environment variables to connect to models in Microsoft Foundry or to GPT model using OpenAI's API.
+You can install GraphRAG and try it out yourself using the following commands. The initialization process will create two files, `.env` and `settings.yaml`, and an `input/` directory, in the current directory. The `.env` file is where you can set your environment variables to connect to models in Microsoft Foundry or to GPT models using OpenAI's API.
 
 ```bash
 ## Install GraphRAG
@@ -350,7 +389,7 @@ To learn more about GraphRAG and how to use it, check out the GitHub repository:
 
 The Microsoft Agent Framework is an open-source project that is touted as the "comprehensive multi-language framework for building, orchestrating, and deploying AI agents". It includes components for natural language understanding, dialogue management, and tool integration. The framework is available for Python and .NET and is designed to be flexible and extensible, allowing developers to create agents that can interact with a wide range of tools and services.
 
-For example, in the code block below, we can quickly make an comedian agent:
+For example, in the following code block, we can quickly make a comedian agent:
 
 ```python
 # pip install agent-framework
@@ -375,7 +414,7 @@ print(f"Agent: {result}")
 ## Agent: Why did the computer go to the doctor? Because it had a virus!
 ```
 
-Parts of the Microsoft Agent Framework will feel familiar because they use the same services that power Microsoft Foundry, especially Workflows. We can create multi-agent workflows using the Agent Framework's `SequentialBuilder`, which chains together multiple agents. If we were to remake the Workflow from @sec-chapter-6, the code block below shows an example of how to do so using the Agent Framework.
+Parts of the Microsoft Agent Framework will feel familiar because they use the same services that power Microsoft Foundry, especially Workflows. We can create multi-agent workflows using the Agent Framework's `SequentialBuilder`, which chains together multiple agents. If we were to remake the Workflow from @sec-chapter-6, the following code block shows an example of how to do so using the Agent Framework.
 
 ```python
 math_evaluator_agent = client.as_agent(...)
@@ -394,7 +433,7 @@ outputs = events.get_outputs()
 
 However, the Agent Framework is a separate project that can be used independently of Foundry. It provides a more code-centric approach to building agents, while Foundry provides a low-code/no-code interface for building and managing agents at scale. Depending on your needs and preferences, you may choose to use one or both of these tools in your AI agent development process.
 
-For more information about the Microsoft Agent Framework, check out their GitHub repository: [https://github.com/microsoft/agent-framework](https://github.com/microsoft/agent-framework).
+For more information about the Microsoft Agent Framework, check out its GitHub repository: [https://github.com/microsoft/agent-framework](https://github.com/microsoft/agent-framework).
 
 ### Foundry Toolkit Extension for VS Code
 
@@ -418,14 +457,14 @@ The toolkit is agent framework-agnostic (i.e., use OpenAI or LangChain or whatev
 
 ![Governance workflow of the Microsoft Agent Governance Toolkit](figures/co/il_govframework_001_clean.png){#fig-1FED}
 
-Similar to zero-trust paradigms for human users, this toolkit also includes a zero-trust model for agent identity and access management. The toolkit defines 4 privilege rings for agent identity, which are shown in @fig-5BE2. Each ring has different levels of access and permissions, with Ring 0 being the most privileged and Ring 3 being the least privileged. All agents start at Ring 3, which locks the agent's capabilities to a sandbox. Then, after earning trust through safe actions, an agent can be granted access to higher privilege rings with more capabilities. This approach helps to mitigate risks by ensuring that agents only have access to the resources and permissions they need to perform their tasks, and that they must earn trust over time through their behavior.
+Similar to zero-trust paradigms for human users, this toolkit also includes a zero-trust model for agent identity and access management. The toolkit defines four privilege rings for agent identity, which are shown in @fig-5BE2. Each ring has different levels of access and permissions, with Ring 0 being the most privileged and Ring 3 being the least privileged. All agents start at Ring 3, which locks the agent's capabilities to a sandbox. Then, after earning trust through safe actions, an agent can be granted access to higher privilege rings with more capabilities. This approach helps to mitigate risks by ensuring that agents only have access to the resources and permissions they need to perform their tasks, and that they must earn trust over time through their behavior.
 
-![The 4 privilege rings of zero-trust Agent identity](figures/co/il_govframework_002_clean.png){#fig-5BE2}
+![The four privilege rings of zero-trust Agent identity](figures/co/il_govframework_002_clean.png){#fig-5BE2}
 
-An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the code block below. In this example, we create a simple policy that blocks any tool calls to `execute_code` or `delete_file`. We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
+An example of how to use the policy evaluation component of the Microsoft Agent Governance Toolkit is shown in the following code block. In this example, we create a simple policy that blocks any tool calls to `execute_code` or `delete_file`. We then evaluate two different tool calls against this policy, one that is allowed and one that is blocked.
 
 ```python
-## pip install agent-governance-toolkit[full]
+# pip install agent-governance-toolkit[full]
 from agent_os.policies import *
 
 evaluator = PolicyEvaluator(policies=[PolicyDocument(
@@ -446,7 +485,7 @@ result = evaluator.evaluate({"tool_name": "web_search"})    ## Allowed
 result = evaluator.evaluate({"tool_name": "delete_file"})   ## Blocked
 ```
 
-For more information about the Microsoft Agent Governance Toolkit, check out their GitHub repository: [https://github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit).
+For more information about the Microsoft Agent Governance Toolkit, check out its GitHub repository: [https://github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit).
 
 
 
@@ -457,7 +496,7 @@ As we've traversed through the various chapters of this book, we've touched on d
 
 ### Infrastructure and Configuration Management
 
-When designing an Azure-based architecture for your AI use cases, treat your infrastructure as software from day one. Use Azure Resource Manager (ARM) templates, Bicep, or Terraform to define your infrastructure as code. This allows you to version control your infrastructure, easily replicate it across environments, and avoid the painful "works in dev, broken in prod" problem that plagues manually provisioned systems. For Foundry-specific resources (model deployments, agent configurations, and knowledge base connections) consider keeping these definitions alongside your application code in source control so that infrastructure changes go through the same review process as code changes. An example Bicep snippet for deploying a Foundry resource and related components is shown below.
+When designing an Azure-based architecture for your AI use cases, treat your infrastructure as software from day one. Use Azure Resource Manager (ARM) templates, Bicep, or Terraform to define your infrastructure as code. This allows you to version control your infrastructure, easily replicate it across environments, and avoid the painful "works in dev, broken in prod" problem that plagues manually provisioned systems. For Foundry-specific resources (model deployments, agent configurations, and knowledge base connections) consider keeping these definitions alongside your application code in source control so that infrastructure changes go through the same review process as code changes. An example Bicep snippet for deploying a Foundry resource and related components is shown here.
 
 
 ```bicep
@@ -485,14 +524,14 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2025-
 }
 ```
 
-Microsoft provides multiple Bicep and Terraform templates on their GitHub repo: [https://github.com/microsoft-foundry/foundry-samples/tree/main/infrastructure/infrastructure-setup-bicep](https://github.com/microsoft-foundry/foundry-samples/tree/main/infrastructure/infrastructure-setup-bicep)
+Microsoft provides multiple Bicep and Terraform templates on its GitHub repo: [https://github.com/microsoft-foundry/foundry-samples/tree/main/infrastructure/infrastructure-setup-bicep](https://github.com/microsoft-foundry/foundry-samples/tree/main/infrastructure/infrastructure-setup-bicep).
 
 
 ### Security and Identity
 
 AI agents can be surprisingly powerful actors in your organization, and with that power comes great responsibility (and risk). Thus, controlling what they can access and do is paramount. My recommendation is to leverage Azure's native security and identity services such as Microsoft Entra ID for authentication and Azure Key Vault for secrets management. When connecting an Agent to downstream services, always use managed identities to avoid storing credentials. In other words, as a general rule, never embed API keys or connection strings directly in your agent's instructions or tool definitions. These will inevitably end up in logs, conversation histories, and screenshots. When you use managed identities, your agents can authenticate to downstream services without any credentials ever being stored.
 
-Also, using role-based access controls (RBAC) can be applied on each resource to ensure that only authorized users can perform specific actions. For example, as shown in @fig-285E, you can set up RBAC for your Foundry resources separately from the RBAC for your Azure resources (e.g., the Subscription and Resource Group). This allows you to have fine-grained control over who can access and manage your Foundry agents and projects, which is especially important in larger organizations with multiple teams and stakeholders involved in AI initiatives.
+Also, role-based access controls (RBAC) can be applied on each resource to ensure that only authorized users can perform specific actions. For example, as shown in @fig-285E, you can set up RBAC for your Foundry resources separately from the RBAC for your Azure resources (e.g., the Subscription and Resource Group). This allows you to have fine-grained control over who can access and manage your Foundry agents and projects, which is especially important in larger organizations with multiple teams and stakeholders involved in AI initiatives.
 
 ![Role-based access controls for Foundry resources](figures/co/ss_identity_001_clean.png){#fig-285E}
 
@@ -507,7 +546,7 @@ If you're using the Microsoft Agent Governance Toolkit discussed earlier in this
 
 ### Observability
 
-You cannot improve what you cannot see. Use Azure Monitor and Application Insights to set up end-to-end observability for your agents. At a minimum, you should be tracking latency per tool call, token consumption per session, error rates by agent and by model, and the ratio of successful task completions to abandoned sessions. From the Foundry Portal, you can see an Agent's telemetry in the *Monitor* tab, as shown in @fig-30D0. This provides a high-level overview of the agent's performance and can help you identify any issues or bottlenecks in your agent's interactions.
+You can't improve what you can't see. Use Azure Monitor and Application Insights to set up end-to-end observability for your agents. At a minimum, you should be tracking latency per tool call, token consumption per session, error rates by agent and by model, and the ratio of successful task completions to abandoned sessions. From the Foundry portal, you can see an Agent's telemetry in the *Monitor* tab, as shown in @fig-30D0. This provides a high-level overview of the agent's performance and can help you identify any issues or bottlenecks in your agent's interactions.
 
 ![Viewing the Monitor tab of an Agent](figures/co/ss_monitor_001_ann.png){#fig-30D0}
 
@@ -529,18 +568,18 @@ Azure API Management (APIM) deserves special attention when your agents expose c
 
 ### Scalability and Cost Management
 
-Design for scalability by leaning on Azure's managed services. These include Azure Kubernetes Service (AKS) for containerized workloads, Azure App Service for web-facing components, and Azure Service Bus or Event Grid for decoupling high-throughput agent pipelines. However, resist the urge to over-engineer upfront. Start with simpler, fully-managed services and migrate to more complex orchestration only when you have real workload data justifying the operational overhead.
+Design for scalability by leaning on Azure's managed services. These include Azure Kubernetes Service (AKS) for containerized workloads, Azure App Service for web-facing components, and Azure Service Bus or Event Grid for decoupling high-throughput agent pipelines. However, resist the urge to over-engineer up front. Start with simpler, fully managed services and migrate to more complex orchestration only when you have real workload data justifying the operational overhead.
 
 Cost management is often an afterthought with AI workloads, but it shouldn't be. Token costs compound quickly at full scale. Set up Azure Cost Management budgets and alerts scoped to your Foundry resources from the very beginning. Tag all Foundry-related resources consistently (e.g., `workload: foundry-agents`, `env: prod`) so you can slice cost reports by agent, by team, or by environment without guesswork.
 
-As shown in @fig-DD24, you can view the Cost Management screen in the Azure Portal for your Foundry-related resources. This view allows you to monitor and analyze your spending patterns. This will help you identify any unexpected cost spikes and optimize your agent's performance and cost-efficiency over time.
+As shown in @fig-DD24, you can view the Cost Management screen in the Azure portal for your Foundry-related resources. This view allows you to monitor and analyze your spending patterns. This will help you identify any unexpected cost spikes and optimize your agent's performance and cost-efficiency over time.
 
 ![Viewing the Cost Management screen for the Foundry-related resources](figures/co/ss_costs_001_clean.png){#fig-DD24}
 
 
 ### Reference Architectures
 
-Lastly, I'd like to show a couple reference architectures of varying complexity that illustrate how you might integrate Foundry agents into an Azure-based cloud estate. These are not prescriptive templates, but rather examples to spark ideas for how you can design your own architecture based on your specific use case and constraints.
+Lastly, I'd like to show a couple of reference architectures of varying complexity that illustrate how you might integrate Foundry agents into an Azure-based cloud estate. These are not prescriptive templates, but rather examples to spark ideas for how you can design your own architecture based on your specific use case and constraints.
 
 Remember that one main benefit of Microsoft Foundry is that you get a simple model or agent endpoint that you can easily integrate into your apps. So, in many cases, your architecture might be as simple as a web app that calls out to Foundry for AI capabilities. However, as your needs grow, you might find it beneficial to introduce additional Azure services for orchestration, integration, or security.
 
@@ -553,7 +592,7 @@ Next, let's get a bit more technical with networking and security. In @fig-BDB5,
 ![A more sophisticated architecture with private networking](figures/co/il_architecture_002_clean.png){#fig-BDB5}
 
 
-These examples are just two of many possible architectures for integrating Foundry agents into an Azure-based cloud environment.For more reference architectures related to Microsoft Foundry, check out the Azure Architecture Center: [https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry](https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry).
+These examples are just two of many possible architectures for integrating Foundry agents into an Azure-based cloud environment. For more reference architectures related to Microsoft Foundry, check out the Azure Architecture Center: [https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry](https://learn.microsoft.com/en-us/azure/architecture/browse/?products=microsoft-foundry).
 
 
 
@@ -563,14 +602,14 @@ These examples are just two of many possible architectures for integrating Found
 
 I suppose all good things must come to an end, but the party has just begun! As we conclude this journey through Microsoft Foundry, remember that AI is not just about technology. It's about empowering people to accomplish more. The patterns, practices, and architectures presented in this book provide a foundation, but your creativity and domain expertise will ultimately determine success. I encourage you to experiment, iterate, and share your learnings with the community. The future of enterprise AI is being formed now.
 
-Key Takeaways:
+Key takeaways:
 
-1. *Start Simple*. Begin with a focused use case and expand gradually
-2. *Security First*. Build security and compliance in from the start
-3. *Measure Everything*. Use observability to understand and improve
-4. *Iterate Rapidly*. Collect feedback and continuously refine
-5. *Scale Thoughtfully*. Plan for growth but don't over-engineer initially
-6. *Stay Current*. AI technology evolves rapidly; keep learning
+1. *Start Simple*: Begin with a focused use case and expand gradually
+2. *Security First*: Build security and compliance in from the start
+3. *Measure Everything*: Use observability to understand and improve
+4. *Iterate Rapidly*: Collect feedback and continuously refine
+5. *Scale Thoughtfully*: Plan for growth but don't over-engineer initially
+6. *Stay Current*: AI technology evolves rapidly; keep learning
 
 As AI continues to evolve, Microsoft Foundry will evolve with it, providing new capabilities, models, and tools. The fundamentals of good engineering will remain: clear requirements, solid architecture, comprehensive testing, and continuous improvement.
 
@@ -579,10 +618,10 @@ I encourage you to experiment, build, and share your learnings with the communit
 Next Steps:
 
 * Visit the [Microsoft Foundry portal](https://ai.azure.com) to start building.
-* Join the [Microsoft Foundry community](https://aka.ms/foundry/community)
+* Join the [Microsoft Foundry community](https://aka.ms/foundry/community).
 * Keep an eye on the Dev Blog: [https://devblogs.microsoft.com/foundry](https://devblogs.microsoft.com/foundry) for updates and best practices.
-* Explore the [documentation](https://learn.microsoft.com/azure/ai-foundry/)
-* Work through the Foundry examples on GitHub: [https://github.com/microsoft-foundry/foundry-samples](https://github.com/microsoft-foundry/foundry-samples)
+* Explore the [documentation](https://learn.microsoft.com/azure/ai-foundry/).
+* Work through the Foundry examples on GitHub: [https://github.com/microsoft-foundry/foundry-samples](https://github.com/microsoft-foundry/foundry-samples).
 * Share your success stories and learn from others.
 
 Thank you for reading and, as always, stay curious...

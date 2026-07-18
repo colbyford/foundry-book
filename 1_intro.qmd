@@ -127,7 +127,7 @@ Next, click the **Next** button at the bottom of the screen or navigate to the *
 
 - Under the **Credential storage and application login** section, create a new Key Vault and Application Insights service.
 
-- Under the **Agent service** section, click the **+ Select Resources** button and create a new Cosmos DB database, AI Search service, and Storage Account.
+- Under the **Agent service** section, click the **+ Select Resources** button and create a new Cosmos DB database, AI Search service, and Storage Account. For the AI Search service, be sure to select the *Basic* pricing tier.
 
 - For the **Speech and Language service**, you can ignore the Storage Account selection as we won't need it.
 

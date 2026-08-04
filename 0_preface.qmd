@@ -1,5 +1,28 @@
 # Preface {.unnumbered}
 
+Hello and welcome to *Building Agentic Solutions with Microsoft Foundry*! The goal of this book is to help you understand how to deliver AI-enabled experiences using Microsoft Foundry, a powerful platform for creating intelligent agents and applications. Whether you're a developer, data scientist, AI engineer, or cloud architect, this book will provide you with the knowledge and skills needed to leverage Foundry's capabilities effectively.
+
+## Who Should Read This Book
+
+This book is intended for anyone interested in building cloud-based artificial intelligence (AI) solutions for your organization. This book was written for data scientists and AI engineers who have experience working with large language models (LLMs) and want to learn how to build agentic solutions in a cloud-based environment, specifically Microsoft Foundry. However, there is plenty of content in this book that will also be valuable for cloud engineers looking to get a better understanding of how cloud architecture should work for deploying and managing AI models and agents at an enterprise level. This book is not intended to teach you how to build and train AI models from scratch or to train your own models. Instead, it focuses on how to deploy and manage both open-source and proprietary foundation models at scale.
+
+It seems like there are a million new AI models that come available every week, and it can be overwhelming to keep up with all the new developments. This book will also help you understand how to evaluate various models, compare their performance and costs, and determine which models are best suited for your specific use case. For those interested in building truly custom AI experiences, we'll cover model customizations through fine-tuning and connecting to data with retrieval augmented generation (RAG) and tools. Plus, if you're the person responsible for making sure your AI doesn't go rogue, I'll show you how to implement guardrails and controls to ensure that your agentic solutions are safe, ethical, and compliant with regulations and adhere to your organization's rules.
+
+By the end of this book, you will have a solid understanding of how to build agentic solutions using Microsoft Foundry, including all of the ins and outs of the platform's features and some open-source frameworks that are commonly used in conjunction with Foundry. While the book is certainly centered around Foundry features, there's a lot on conceptual knowledge in here that should help you better understand how to make informed decisions around AI in general, regardless of the platform you choose to use.
+
+
+## How the Book is Organized
+
+This book is organized in a "ground-up" manner, starting with the deployment of Microsoft Foundry resources in Azure and gradually working up to deploying models and agents. Then, we build up to more advanced topics such as connecting to tools, fine-tuning, and building knowledge bases. We'll also discuss security,  governance, and management features in Foundry once you've learned how to use deployment facets of the platform. In addition to the main Foundry-related content, we will also cover Foundry Local for running models locally, and we'll discuss some open-source frameworks that are commonly used in conjunction with Foundry. The book is structured to provide a comprehensive understanding of the platform, starting from the basics and progressing to more advanced topics and configurations.
+
+
+::: {.callout-warning}
+## Warning
+
+This book was finished in June 2026 and is based on the state of Microsoft Foundry and related tools at that time. Given the rapid pace of new features that are being developed for Microsoft Foundry, some of the content related to exercises, SDK code, etc. may change a bit by the time you read it. Always refer to the official Microsoft Foundry documentation for the most up-to-date information on features, functionality, and best practices.
+:::
+
+
 ## Conventions Used in This Book
 
 The following typographical conventions are used in this book:
@@ -89,12 +112,6 @@ Find us on LinkedIn: <https://linkedin.com/company/oreilly-media>
 
 Watch us on YouTube: <https://youtube.com/oreillymedia>
 
-
-::: {.callout-warning}
-## Warning
-
-This book was finished in June 2026 and is based on the state of Microsoft Foundry and related tools at that time. Given the rapid pace of new features that are being developed for Microsoft Foundry, some of the content related to exercises, SDK code, etc. may change a bit by the time you read it. Always refer to the official Microsoft Foundry documentation for the most up-to-date information on features, functionality, and best practices.
-:::
 
 We have a web page for this book, where we list errata and any additional information. You can access this page at:
 

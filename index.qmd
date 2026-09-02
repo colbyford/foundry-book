@@ -1,14 +1,17 @@
 # Welcome {.unnumbered}
 
-This is a website of "**Building Agentic Solutions with Microsoft Foundry**" that will accompany the physical book to be published by O'Reilly Media in mid-2026.
+This is the website for "**Building Agentic Solutions with Microsoft Foundry**" that accompanies the physical book published by O'Reilly Media in September 2026.
 
-Bringing AI into production involves much more than model deployment. Organizations need to control how agents access data, respond to users, and operate within governance policies. Microsoft Foundry offers a unified platform for building, scaling, and managing intelligent agents across an enterprise. This book helps you unlock its full potential through proven practices, clear examples, and actionable guidance.
+If you’d like a physical copy of the book, you can order it on [Amazon](https://a.co/d/0dwoifrd) or read it on [O'Reilly's learning platform](https://learning.oreilly.com/library/view/building-agentic-solutions/0642572309817/).
 
-This book serves as a hands-on guide for cloud engineers, AI developers, and technical leaders using Azure to implement enterprise-ready AI. You’ll learn how to deploy large language models, connect them to secure data sources, manage quotas and usage, and architect agentic workflows. This book will become a trusted reference as you bring intelligent agents into your organization.
+Bringing AI into production involves much more than model deployment. Organizations need to control how agents access data, respond to users, and operate within governance policies. Microsoft Foundry offers a unified platform for building, scaling, and managing intelligent agents across an enterprise. This book helps you unlock Foundry’s full potential through proven practices, clear examples, and actionable guidance.
+
+Building Agentic Solutions with Microsoft Foundry is a hands-on guide for cloud engineers, AI developers, and technical leaders using Azure to implement enterprise-ready AI. You’ll learn how to deploy large language models, connect them to secure data sources, manage quotas and usage, and architect agentic workflows. This book will become a trusted reference as you bring intelligent agents into your organization.
 
 - Deploy large language models using Microsoft Foundry services
-- Configure retrieval-augmented generation with MCP tools to enable data access
-- Build multi-agent workflows with Foundry IQ knowledge bases
+- Connect agents to other platforms and services with MCP tools 
+- Configure retrieval-augmented generation with Foundry IQ knowledge bases
+- Fine-tune models and build multi-agent workflows
 - Monitor usage and track performance with built-in observability features
 - Apply reference architectures and patterns suited for enterprise environments
 - Govern compliant and secure AI applications with confidence using scalable management tools

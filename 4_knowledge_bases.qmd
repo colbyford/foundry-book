@@ -306,6 +306,10 @@ Spend some time asking different questions and seeing how the agent is able to g
 
 {{< pagebreak >}}
 
+::: {.callout-warning}
+Be sure to delete the AI Search Service (or scale it down to the **Basic** tier) from the Azure portal once you're done with this exercise. The Standard pricing tier for this service is around $250 per month, which is a lot to pay if you are not actively using it.
+:::
+
 ## Summary
 
 Foundry IQ represents a shift in how enterprise AI systems are built. While custom RAG-based solutions will continue to pop up, Foundry IQ alleviates our need to build them ourselves. Instead of treating knowledge, memory, and observability as external concerns, it embeds them directly into the platform. By doing so, Microsoft Foundry enables developers to move beyond isolated prompts and toward intelligent systems that retrieve data, reason with it, and ground their responses before providing a response.

@@ -296,7 +296,7 @@ As you likely noticed earlier, Microsoft Foundry supports over 1,400 pre-built t
 
 For many external (non-Azure) Tools, the configuration requires an endpoint URL to the MCP server and usually some sort of authentication method. For many services that have made their APIs available (e.g., Morningstar for investor data or Stripe for payment processing) you simply need to go to those services, create an account and get your access key or token. See @fig-3AB9 for the general MCP tool configuration.
 
-This is also the case if you find MCP servers that are available outside of the Microsoft Foundry platform. For example, there are large lists of public MCP servers available online such as [MCPMarket.com](https://mcpmarket.com/) and [MCPServers.org](https://mcpservers.org/).
+This is also the case if you find MCP servers that are available outside of the Microsoft Foundry platform. For example, there are large lists of public MCP servers available online such as [MCPMarket](https://mcpmarket.com/) and [MCP Servers](https://mcpservers.org/).
 
 ![Configuring a general MCP tool](figures/ad/ss_tools_008_clean.png){#fig-3AB9}
 
@@ -310,7 +310,7 @@ In this exercise, we'll need a few pieces of information to connect to your Cosm
 ::: {.callout-warning}
 If you didn't deploy a Cosmos DB back in @sec-chapter-1, go back and review those setup parameters and deploy your own database in the same Resource Group as your Foundry Project.
 
-You can follow the deployment instructions from Microsoft Learn here: [learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal](https://learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal).
+You can follow the deployment instructions from Microsoft Learn. [learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal](https://learn.microsoft.com/en-us/azure/cosmos-db/quickstart-portal).
 :::
 
 

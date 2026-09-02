@@ -14,6 +14,8 @@ Introduced at the Microsoft Ignite conference in November 2025, Microsoft Foundr
 
 Microsoft Foundry delivers multiple capabilities to manage enterprise agentic solutions at scale and from end to end. As shown in @fig-4C72, these include:
 
+The Microsoft Foundry platform includes:
+
 * **Multi-Agent Orchestration and Workflows** – Build advanced automation using SDKs for C# and Python that enable collaborative agent behavior and complex workflow execution.
 * **Expanded Integration Options** – Publish agents to Microsoft 365 and Teams, plus leverage containerized deployments for greater portability.
 * **Expanded Tool Access** – Access the Foundry tool catalog with a public tool catalog and your own private catalogs, connecting over 1,400 tools in Microsoft Foundry.

@@ -344,14 +344,14 @@ When running AI models locally, especially on resource-constrained devices, it's
 
 ### Precision and Quantization
 
-When LLMs are trained, they typically use higher floating point precision, such as 16-bit (FP16) or 32-bit (FP32) for the weights. That is, each weight in the model is represented using 16 bits. So, a weight like `0.15625` would be stored in a 16-bit format `0011000100000000` (IEEE 754 format).
+When LLMs are trained, they typically use higher floating point precision, such as 16-bit (FP16) or 32-bit (FP32) for the weights. That is, each weight in the model is represented using a certain number of bits. So, a weight like `0.15625` would be stored in a 16-bit format `0011000100000000` (IEEE 754 format).
 
 * For 16-bit precision (FP16), you can represent numbers between ± 5.97e-8 and 65,504.
 * For 32-bit precision (FP32), you can represent numbers between ± 1.40e-45 and 3.4e38.
 
-Picking a higher level of precision has a tradeoff between model quality and resource requirements. Using FP16 during training helps to reduce memory usage and speed up computations while still maintaining good model quality.
+Picking a higher level of precision has a trade-off between model quality and resource requirements. Using FP16 during training helps to reduce memory usage and speed up computations while still maintaining good model quality.
 
-However, for inference, we can often get away with using lower-precision without significantly impacting the quality of the results. This is where quantization comes in. Quantization is the process of converting the model's weights from higher precision (like FP16) to lower-precision formats such as 8-bit integers (INT8) or even 4-bit integers (INT4). This can significantly reduce the model's memory footprint and improve inference speed, especially on hardware that supports efficient low-precision computation. So, our `0.15625` weight could be quantized to an 8-bit integer value of `40` (if we use a simple linear quantization scheme), which would be stored as `00101000` in binary. In 4-bit quantization, it could be quantized to `10` (stored as `1010` in binary).
+However, for inference, we can often get away with using lower precision without significantly impacting the quality of the results. This is where quantization comes in. Quantization is the process of converting the model's weights from higher precision (like FP16) to lower-precision formats such as 8-bit integers (INT8) or even 4-bit integers (INT4). This can significantly reduce the model's memory footprint and improve inference speed, especially on hardware that supports efficient low-precision computation. So, our `0.15625` weight could be quantized to an 8-bit integer value of `40` (if we use a simple linear quantization scheme), which would be stored as `00101000` in binary. In 4-bit quantization, it could be quantized to `10` (stored as `1010` in binary).
 
 * For 8-bit integer quantization (INT8), each weight is represented using 8 bits, allowing for 256 discrete values. This can reduce the model size by up to 75% compared to FP16.
 * For 4-bit integer quantization (INT4), each weight is represented using 4 bits, allowing for 16 discrete values. This can reduce the model size by up to 87.5% compared to FP16.

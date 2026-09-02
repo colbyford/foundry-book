@@ -224,6 +224,8 @@ As shown in @fig-7C25, click the *Done* button once your instructions and settin
 
 Now we need to handle what should happenif the agent is unable to solve the problem. You may have noticed in the prompt that the agent should return `[COMPLETE]` as part of its response if it was able to produce a complete solution plan. We will add a conditional branch that checks whether the agent's response contains the `[COMPLETE]` flag. If it does not, it will tell the user that it was unable to solve the problem.
 
+This example uses `[COMPLETE]` as a string-based flag for simplicity purposes. In practice, complex multi-agent workflows often pass JSON objects around, which have specified schemas. Using JSON structures as inputs and outputs for an agent helps to ensure consistency with information handling, though it takes more effort to set up.
+
 Click on the *+* icon after the "math-evaluator-agent" node and select the *If/else condition* node type. In the configuration panel, set the following value:
 
 * *Node ID*: `check_evaluator_exit`

@@ -1,0 +1,15 @@
+name: supervised-ft-cli-medical
+description: Template for supervised medical fine-tuning using via CLI
+model: gpt-4.1-mini
+method:
+  type: supervised
+  supervised:
+    hyperparameters:
+      epochs: 4
+      batch_size: 8
+      learning_rate_multiplier: 0.1
+      prompt_loss_weight: 0.01
+seed: 1337
+suffix: "medical-trained-full"
+training_file: local:medical_training_set.jsonl
+validation_file: local:medical_validation_set.jsonl

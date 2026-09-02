@@ -1,0 +1,9 @@
+id,address,city,state,zip,n_bedrooms,n_bathrooms,sq_footage,year_built
+prop-001,123 Maple Street,Austin,TX,78704,3,2,1850,1998
+prop-002,456 Oak Avenue,Denver,CO,80205,4,3,2400,2005
+prop-003,789 Pine Lane,Seattle,WA,98109,2,1,980,1984
+prop-004,321 Birch Road,Madison,WI,53703,3,2,1650,1976
+prop-005,654 Cedar Court,Raleigh,NC,27601,4,2.5,2200,2012
+prop-006,987 Elm Drive,Phoenix,AZ,85016,3,2,1750,1991
+prop-007,159 Spruce Way,Portland,OR,97205,2,2,1200,2008
+prop-008,753 Willow Boulevard,San Diego,CA,92101,3,2.5,1950,2016

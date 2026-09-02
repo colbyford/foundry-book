@@ -1,0 +1,9 @@
+name: cosmos-mcp-demo
+infra:
+    provider: "bicep"
+services:
+  mcp:
+    project: ./app
+    language: python
+    host: appservice
+    

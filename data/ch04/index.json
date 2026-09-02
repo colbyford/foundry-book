@@ -1,0 +1,144 @@
+{
+  "name": "financial-documents-index",
+  "fields": [
+    {
+      "name": "id",
+      "type": "Edm.String",
+      "key": true,
+      "searchable": false
+    },
+    {
+      "name": "document_id",
+      "type": "Edm.String",
+      "filterable": true,
+      "searchable": false
+    },
+    {
+      "name": "file_name",
+      "type": "Edm.String",
+      "filterable": true,
+      "searchable": false
+    },
+    {
+      "name": "blob_url",
+      "type": "Edm.String",
+      "filterable": false,
+      "searchable": false
+    },
+    {
+      "name": "company_name",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "name": "ticker",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "sortable": true,
+      "facetable": true
+    },
+    {
+      "name": "sector",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "filing_type",
+      "type": "Edm.String",
+      "filterable": true,
+      "facetable": true,
+      "searchable": false
+    },
+    {
+      "name": "fiscal_year",
+      "type": "Edm.Int32",
+      "filterable": true,
+      "sortable": true,
+      "facetable": true
+    },
+    {
+      "name": "fiscal_quarter",
+      "type": "Edm.String",
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "report_date",
+      "type": "Edm.DateTimeOffset",
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "name": "page_number",
+      "type": "Edm.Int32",
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "name": "content",
+      "type": "Edm.String",
+      "searchable": true,
+      "analyzer": "en.microsoft"
+    },
+    {
+      "name": "content_vector",
+      "type": "Collection(Edm.Single)",
+      "searchable": true,
+      "dimensions": 3072,
+      "vectorSearchProfile": "financial-vector-profile"
+    }
+  ],
+  "vectorSearch": {
+    "algorithms": [
+      {
+        "name": "financial-hnsw",
+        "kind": "hnsw",
+        "hnswParameters": {
+          "metric": "cosine",
+          "m": 4,
+          "efConstruction": 400,
+          "efSearch": 500
+        }
+      }
+    ],
+    "profiles": [
+      {
+        "name": "financial-vector-profile",
+        "algorithm": "financial-hnsw"
+      }
+    ]
+  },
+  "semantic": {
+    "configurations": [
+      {
+        "name": "financial-semantic-config",
+        "prioritizedFields": {
+          "titleField": {
+            "fieldName": "file_name"
+          },
+          "prioritizedContentFields": [
+            {
+              "fieldName": "content"
+            }
+          ],
+          "prioritizedKeywordsFields": [
+            {
+              "fieldName": "company_name"
+            },
+            {
+              "fieldName": "ticker"
+            },
+            {
+              "fieldName": "filing_type"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -4,4 +4,3 @@
 
 Site and content code for the _Building Agentic Solutions with Microsoft Foundry_ book.
 
-Coming soon in mid-2026!

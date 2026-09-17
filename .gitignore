@@ -222,7 +222,13 @@ libs
 *.rds
 _main.*
 tmp-pdfcrop-*
-figures
+# figures
 /.quarto/
 site_libs
 oreilly
+.azure
+data/ch08/node_modules/
+data/ch08/package-lock.json
+data/ch08/package.json
+
+**/*.quarto_ipynb

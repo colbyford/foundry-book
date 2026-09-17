@@ -15,5 +15,3 @@ Building Agentic Solutions with Microsoft Foundry is a hands-on guide for cloud 
 - Monitor usage and track performance with built-in observability features
 - Apply reference architectures and patterns suited for enterprise environments
 - Govern compliant and secure AI applications with confidence using scalable management tools
-
-

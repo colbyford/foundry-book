@@ -1,6 +1,6 @@
 # Welcome {.unnumbered}
 
-This is the website for "**Building Agentic Solutions with Microsoft Foundry**" that accompanies the physical book published by O'Reilly Media in September 2026.
+This is a website of "**Building Agentic Solutions with Microsoft Foundry**" that accompanies the physical book published by O'Reilly Media in September 2026.
 
 If you’d like a physical copy of the book, you can order it on [Amazon](https://a.co/d/0dwoifrd) or read it on [O'Reilly's learning platform](https://learning.oreilly.com/library/view/building-agentic-solutions/0642572309817/).
 
